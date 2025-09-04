@@ -1,0 +1,239 @@
+{
+  "version": 1,
+  "updated_at": "2025-09-04T22:57:14Z",
+  "indice_mes": 787.1022,
+  "indice_mes_anterior": 772.4261,
+  "antiguedad": [
+    {
+      "years": 34,
+      "pct": 170
+    },
+    {
+      "years": 32,
+      "pct": 160
+    },
+    {
+      "years": 30,
+      "pct": 150
+    },
+    {
+      "years": 28,
+      "pct": 140
+    },
+    {
+      "years": 25,
+      "pct": 130
+    },
+    {
+      "years": 24,
+      "pct": 120
+    },
+    {
+      "years": 22,
+      "pct": 110
+    },
+    {
+      "years": 20,
+      "pct": 100
+    },
+    {
+      "years": 17,
+      "pct": 80
+    },
+    {
+      "years": 15,
+      "pct": 70
+    },
+    {
+      "years": 12,
+      "pct": 60
+    },
+    {
+      "years": 10,
+      "pct": 50
+    },
+    {
+      "years": 7,
+      "pct": 40
+    },
+    {
+      "years": 5,
+      "pct": 30
+    },
+    {
+      "years": 2,
+      "pct": 15
+    },
+    {
+      "years": 1,
+      "pct": 10
+    },
+    {
+      "years": 0,
+      "pct": 0
+    }
+  ],
+  "radio": [
+    {
+      "label": "Sin radio",
+      "pct": 0
+    },
+    {
+      "label": "Radio 1 (40%)",
+      "pct": 40
+    },
+    {
+      "label": "Radio 2 (50%)",
+      "pct": 50
+    },
+    {
+      "label": "Radio 3 (60%)",
+      "pct": 60
+    },
+    {
+      "label": "Radio 4 (90%)",
+      "pct": 90
+    },
+    {
+      "label": "Radio 5 (110%)",
+      "pct": 110
+    },
+    {
+      "label": "Radio 6 (130%)",
+      "pct": 130
+    },
+    {
+      "label": "Radio 7 (150%)",
+      "pct": 150
+    }
+  ],
+  "cargos": {
+    "Primario": [
+      {
+        "nombre": "Maestro de Grado - Jornada Simple",
+        "cat": "116",
+        "pts": 482
+      },
+      {
+        "nombre": "Maestro de Grado - Ed. Primaria Adultos",
+        "cat": "117",
+        "pts": 482
+      },
+      {
+        "nombre": "Maestro de Nivel Inicial",
+        "cat": "120",
+        "pts": 482
+      },
+      {
+        "nombre": "Maestro de Grado de Educación Especial",
+        "cat": "121",
+        "pts": 503
+      },
+      {
+        "nombre": "Maestro de Especialidades",
+        "cat": "134",
+        "pts": 463
+      },
+      {
+        "nombre": "Maestro de Esp. de Educación Especial",
+        "cat": "135",
+        "pts": 498
+      },
+      {
+        "nombre": "Celador de Educación Especial",
+        "cat": "149",
+        "pts": 498
+      },
+      {
+        "nombre": "Maestro Celador de Educación Especial",
+        "cat": "151",
+        "pts": 500
+      },
+      {
+        "nombre": "Maestro de Grado - Jornada Extendida",
+        "cat": "166",
+        "pts": 605
+      },
+      {
+        "nombre": "Maestro de Grado - Jornada Completa",
+        "cat": "167",
+        "pts": 964
+      },
+      {
+        "nombre": "Completar",
+        "cat": "",
+        "pts": ""
+      }
+    ],
+    "Secundario": [
+      {
+        "nombre": "Horas Cátedra - Nivel Medio",
+        "cat": "",
+        "pts": ""
+      },
+      {
+        "nombre": "Maestro de Opción - Nivel Secundario",
+        "cat": "119",
+        "pts": 482
+      },
+      {
+        "nombre": "MEP",
+        "cat": "125",
+        "pts": 482
+      },
+      {
+        "nombre": "Ayudante de Clases Prácticas",
+        "cat": "141",
+        "pts": 478
+      },
+      {
+        "nombre": "Bibliotecario",
+        "cat": "152",
+        "pts": 482
+      },
+      {
+        "nombre": "Preceptor de Nivel Secundario",
+        "cat": "153",
+        "pts": 477
+      },
+      {
+        "nombre": "Completar",
+        "cat": "",
+        "pts": ""
+      }
+    ],
+    "Nivel Superior": [
+      {
+        "nombre": "Horas Cátedra - Nivel Superior",
+        "cat": "",
+        "pts": ""
+      }
+    ]
+  },
+  "horas_catedra_factor": 15,
+  "codigos": {
+    "A01": {
+      "mult_pct": 100
+    },
+    "A03": {
+      "mult_pct_antiguedad": true
+    },
+    "A04": {
+      "mult_pct_radio": true
+    },
+    "A56": {
+      "visible_si": "optA56"
+    },
+    "E66": {
+      "visible_si": "optE66"
+    },
+    "E60": {
+      "visible_si": "optE60",
+      "solo_cargos": true
+    },
+    "E29": {
+      "visible_si": "suplente",
+      "solo_cargos": true
+    }
+  }
+}
