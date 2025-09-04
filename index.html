@@ -659,6 +659,97 @@ const sueldoBasico = isHoras(cargo) ? (horas * 15 * indice) : (puntos * indice);
     uiUpdateAntigPct();
     update();
   </script>
+
+  // ====== CARGA DE DATOS DEL REPO (data/current.json) ======
+async function loadRepoData() {
+  try {
+    const res = await fetch('./data/current.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('No se pudo cargar data/current.json');
+    const cfg = await res.json();
+
+    // 1) Índices del mes actual y anterior
+    if (typeof cfg.indice_mes === 'number' && window.inputIndiceMes) {
+      inputIndiceMes.value = cfg.indice_mes;
+    }
+    if (typeof cfg.indice_mes_anterior === 'number' && window.inputIndiceMesPrev) {
+      inputIndiceMesPrev.value = cfg.indice_mes_anterior;
+    }
+
+    // 2) Tabla de Antigüedad
+    if (Array.isArray(cfg.antiguedad)) {
+      // La app usa ANTIG_Tabla = [{y: años, p: porcentaje}] ordenada de mayor a menor
+      window.ANTIG_Tabla = cfg.antiguedad
+        .map(x => ({ y: x.years, p: x.pct }))
+        .sort((a, b) => b.y - a.y);
+    }
+
+    // 3) Opciones de Radio
+    if (Array.isArray(cfg.radio) && window.selectRadio) {
+      // Guardamos la selección previa (si hubiera)
+      const prev = selectRadio.value;
+      // Limpiar y repoblar
+      while (selectRadio.firstChild) selectRadio.removeChild(selectRadio.firstChild);
+      cfg.radio.forEach(r => {
+        const o = document.createElement('option');
+        o.value = String(r.pct);
+        o.textContent = r.label;
+        selectRadio.appendChild(o);
+      });
+      // Restaurar si coincide
+      if ([...selectRadio.options].some(o => o.value === prev)) {
+        selectRadio.value = prev;
+      }
+    }
+
+    // 4) Cargos por nivel
+    function fillSelect(sel, list) {
+      if (!sel || !Array.isArray(list)) return;
+      const prev = sel.value;
+      sel.innerHTML = '';
+      const def = document.createElement('option');
+      def.value = '';
+      def.textContent = '— Seleccionar —';
+      def.dataset.cat = '';
+      def.dataset.pts = '';
+      sel.appendChild(def);
+      list.forEach(item => {
+        const o = document.createElement('option');
+        o.value = item.nombre;
+        o.textContent = item.nombre;
+        if (item.cat != null) o.dataset.cat = item.cat;
+        if (item.pts != null) o.dataset.pts = item.pts;
+        sel.appendChild(o);
+      });
+      if ([...sel.options].some(o => o.value === prev)) {
+        sel.value = prev;
+      }
+    }
+
+    if (cfg.cargos) {
+      fillSelect(window.selectCargoPrimario,   cfg.cargos['Primario']);
+      fillSelect(window.selectCargoSecundario, cfg.cargos['Secundario']);
+      fillSelect(window.selectCargoSuperior,   cfg.cargos['Nivel Superior']);
+    }
+
+    // 5) Factor de horas cátedra (usado en calculateLiq)
+    window.__HORAS_FACTOR__ = (typeof cfg.horas_catedra_factor === 'number')
+      ? cfg.horas_catedra_factor
+      : 15;
+
+  } catch (e) {
+    console.warn('No se pudo cargar data/current.json. Se usan valores embebidos.', e);
+    // Si falla, __HORAS_FACTOR__ queda undefined y en calculateLiq se usa 15 por defecto.
+  }
+}
+
+// Inicialización en orden: primero datos, luego UI y cálculos
+(async function init() {
+  await loadRepoData();
+  if (typeof handleNivelChange === 'function') handleNivelChange();
+  if (typeof uiUpdateAntigPct === 'function') uiUpdateAntigPct();
+  if (typeof update === 'function') update();
+})();  
+    
 <script>
 (function(){
   const orig = document.getElementById('indiceMesPrev');
