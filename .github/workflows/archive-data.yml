@@ -1,0 +1,47 @@
+name: Archive current data monthly
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 00:05 America/Argentina/San_Juan ≈ 03:05 UTC (ajusta si es necesario)
+    - cron: '5 3 1 * *'
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set date env (America/Argentina/San_Juan)
+        id: dates
+        run: |
+          TZ='America/Argentina/San_Juan'
+          YEAR=$(date +'%Y')
+          MONTH=$(date +'%m')
+          echo "YEAR=$YEAR" >> $GITHUB_OUTPUT
+          echo "MONTH=$MONTH" >> $GITHUB_OUTPUT
+
+      - name: Ensure year folder exists
+        run: |
+          mkdir -p data/${{ steps.dates.outputs.YEAR }}
+
+      - name: Archive current.json if exists
+        run: |
+          if [ -f "data/current.json" ]; then
+            cp data/current.json data/${{ steps.dates.outputs.YEAR }}/${{ steps.dates.outputs.MONTH }}.json
+          else
+            echo "No data/current.json found. Skipping copy."
+          fi
+
+      - name: Commit & push
+        run: |
+          git config user.name  "github-actions"
+          git config user.email "github-actions@github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Archive data: ${{ steps.dates.outputs.YEAR }}/${{ steps.dates.outputs.MONTH }} from current.json"
+            git push
+          fi
