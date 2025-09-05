@@ -653,13 +653,9 @@ const sueldoBasico = isHoras(cargo) ? (horas * 15 * indice) : (puntos * indice);
     selectCargoPrimario.addEventListener('change', updateCargoPrimario);
     selectCargoSecundario.addEventListener('change', updateCargoSecundario);
     selectCargoSuperior.addEventListener('change', updateCargoSuperior);
-    
-    // Initial call to set up the UI correctly
-    handleNivelChange();
-    uiUpdateAntigPct();
-    update();
   </script>
-
+    
+  <script>
   // ====== CARGA DE DATOS DEL REPO (data/current.json) ======
 async function loadRepoData() {
   try {
@@ -748,7 +744,8 @@ async function loadRepoData() {
   if (typeof handleNivelChange === 'function') handleNivelChange();
   if (typeof uiUpdateAntigPct === 'function') uiUpdateAntigPct();
   if (typeof update === 'function') update();
-})();  
+})();
+  </script>    
     
 <script>
 (function(){
