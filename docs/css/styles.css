@@ -1,0 +1,95 @@
+
+:root { --card-bg:#fff; --muted:#666; --border:#e7e7f3; --ink:#222; }
+
+/* Base */
+html,body{height:100%}
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial;
+  background:#f6f7fb; margin:0; padding:24px; color:var(--ink);
+}
+
+/* Container */
+.card { max-width: 1500px; width: min(95vw, 1500px); margin: 0 auto; }
+h1 { margin: 0 0 8px 0; font-size: 22px; }
+
+/* Labels */
+label { display:block; font-size:14px; margin:10px 0 4px; color:#333; }
+
+/* === Layout v34 (tres columnas) === */
+/* Contenedor maestro: usamos flex para lograr 3 columnas prácticas */
+.grid{ display:flex; gap:48px; align-items:flex-start; }
+
+/* Columna izquierda: selectores de nivel/cargo, fija en alto */
+.leftCol{
+  flex:1 1 auto;
+  min-width:720px;
+  display:grid;
+  grid-template-columns: minmax(320px,360px) 1fr;
+  gap:24px;
+  align-items:start;
+}
+.sidebar{
+  grid-column:1;
+  grid-row:1 / span 2;   /* ocupa alto de fechas+liq */
+  position:sticky;
+  top:12px;
+  align-self:start;
+}
+.stack{ grid-column:2; grid-row:1; }
+#liqBlock{ grid-column:2; grid-row:2; }
+
+/* Columna derecha: apilada (Desglose / Aguinaldo / Décimas) */
+.rightCol{ width: min(420px, 40vw); display:flex; flex-direction:column; gap:24px; }
+.months-box{ display:block; }
+#sacBox, #decimasBox{ grid-column:auto; grid-row:auto; }
+#decimasDetalle{ display:none !important; }
+
+/* Responsive */
+@media (max-width: 1200px){
+  .grid{ flex-direction:column; gap:24px; }
+  .leftCol{ min-width:0; grid-template-columns:1fr; }
+}
+
+/* === Visual de resultados/controles (igual v34) === */
+.result { background:#f7f7fb; border:1px solid var(--border); padding:14px; border-radius:12px; margin-top: 14px; display:inline-block; }
+.muted { color:var(--muted); font-size: 13px; }
+.title { font-weight: 600; font-size: 16px; }
+input[type="date"] { width: 14ch; padding:10px 12px; border:1px solid #d6d6e7; border-radius:12px; outline:none; }
+
+table { width:auto; border-collapse: collapse; font-size: 14px; table-layout: auto; }
+th, td { padding:3px 6px; border-bottom:1px solid var(--border); }
+th { font-weight:600; font-size:13px; color:#444; }
+th:nth-child(2), td:nth-child(2){ text-align:right; min-width: 48px; }
+tfoot td { font-weight:700; }
+
+.pill { display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #cfd3ea; background:#fff; font-size:12px; }
+.months-header { display:flex; flex-direction:column; align-items:flex-start; gap:4px; margin-bottom:8px; }
+.row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+select { padding:6px 10px; border:1px solid #d6d6e7; border-radius:10px; background:#fff; width:auto; }
+
+/* Mini índice */
+.mini { width:78px; border:1px solid #bfc3d6; border-radius:6px; overflow:hidden; box-shadow: inset 0 0 0 1px #fff; }
+.mini-top { background:#ededf3; text-align:center; font-weight:600; font-size:11px; padding:4px 4px; }
+.mini-bottom { background:#fff36b; text-align:center; font-weight:800; font-size:18px; padding:3px; }
+.mini-bottom input { width:100%; text-align:center; border:none; background:transparent; font:inherit; outline:none; }
+
+/* Tablas de la liquidación */
+.tabla-codigos{ width:100%; border-collapse:collapse; font-size:14px; table-layout:auto; }
+.tabla-codigos th,.tabla-codigos td{ border-bottom:1px solid var(--border); padding:6px 8px; }
+.tabla-codigos thead th{ background:#d6e4f0; color:#333; }
+.liq-columns{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; align-items:start; }
+.liq-columns > div{ align-self:start; }
+
+/* Anchos consistentes en la 1ª columna de ambas tablas */
+#liqBlock .tabla-codigos th:first-child, #liqBlock .tabla-codigos td:first-child,
+#complementoBox .tabla-codigos th:first-child, #complementoBox .tabla-codigos td:first-child { width: 180px; }
+
+/* Encabezados alineados en Complemento */
+#complementoBox{ position: relative; }
+#complementoBox > .muted{ position:absolute; top:-24px; left:0; margin:0; }
+#complementoBox > .pill{ position:absolute; top:-28px; right:0; margin:0; }
+
+/* Fila altura uniforme */
+#liqBlock .tabla-codigos thead th,
+#liqBlock .tabla-codigos tbody td{ height: 28px; }
