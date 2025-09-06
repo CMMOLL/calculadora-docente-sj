@@ -1,11 +1,11 @@
 
-:root { --card-bg:#fff; --muted:#666; --border:#e7e7f3; --ink:#222; }
+:root { --card-bg:#92eadad7; --muted:#666; --border:#e7e7f3; --ink:#222; }
 
 /* Base */
 html,body{height:100%}
 body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial;
-  background:#f6f7fb; margin:0; padding:24px; color:var(--ink);
+  background:#7ab29d; margin:0; padding:24px; color:var(--ink);
 }
 
 /* Container */
@@ -93,3 +93,24 @@ select { padding:6px 10px; border:1px solid #d6d6e7; border-radius:10px; backgro
 /* Fila altura uniforme */
 #liqBlock .tabla-codigos thead th,
 #liqBlock .tabla-codigos tbody td{ height: 28px; }
+
+/* ===== Extras (checkboxes) ===== */
+#optExtras {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 12px;
+  color: var(--muted);
+}
+
+#optExtras > span.label {
+  margin-right: 4px;
+}
+
+#optExtras label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: var(--ink);
+}

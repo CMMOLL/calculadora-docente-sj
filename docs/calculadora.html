@@ -1,212 +1,324 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Liquidación de Sueldos</title>
-  <link rel="icon" href="images/favicon-32x32.png" type="image/png"/>
-  <link rel="stylesheet" href="css/styles.css"/>
+  <link rel="icon" href="images/favicon-32x32.png" type="image/png" />
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 
 <body>
-<div class="card">
-<h1>Liquidación de Sueldos</h1>
-<div class="grid" style="grid-column-gap: 48px; column-gap: 48px;"><div class="leftCol">
-<div class="sidebar">
-<div>
-<label>Nivel</label>
-<select id="nivel">
-<option value="Primario">Primario</option>
-<option value="Secundario">Secundario</option>
-<option value="Nivel Superior">Nivel Superior</option>
-</select>
-</div>
-<div id="primarioBlock" style="display:none;">
-<label>(Primario)</label>
-<select id="cargoPrimario">
-<option data-cat="" data-pts="" value="">— Seleccionar —</option>
-<option data-cat="116" data-pts="482" value="Maestro de Grado - Jornada Simple">Maestro de Grado - Jornada Simple</option>
-<option data-cat="117" data-pts="482" value="Maestro de Grado - Ed. Primaria Adultos">Maestro de Grado - Ed. Primaria Adultos</option>
-<option data-cat="120" data-pts="482" value="Maestro de Nivel Inicial">Maestro de Nivel Inicial</option>
-<option data-cat="121" data-pts="503" value="Maestro de Grado de Educación Especial">Maestro de Grado de Educación Especial</option>
-<option data-cat="134" data-pts="463" value="Maestro de Especialidades">Maestro de Especialidades</option>
-<option data-cat="135" data-pts="498" value="Maestro de Esp. de Educación Especial">Maestro de Esp. de Educación Especial</option>
-<option data-cat="149" data-pts="498" value="Celador de Educación Especial">Celador de Educación Especial</option>
-<option data-cat="151" data-pts="500" value="Maestro Celador de Educación Especial">Maestro Celador de Educación Especial</option>
-<option data-cat="166" data-pts="605" value="Maestro de Grado - Jornada Extendida">Maestro de Grado - Jornada Extendida</option>
-<option data-cat="167" data-pts="964" value="Maestro de Grado - Jornada Completa">Maestro de Grado - Jornada Completa</option>
-<option data-cat="" data-pts="" value="Completar">Completar</option>
-</select>
-<div class="muted" id="primarioCatWrap" style="display:none;">Categoría: <span id="primarioCat">—</span> · Puntos: <span id="primarioPts">—</span></div>
-</div>
-<div id="secundarioBlock" style="display:none;">
-<label>(Secundario)</label>
-<select id="cargoSecundario">
-<option data-cat="" data-pts="" value="">— Seleccionar —</option>
-<option data-cat="" data-pts="" value="Horas Cátedra - Nivel Medio">Horas Cátedra - Nivel Medio</option>
-<option data-cat="119" data-pts="482" value="Maestro de Opción - Nivel Secundario">Maestro de Opción - Nivel Secundario</option>
-<option data-cat="125" data-pts="482" value="MEP">MEP</option>
-<option data-cat="141" data-pts="478" value="Ayudante de Clases Prácticas">Ayudante de Clases Prácticas</option>
-<option data-cat="152" data-pts="482" value="Bibliotecario">Bibliotecario</option>
-<option data-cat="153" data-pts="477" value="Preceptor de Nivel Secundario">Preceptor de Nivel Secundario</option>
-<option data-cat="" data-pts="" value="Completar">Completar</option>
-</select>
-<div class="muted" id="secundarioCatWrap" style="display:none;">Categoría: <span id="secundarioCat">—</span> · Puntos: <span id="secundarioPts">—</span></div>
-<div class="mini" id="horasSecCard" style="display:none;">
-<div class="mini-top">Carga Horaria</div>
-<div class="mini-bottom"><input id="horasSec" min="1" step="1" type="number" value="1"/></div>
-</div>
-</div>
-<div id="superiorBlock" style="display:none;">
-<label>(Nivel Superior)</label>
-<select id="cargoSuperior">
-<option data-cat="" data-pts="" value="">— Seleccionar —</option>
-<option data-cat="" data-pts="" value="Horas Cátedra - Nivel Superior">Horas Cátedra - Nivel Superior</option>
-</select>
-<div class="muted" id="superiorCatWrap" style="display:none;">Categoría: <span id="superiorCat">—</span></div>
-<div class="mini" id="horasSupCard" style="display:none;">
-<div class="mini-top">Carga Horaria</div>
-<div class="mini-bottom"><input id="horasSup" min="1" step="1" type="number" value="1"/></div>
-</div>
-</div>
-</div>
-<div class="stack">
-<div>
-<label>Fecha Inicio</label>
-<input id="inicio" placeholder="dd/mm/aaaa" type="date"/>
-</div>
-<div>
-<label>Fecha Fin</label>
-<input id="fin" placeholder="dd/mm/aaaa" type="date"/>
-</div>
-<label style="margin-top:4px;">
-<label style="display:inline-flex;align-items:center;gap:8px;user-select:none;cursor:pointer;" for="baja"><span>BAJA</span><input id="baja" type="checkbox"/></label><label style="display:inline-flex;align-items:center;gap:8px;user-select:none;cursor:pointer;margin-left:12px;" for="suplente"><span>SUPLENTE</span><input id="suplente" type="checkbox"/></label>
-</label>
-</div>
-<div class="result" id="liqBlock">
-<div class="title">Liquidación</div>
-<div id="indicesRow" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;"><label class="muted">Índice del mes
-            <input id="indiceMes" step="0.0001" style="width:12ch; margin-left:6px;" type="number" value="787.1022"/>
-</label><div id="indicePrevToolbar" style="display:none;"><label class="muted">Índice mes anterior
-            <input id="indiceMesPrev_clone" name="indiceMesPrev_clone" step="0.0001" style="width:110px;" type="number" value="772.4261"/>
-</label></div></div><div class="row" style="display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin:8px 0 4px 0;"><label class="muted">Antigüedad (años)
-            <input id="antiguedadAnios" min="0" step="1" style="width:8ch; margin-left:6px;" type="number" value="0"/> <span class="pill" id="antiguedadPct" style="margin-left:8px;">0%</span>
-<label class="muted">Radio
-            <select id="radioDocente" style="margin-left:6px;">
-<option value="0">Sin radio</option>
-<option value="40">Radio 1 (40%)</option>
-<option value="50">Radio 2 (50%)</option>
-<option value="60">Radio 3 (60%)</option>
-<option value="90">Radio 4 (90%)</option>
-<option value="110">Radio 5 (110%)</option>
-<option value="130">Radio 6 (130%)</option>
-<option value="150">Radio 7 (150%)</option>
-</select>
-</label><div id="optExtras" class="muted" style="display:flex;align-items:center;gap:10px;margin-left:12px;"><span style="margin-right:4px;">Extras:</span><label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;"><span title="Estado Docente">A56</span><input id="optA56" type="checkbox"/></label><label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;"><span title="Suma Remun. y bonificable por antigüedad">E66</span><input id="optE66" type="checkbox"/></label><label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;"><span title="Suma Remun. y bonificable por antigüedad (solo cargos)">E60</span><input id="optE60" type="checkbox"/></label></div><label class="muted" style="display:none;">Índice mes anterior
-            <input id="indiceMesPrev" step="0.0001" style="width:12ch; margin-left:6px;" type="number" value="772.4261"/>
-</label></div>
-<span class="pill"><b id="diasLiq">0</b></span>
-<div class="liq-columns">
-<div>
-<table class="tabla-codigos">
-<thead>
-<tr><th>Código</th><th></th><th>Importe</th></tr>
-</thead>
-<tbody id="liqBaseBody">
-<tr><td><b>A01</b> Sueldo Básico</td><td>$</td><td id="a01Importe">0,00</td></tr>
-<tr><td><b>A03</b> Antigüedad</td><td>$</td><td id="a03Importe">0,00</td></tr>
-<tr><td><b>A04</b> Radio</td><td>$</td><td id="a04Importe">0,00</td></tr>
-<tr id="rowA56" style="display:none;"><td title="Estado Docente"><b>A56</b></td><td>$</td><td id="a56Importe">0,00</td></tr><tr id="rowE29" style="display:none;"><td title="Equipamiento Suplentes"><b>E29</b></td><td>$</td><td id="e29Importe">0,00</td></tr><tr id="rowE66" style="display:none;"><td title="Suma Remunerativa y bonificable por antigüedad"><b>E66</b></td><td>$</td><td id="e66Importe">0,00</td></tr><tr id="rowE60" style="display:none;"><td title="Suma Remunerativa y bonificable por antigüedad (solo cargos)"><b>E60</b></td><td>$</td><td id="e60Importe">0,00</td></tr></tbody>
-<tfoot>
-<tr><td><b>Total Parcial</b></td><td>$</td><td id="totalParcial">0,00</td></tr>
-</tfoot>
-</table>
-</div>
-<div id="complementoBox" style="display:none;; position:relative;">
-<div class="muted" style="margin:6px 0 4px 0;">Complemento</div>
-<div class="pill" style="margin:0 0 6px 0;">Días excedentes: <b id="diasExc">0</b></div>
-<table class="tabla-codigos">
-<thead>
-<tr><th>Código</th><th></th><th>Importe</th></tr>
-</thead>
-<tbody>
-<tr><td><b>A01</b> Sueldo Básico</td><td>$</td><td id="a01Exc">0,00</td></tr>
-<tr><td><b>A03</b> Antigüedad</td><td>$</td><td id="a03Exc">0,00</td></tr>
-<tr><td><b>A04</b> Radio</td><td>$</td><td id="a04Exc">0,00</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="muted" style="margin-top:6px;">
-          * Si el período supera 30 días: se calculan 30 d con el índice vigente y el excedente con el índice del mes anterior.
+  <div class="card">
+    <h1>Liquidación de Sueldos</h1>
+    <div class="grid" style="grid-column-gap: 48px; column-gap: 48px;">
+      <div class="leftCol">
+        <div class="sidebar">
+          <div>
+            <label>Nivel</label>
+            <select id="nivel">
+              <option value="Primario">Primario</option>
+              <option value="Secundario">Secundario</option>
+              <option value="Nivel Superior">Nivel Superior</option>
+            </select>
+          </div>
+          <div id="primarioBlock" style="display:none;">
+            <label>(Primario)</label>
+            <select id="cargoPrimario">
+              <option data-cat="" data-pts="" value="">— Seleccionar —</option>
+              <option data-cat="116" data-pts="482" value="Maestro de Grado - Jornada Simple">Maestro de Grado - Jornada
+                Simple</option>
+              <option data-cat="117" data-pts="482" value="Maestro de Grado - Ed. Primaria Adultos">Maestro de Grado -
+                Ed. Primaria Adultos</option>
+              <option data-cat="120" data-pts="482" value="Maestro de Nivel Inicial">Maestro de Nivel Inicial</option>
+              <option data-cat="121" data-pts="503" value="Maestro de Grado de Educación Especial">Maestro de Grado de
+                Educación Especial</option>
+              <option data-cat="134" data-pts="463" value="Maestro de Especialidades">Maestro de Especialidades</option>
+              <option data-cat="135" data-pts="498" value="Maestro de Esp. de Educación Especial">Maestro de Esp. de
+                Educación Especial</option>
+              <option data-cat="149" data-pts="498" value="Celador de Educación Especial">Celador de Educación Especial
+              </option>
+              <option data-cat="151" data-pts="500" value="Maestro Celador de Educación Especial">Maestro Celador de
+                Educación Especial</option>
+              <option data-cat="166" data-pts="605" value="Maestro de Grado - Jornada Extendida">Maestro de Grado -
+                Jornada Extendida</option>
+              <option data-cat="167" data-pts="964" value="Maestro de Grado - Jornada Completa">Maestro de Grado -
+                Jornada Completa</option>
+              <option data-cat="" data-pts="" value="Completar">Completar</option>
+            </select>
+            <div class="muted" id="primarioCatWrap" style="display:none;">Categoría: <span id="primarioCat">—</span> ·
+              Puntos: <span id="primarioPts">—</span></div>
+          </div>
+          <div id="secundarioBlock" style="display:none;">
+            <label>(Secundario)</label>
+            <select id="cargoSecundario">
+              <option data-cat="" data-pts="" value="">— Seleccionar —</option>
+              <option data-cat="" data-pts="" value="Horas Cátedra - Nivel Medio">Horas Cátedra - Nivel Medio</option>
+              <option data-cat="119" data-pts="482" value="Maestro de Opción - Nivel Secundario">Maestro de Opción -
+                Nivel Secundario</option>
+              <option data-cat="125" data-pts="482" value="MEP">MEP</option>
+              <option data-cat="141" data-pts="478" value="Ayudante de Clases Prácticas">Ayudante de Clases Prácticas
+              </option>
+              <option data-cat="152" data-pts="482" value="Bibliotecario">Bibliotecario</option>
+              <option data-cat="153" data-pts="477" value="Preceptor de Nivel Secundario">Preceptor de Nivel Secundario
+              </option>
+              <option data-cat="" data-pts="" value="Completar">Completar</option>
+            </select>
+            <div class="muted" id="secundarioCatWrap" style="display:none;">Categoría: <span id="secundarioCat">—</span>
+              · Puntos: <span id="secundarioPts">—</span></div>
+            <div class="mini" id="horasSecCard" style="display:none;">
+              <div class="mini-top">Carga Horaria</div>
+              <div class="mini-bottom"><input id="horasSec" min="1" step="1" type="number" value="1" /></div>
+            </div>
+          </div>
+          <div id="superiorBlock" style="display:none;">
+            <label>(Nivel Superior)</label>
+            <select id="cargoSuperior">
+              <option data-cat="" data-pts="" value="">— Seleccionar —</option>
+              <option data-cat="" data-pts="" value="Horas Cátedra - Nivel Superior">Horas Cátedra - Nivel Superior
+              </option>
+            </select>
+            <div class="muted" id="superiorCatWrap" style="display:none;">Categoría: <span id="superiorCat">—</span>
+            </div>
+            <div class="mini" id="horasSupCard" style="display:none;">
+              <div class="mini-top">Carga Horaria</div>
+              <div class="mini-bottom"><input id="horasSup" min="1" step="1" type="number" value="1" /></div>
+            </div>
+          </div>
         </div>
-<div class="muted" style="margin-top:6px;">Criterio: inicio siempre incluido · fin <span id="finLabel2">NO incluido</span>.</div>
-</div></div><aside class="rightCol">
-<div class="months-box">
-<div class="months-header">
-<div class="title" style="; margin-left:40px;">Desglose Mensual (30/360)</div>
-<div class="pill" id="periodoLabel">—</div>
-</div>
-<div class="result">
-<table>
-<thead>
-<tr>
-<th>Mes</th>
-<th>Días</th>
-</tr>
-</thead>
-<tbody id="tbodyMeses">
-<tr><td class="muted" colspan="2">Ingresá inicio y fin…</td></tr>
-</tbody>
-<tfoot>
-<tr>
-<td>Total</td>
-<td id="totalDias">—</td>
-</tr>
-</tfoot>
-</table>
-</div>
-<div class="result">
-<div class="row" style="justify-content:space-between;">
-<div class="title" style="; margin-left:40px;">Días de Aguinaldo</div>
-<div class="row">
-<label class="muted">Año
-                <select id="anioSAC"></select>
-</label>
-<label class="muted">Semestre
-                <select id="semSAC">
-<option value="1">1º SAC (Ene–Jun)</option>
-<option value="2">2º SAC (Jul–Dic)</option>
-</select>
-</label>
-</div>
-</div>
-<div style="margin-top:8px;">
-<span class="muted">Días dentro del semestre seleccionado:</span>
-<span class="title" id="diasSAC">—</span>
-</div>
-</div>
-<div class="result" id="decimasBlock" style="display:none;">
-<div class="title">Décimas</div>
-<div class="muted">(Comprende del 1 Mar al 30 Dic)</div>
-<div style="margin-top:8px;">
-<span class="muted">Total:</span>
-<span class="title" id="decimasTotal">—</span>
-</div>
-<div class="muted" id="decimasDetalle" style="margin-top:6px;">—</div>
-</div>
-</div>
-</div></aside></div>
-</div>
-<script>
+        <div class="stack">
+          <div>
+            <label>Fecha Inicio</label>
+            <input id="inicio" placeholder="dd/mm/aaaa" type="date" />
+          </div>
+          <div>
+            <label>Fecha Fin</label>
+            <input id="fin" placeholder="dd/mm/aaaa" type="date" />
+          </div>
+          <label style="margin-top:4px;">
+            <label style="display:inline-flex;align-items:center;gap:8px;user-select:none;cursor:pointer;"
+              for="baja"><span>BAJA</span><input id="baja" type="checkbox" /></label><label
+              style="display:inline-flex;align-items:center;gap:8px;user-select:none;cursor:pointer;margin-left:12px;"
+              for="suplente"><span>SUPLENTE</span><input id="suplente" type="checkbox" /></label>
+          </label>
+        </div>
+        <div class="result" id="liqBlock">
+          <div class="title">Liquidación</div>
+          <div id="indicesRow"
+            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;"><label
+              class="muted">Índice del mes
+              <input id="indiceMes" step="0.0001" style="width:12ch; margin-left:6px;" type="number" value="787.1022" />
+            </label>
+            <div id="indicePrevToolbar" style="display:none;"><label class="muted">Índice mes anterior
+                <input id="indiceMesPrev_clone" name="indiceMesPrev_clone" step="0.0001" style="width:110px;"
+                  type="number" value="772.4261" />
+              </label></div>
+          </div>
+          <div class="row"
+            style="display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin:8px 0 4px 0;"><label
+              class="muted">Antigüedad (años)
+              <input id="antiguedadAnios" min="0" step="1" style="width:8ch; margin-left:6px;" type="number"
+                value="0" /> <span class="pill" id="antiguedadPct" style="margin-left:8px;">0%</span>
+              <label class="muted">Radio
+                <select id="radioDocente" style="margin-left:6px;">
+                  <option value="0">Sin radio</option>
+                  <option value="40">Radio 1 (40%)</option>
+                  <option value="50">Radio 2 (50%)</option>
+                  <option value="60">Radio 3 (60%)</option>
+                  <option value="90">Radio 4 (90%)</option>
+                  <option value="110">Radio 5 (110%)</option>
+                  <option value="130">Radio 6 (130%)</option>
+                  <option value="150">Radio 7 (150%)</option>
+                </select>
+              </label>
+              <div id="optExtras" class="muted">
+                <span class="label">Extras:</span>
+
+                <label title="Estado Docente">A56
+                  <input id="optA56" type="checkbox">
+                </label>
+
+                <label title="Suma Remun. y bonificable por antigüedad">E66
+                  <input id="optE66" type="checkbox">
+                </label>
+
+                <label title="Suma Remun. y bonificable por antigüedad (solo cargos)">E60
+                  <input id="optE60" type="checkbox">
+                </label>
+              </div>
+
+              <label class="muted" style="display:none;">Índice mes anterior
+                <input id="indiceMesPrev" step="0.0001" style="width:12ch; margin-left:6px;" type="number"
+                  value="772.4261" />
+              </label>
+          </div>
+          <span class="pill"><b id="diasLiq">0</b></span>
+          <div class="liq-columns">
+            <div>
+              <table class="tabla-codigos">
+                <thead>
+                  <tr>
+                    <th>Código</th>
+                    <th></th>
+                    <th>Importe</th>
+                  </tr>
+                </thead>
+                <tbody id="liqBaseBody">
+                  <tr>
+                    <td><b>A01</b> Sueldo Básico</td>
+                    <td>$</td>
+                    <td id="a01Importe">0,00</td>
+                  </tr>
+                  <tr>
+                    <td><b>A03</b> Antigüedad</td>
+                    <td>$</td>
+                    <td id="a03Importe">0,00</td>
+                  </tr>
+                  <tr>
+                    <td><b>A04</b> Radio</td>
+                    <td>$</td>
+                    <td id="a04Importe">0,00</td>
+                  </tr>
+                  <tr id="rowA56" style="display:none;">
+                    <td title="Estado Docente"><b>A56</b></td>
+                    <td>$</td>
+                    <td id="a56Importe">0,00</td>
+                  </tr>
+                  <tr id="rowE29" style="display:none;">
+                    <td title="Equipamiento Suplentes"><b>E29</b></td>
+                    <td>$</td>
+                    <td id="e29Importe">0,00</td>
+                  </tr>
+                  <tr id="rowE66" style="display:none;">
+                    <td title="Suma Remunerativa y bonificable por antigüedad"><b>E66</b></td>
+                    <td>$</td>
+                    <td id="e66Importe">0,00</td>
+                  </tr>
+                  <tr id="rowE60" style="display:none;">
+                    <td title="Suma Remunerativa y bonificable por antigüedad (solo cargos)"><b>E60</b></td>
+                    <td>$</td>
+                    <td id="e60Importe">0,00</td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td><b>Total Parcial</b></td>
+                    <td>$</td>
+                    <td id="totalParcial">0,00</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+            <div id="complementoBox" style="display:none;; position:relative;">
+              <div class="muted" style="margin:6px 0 4px 0;">Complemento</div>
+              <div class="pill" style="margin:0 0 6px 0;">Días excedentes: <b id="diasExc">0</b></div>
+              <table class="tabla-codigos">
+                <thead>
+                  <tr>
+                    <th>Código</th>
+                    <th></th>
+                    <th>Importe</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><b>A01</b> Sueldo Básico</td>
+                    <td>$</td>
+                    <td id="a01Exc">0,00</td>
+                  </tr>
+                  <tr>
+                    <td><b>A03</b> Antigüedad</td>
+                    <td>$</td>
+                    <td id="a03Exc">0,00</td>
+                  </tr>
+                  <tr>
+                    <td><b>A04</b> Radio</td>
+                    <td>$</td>
+                    <td id="a04Exc">0,00</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="muted" style="margin-top:6px;">
+            * Si el período supera 30 días: se calculan 30 d con el índice vigente y el excedente con el índice del mes
+            anterior.
+          </div>
+          <div class="muted" style="margin-top:6px;">Criterio: inicio siempre incluido · fin <span id="finLabel2">NO
+              incluido</span>.</div>
+        </div>
+      </div>
+      <aside class="rightCol">
+        <div class="months-box">
+          <div class="months-header">
+            <div class="title" style="; margin-left:40px;">Desglose Mensual (30/360)</div>
+            <div class="pill" id="periodoLabel">—</div>
+          </div>
+          <div class="result">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mes</th>
+                  <th>Días</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyMeses">
+                <tr>
+                  <td class="muted" colspan="2">Ingresá inicio y fin…</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td>Total</td>
+                  <td id="totalDias">—</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="result">
+            <div class="row" style="justify-content:space-between;">
+              <div class="title" style="; margin-left:40px;">Días de Aguinaldo</div>
+              <div class="row">
+                <label class="muted">Año
+                  <select id="anioSAC"></select>
+                </label>
+                <label class="muted">Semestre
+                  <select id="semSAC">
+                    <option value="1">1º SAC (Ene–Jun)</option>
+                    <option value="2">2º SAC (Jul–Dic)</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+            <div style="margin-top:8px;">
+              <span class="muted">Días dentro del semestre seleccionado:</span>
+              <span class="title" id="diasSAC">—</span>
+            </div>
+          </div>
+          <div class="result" id="decimasBlock" style="display:none;">
+            <div class="title">Décimas</div>
+            <div class="muted">(Comprende del 1 Mar al 30 Dic)</div>
+            <div style="margin-top:8px;">
+              <span class="muted">Total:</span>
+              <span class="title" id="decimasTotal">—</span>
+            </div>
+            <div class="muted" id="decimasDetalle" style="margin-top:6px;">—</div>
+          </div>
+        </div>
+    </div>
+    </aside>
+  </div>
+  </div>
+  <script>
     // ===== Utilidades
     function toUTCDate(y, m, d) { return new Date(Date.UTC(y, m, d)); }
-    function parseDate(s) { if (!s) return null; const [y,m,d] = s.split('-').map(Number); if (!y||!m||!d) return null; return toUTCDate(y, m-1, d); }
-    function is31MonthNum(m) { return [1,3,5,7,8,10,12].includes(m); }
-    function monthNameEs(m) { return ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'][m-1]; }
-    function addMonth(y, m) { return (m===12)?{y:y+1,m:1}:{y,m:m+1}; }
-    function fmtDMY(d) { const y=d.getUTCFullYear(), m=String(d.getUTCMonth()+1).padStart(2,'0'), da=String(d.getUTCDate()).padStart(2,'0'); return `${da}/${m}/${y}`; }
-    function fmtAR(n){ return n.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+    function parseDate(s) { if (!s) return null; const [y, m, d] = s.split('-').map(Number); if (!y || !m || !d) return null; return toUTCDate(y, m - 1, d); }
+    function is31MonthNum(m) { return [1, 3, 5, 7, 8, 10, 12].includes(m); }
+    function monthNameEs(m) { return ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'][m - 1]; }
+    function addMonth(y, m) { return (m === 12) ? { y: y + 1, m: 1 } : { y, m: m + 1 }; }
+    function fmtDMY(d) { const y = d.getUTCFullYear(), m = String(d.getUTCMonth() + 1).padStart(2, '0'), da = String(d.getUTCDate()).padStart(2, '0'); return `${da}/${m}/${y}`; }
+    function fmtAR(n) { return n.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
     // Ajusta el ancho de un <select> al de su opción más larga
     function adjustSelectWidth(sel) {
@@ -225,29 +337,29 @@
 
     // ===== Cálculo 30/360
     function breakdown30_360(start, end, baja) {
-      let y1=start.getUTCFullYear(), m1=start.getUTCMonth()+1, d1=start.getUTCDate();
-      let y2=end.getUTCFullYear(),   m2=end.getUTCMonth()+1,   d2=end.getUTCDate();
-      const s=Math.min(d1,30), e=Math.min(d2,30);
-      const rows=[];
-      if (y1===y2 && m1===m2) {
-        let eEff; if (baja){ eEff=(d2===31 && is31MonthNum(m2))?30:e-1; } else { eEff=e; }
-        let days=eEff - s + 1; if (days<1) days=1; rows.push({y:y1,m:m1,days}); return rows;
+      let y1 = start.getUTCFullYear(), m1 = start.getUTCMonth() + 1, d1 = start.getUTCDate();
+      let y2 = end.getUTCFullYear(), m2 = end.getUTCMonth() + 1, d2 = end.getUTCDate();
+      const s = Math.min(d1, 30), e = Math.min(d2, 30);
+      const rows = [];
+      if (y1 === y2 && m1 === m2) {
+        let eEff; if (baja) { eEff = (d2 === 31 && is31MonthNum(m2)) ? 30 : e - 1; } else { eEff = e; }
+        let days = eEff - s + 1; if (days < 1) days = 1; rows.push({ y: y1, m: m1, days }); return rows;
       }
-      const daysFirst=30-s+1; rows.push({y:y1,m:m1,days:daysFirst});
-      let yc=y1, mc=m1; while (true){ const nm=addMonth(yc,mc); yc=nm.y; mc=nm.m; if (yc===y2 && mc===m2) break; rows.push({y:yc,m:mc,days:30}); }
-      let last; if (baja){ last=(d2===31 && is31MonthNum(m2))?30:Math.max(0,e-1); } else { last=e; } rows.push({y:y2,m:m2,days:last});
+      const daysFirst = 30 - s + 1; rows.push({ y: y1, m: m1, days: daysFirst });
+      let yc = y1, mc = m1; while (true) { const nm = addMonth(yc, mc); yc = nm.y; mc = nm.m; if (yc === y2 && mc === m2) break; rows.push({ y: yc, m: mc, days: 30 }); }
+      let last; if (baja) { last = (d2 === 31 && is31MonthNum(m2)) ? 30 : Math.max(0, e - 1); } else { last = e; } rows.push({ y: y2, m: m2, days: last });
       return rows;
     }
 
     // ===== Lógica de la interfaz y cálculos
-    const ANTIG_Tabla=[{y:34,p:170},{y:32,p:160},{y:30,p:150},{y:28,p:140},{y:25,p:130},{y:24,p:120},{y:22,p:110},{y:20,p:100},{y:17,p:80},{y:15,p:70},{y:12,p:60},{y:10,p:50},{y:7,p:40},{y:5,p:30},{y:2,p:15},{y:1,p:10},{y:0,p:0}];
-    function getAntiguedad(anios){ const item=ANTIG_Tabla.find(a => anios>=a.y); return item ? item.p : 0; }
-function uiUpdateAntigPct(){
-  var el=document.getElementById('antiguedadPct');
-  if(!el) return; var anios=parseInt(document.getElementById('antiguedadAnios').value||'0');
-  var p=getAntiguedad(anios); el.textContent = p.toFixed(0)+'%';
-}
-    function isHoras(cargo){ return cargo.includes('Horas Cátedra'); }
+    const ANTIG_Tabla = [{ y: 34, p: 170 }, { y: 32, p: 160 }, { y: 30, p: 150 }, { y: 28, p: 140 }, { y: 25, p: 130 }, { y: 24, p: 120 }, { y: 22, p: 110 }, { y: 20, p: 100 }, { y: 17, p: 80 }, { y: 15, p: 70 }, { y: 12, p: 60 }, { y: 10, p: 50 }, { y: 7, p: 40 }, { y: 5, p: 30 }, { y: 2, p: 15 }, { y: 1, p: 10 }, { y: 0, p: 0 }];
+    function getAntiguedad(anios) { const item = ANTIG_Tabla.find(a => anios >= a.y); return item ? item.p : 0; }
+    function uiUpdateAntigPct() {
+      var el = document.getElementById('antiguedadPct');
+      if (!el) return; var anios = parseInt(document.getElementById('antiguedadAnios').value || '0');
+      var p = getAntiguedad(anios); el.textContent = p.toFixed(0) + '%';
+    }
+    function isHoras(cargo) { return cargo.includes('Horas Cátedra'); }
     function isMaestroGradoJornadaCompleta(cargo) { return cargo === "Maestro de Grado - Jornada Completa"; }
 
     const inputInicio = document.getElementById('inicio');
@@ -370,19 +482,19 @@ function uiUpdateAntigPct(){
       const horas = isHoras(cargo) ? parseFloat(inputHorasSec.value || inputHorasSup.value) : null;
       const indice = parseFloat(inputIndiceMes.value) || 0;
       const indicePrev = parseFloat(inputIndiceMesPrev.value) || 0;
-const antiguedadAnios = parseFloat(inputAntiguedad.value) || 0;
-const radioPorcentaje = parseFloat(selectRadio.value) || 0;
-const antiguedadPts = getAntiguedad(antiguedadAnios);
-// Recalcular por 30/360 respetando BAJA
-const rowsCalc = breakdown30_360(start, end, baja);
-let totalDays = 0; rowsCalc.forEach(r => totalDays += r.days);
-let diasBase = Math.min(30, totalDays);
-let diasExc = Math.max(0, totalDays - 30);
-complementoBox.style.display = (diasExc > 0) ? 'block' : 'none';
-const mesBaseName = monthNameEs(end.getUTCMonth() + 1);
-liqDato.diasLiq.textContent = `${diasBase} Días - ${mesBaseName} ${end.getUTCFullYear()}`;
-liqDato.diasExc.textContent = diasExc;
-const sueldoBasico = isHoras(cargo) ? (horas * 15 * indice) : (puntos * indice);
+      const antiguedadAnios = parseFloat(inputAntiguedad.value) || 0;
+      const radioPorcentaje = parseFloat(selectRadio.value) || 0;
+      const antiguedadPts = getAntiguedad(antiguedadAnios);
+      // Recalcular por 30/360 respetando BAJA
+      const rowsCalc = breakdown30_360(start, end, baja);
+      let totalDays = 0; rowsCalc.forEach(r => totalDays += r.days);
+      let diasBase = Math.min(30, totalDays);
+      let diasExc = Math.max(0, totalDays - 30);
+      complementoBox.style.display = (diasExc > 0) ? 'block' : 'none';
+      const mesBaseName = monthNameEs(end.getUTCMonth() + 1);
+      liqDato.diasLiq.textContent = `${diasBase} Días - ${mesBaseName} ${end.getUTCFullYear()}`;
+      liqDato.diasExc.textContent = diasExc;
+      const sueldoBasico = isHoras(cargo) ? (horas * 15 * indice) : (puntos * indice);
       const a01 = (sueldoBasico / 30) * diasBase;
       const a03 = (sueldoBasico * (antiguedadPts / 100)) / 30 * diasBase;
       const a04 = (sueldoBasico * (radioPorcentaje / 100)) / 30 * diasBase;
@@ -434,7 +546,7 @@ const sueldoBasico = isHoras(cargo) ? (horas * 15 * indice) : (puntos * indice);
 
       calculateLiq(start, end, baja);
     }
-    
+
     function handleNivelChange() {
       const nivel = selectNivel.value;
       blockPrimario.style.display = 'none';
@@ -452,15 +564,15 @@ const sueldoBasico = isHoras(cargo) ? (horas * 15 * indice) : (puntos * indice);
       }
       update();
       // --- Extras visibility (A56/E29/E66/E60) ---
-      (function(){
-        function g(id){ return document.getElementById(id); }
+      (function () {
+        function g(id) { return document.getElementById(id); }
         const nivel = g('nivel')?.value || '';
         let cargoTxt = '';
         if (nivel === 'Primario') cargoTxt = g('cargoPrimario')?.value || '';
         else if (nivel === 'Secundario') cargoTxt = g('cargoSecundario')?.value || '';
         else cargoTxt = g('cargoSuperior')?.value || '';
         const esCargo = !/^Horas C[aá]tedra/i.test(cargoTxt);
-        if (typeof ensureExtraRows==='function') ensureExtraRows();
+        if (typeof ensureExtraRows === 'function') ensureExtraRows();
 
         const rowA56 = g('rowA56'), rowE29 = g('rowE29'), rowE66 = g('rowE66'), rowE60 = g('rowE60');
         const optA56 = g('optA56'), optE66 = g('optE66'), optE60 = g('optE60'), chkSupl = g('suplente');
@@ -472,7 +584,7 @@ const sueldoBasico = isHoras(cargo) ? (horas * 15 * indice) : (puntos * indice);
       })();
 
     }
-    
+
     function updateCargoPrimario() {
       const option = selectCargoPrimario.options[selectCargoPrimario.selectedIndex];
       const cat = option?.dataset.cat || '—';
@@ -483,7 +595,7 @@ const sueldoBasico = isHoras(cargo) ? (horas * 15 * indice) : (puntos * indice);
       adjustSelectWidth(selectCargoPrimario);
       update();
     }
-    
+
     function updateCargoSecundario() {
       const option = selectCargoSecundario.options[selectCargoSecundario.selectedIndex];
       const cargo = option?.value || '';
@@ -496,7 +608,7 @@ const sueldoBasico = isHoras(cargo) ? (horas * 15 * indice) : (puntos * indice);
       adjustSelectWidth(selectCargoSecundario);
       update();
     }
-    
+
     function updateCargoSuperior() {
       const option = selectCargoSuperior.options[selectCargoSuperior.selectedIndex];
       const cargo = option?.value || '';
@@ -513,135 +625,138 @@ const sueldoBasico = isHoras(cargo) ? (horas * 15 * indice) : (puntos * indice);
     inputBaja.addEventListener('input', update);
     inputIndiceMes.addEventListener('input', update);
     inputIndiceMesPrev.addEventListener('input', update);
-    inputAntiguedad.addEventListener('input', function(){ uiUpdateAntigPct(); update(); });
+    inputAntiguedad.addEventListener('input', function () { uiUpdateAntigPct(); update(); });
     selectRadio.addEventListener('change', update);
     selectAnioSAC.addEventListener('change', update);
     selectSemSAC.addEventListener('change', update);
     inputHorasSec.addEventListener('input', update);
     inputHorasSup.addEventListener('input', update);
-    
+
     selectNivel.addEventListener('change', handleNivelChange);
     selectCargoPrimario.addEventListener('change', updateCargoPrimario);
     selectCargoSecundario.addEventListener('change', updateCargoSecundario);
     selectCargoSuperior.addEventListener('change', updateCargoSuperior);
-    
+
     // Initial call to set up the UI correctly
     handleNivelChange();
     uiUpdateAntigPct();
     update();
   </script>
-<script>
-(function(){
-  const orig = document.getElementById('indiceMesPrev');
-  const clone = document.getElementById('indiceMesPrev_clone');
-  if (!orig || !clone) return;
+  <script>
+    (function () {
+      const orig = document.getElementById('indiceMesPrev');
+      const clone = document.getElementById('indiceMesPrev_clone');
+      if (!orig || !clone) return;
 
-  // Keep values in sync both ways
-  const sync = (from, to) => { to.value = from.value; };
-  orig.addEventListener('input', () => sync(orig, clone));
-  clone.addEventListener('input', () => sync(clone, orig));
-  // initialize
-  sync(orig, clone);
+      // Keep values in sync both ways
+      const sync = (from, to) => { to.value = from.value; };
+      orig.addEventListener('input', () => sync(orig, clone));
+      clone.addEventListener('input', () => sync(clone, orig));
+      // initialize
+      sync(orig, clone);
 
-  function updateToolbarVisibility(){
-    // read excedente days from the pill element inside complementoBox
-    const pill = document.querySelector('#complementoBox .pill');
-    let exced = 0;
-    if (pill){
-      const match = pill.textContent.match(/(\d+)/);
-      if (match) exced = parseInt(match[1],10);
-    }
-    document.getElementById('indicePrevToolbar').style.display = exced > 0 ? 'flex' : 'none';
-  }
+      function updateToolbarVisibility() {
+        // read excedente days from the pill element inside complementoBox
+        const pill = document.querySelector('#complementoBox .pill');
+        let exced = 0;
+        if (pill) {
+          const match = pill.textContent.match(/(\d+)/);
+          if (match) exced = parseInt(match[1], 10);
+        }
+        document.getElementById('indicePrevToolbar').style.display = exced > 0 ? 'flex' : 'none';
+      }
 
-  // Observe mutations in complementoBox to catch updates to the pill
-  const target = document.getElementById('complementoBox');
-  const mo = new MutationObserver(updateToolbarVisibility);
-  mo.observe(target, { childList: true, subtree: true, characterData: true });
+      // Observe mutations in complementoBox to catch updates to the pill
+      const target = document.getElementById('complementoBox');
+      const mo = new MutationObserver(updateToolbarVisibility);
+      mo.observe(target, { childList: true, subtree: true, characterData: true });
 
-  // Also run on load and when dates/inputs change
-  updateToolbarVisibility();
-  ['fechaInicio','fechaFin','bajaCheck','indiceMes','radioDocente','antiguedadAnios'].forEach(id=>{
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('input', updateToolbarVisibility);
-    if (el) el.addEventListener('change', updateToolbarVisibility);
-  });
-})();
-</script>
-<script>
-// === Extras visibility controller (immediate + DOMContentLoaded) ===
-(function(){
-  function $(id){ return document.getElementById(id); }
-  const chkSuplente = $('suplente');
-  const optA56 = $('optA56');
-  const optE66 = $('optE66');
-  const optE60 = $('optE60');
-  
-  function ensureExtraRows(){
-    let tbody = document.getElementById('a04Importe')?.closest('tbody') || document.getElementById('liqBaseBody');
-    if (!tbody) return;
-    function mkRow(id, code, title){
-      if (document.getElementById(id)) return;
-      const tr = document.createElement('tr'); tr.id = id; tr.style.display='none';
-      const td1 = document.createElement('td'); td1.title = title; td1.innerHTML = '<b>'+code+'</b>';
-      const td2 = document.createElement('td'); td2.textContent = '$';
-      const td3 = document.createElement('td'); td3.id = id.replace('row','').toLowerCase()+'Importe'; td3.textContent = '0,00';
-      tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
-      // insert right after A04 row if exists, else append
-      const a04 = document.getElementById('a04Importe')?.parentElement;
-      if (a04){ a04.insertAdjacentElement('afterend', tr); } else if (tbody) { tbody.appendChild(tr); }
-    }
-    mkRow('rowA56','A56','Estado Docente');
-    mkRow('rowE29','E29','Equipamiento Suplentes');
-    mkRow('rowE66','E66','Suma Remunerativa y bonificable por antigüedad');
-    mkRow('rowE60','E60','Suma Remunerativa y bonificable por antigüedad (solo cargos)');
-  }
+      // Also run on load and when dates/inputs change
+      updateToolbarVisibility();
+      ['fechaInicio', 'fechaFin', 'bajaCheck', 'indiceMes', 'radioDocente', 'antiguedadAnios'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', updateToolbarVisibility);
+        if (el) el.addEventListener('change', updateToolbarVisibility);
+      });
+    })();
+  </script>
+  <script>
+    // === Extras visibility controller (immediate + DOMContentLoaded) ===
+    (function () {
+      function $(id) { return document.getElementById(id); }
+      const chkSuplente = $('suplente');
+      const optA56 = $('optA56');
+      const optE66 = $('optE66');
+      const optE60 = $('optE60');
 
-  const rowA56 = $('rowA56');
-  const rowE29 = $('rowE29');
-  const rowE66 = $('rowE66');
-  const rowE60 = $('rowE60');
+      function ensureExtraRows() {
+        let tbody = document.getElementById('a04Importe')?.closest('tbody') || document.getElementById('liqBaseBody');
+        if (!tbody) return;
+        function mkRow(id, code, title) {
+          if (document.getElementById(id)) return;
+          const tr = document.createElement('tr'); tr.id = id; tr.style.display = 'none';
+          const td1 = document.createElement('td'); td1.title = title; td1.innerHTML = '<b>' + code + '</b>';
+          const td2 = document.createElement('td'); td2.textContent = '$';
+          const td3 = document.createElement('td'); td3.id = id.replace('row', '').toLowerCase() + 'Importe'; td3.textContent = '0,00';
+          tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+          // insert right after A04 row if exists, else append
+          const a04 = document.getElementById('a04Importe')?.parentElement;
+          if (a04) { a04.insertAdjacentElement('afterend', tr); } else if (tbody) { tbody.appendChild(tr); }
+        }
+        mkRow('rowA56', 'A56', 'Estado Docente');
+        mkRow('rowE29', 'E29', 'Equipamiento Suplentes');
+        mkRow('rowE66', 'E66', 'Suma Remunerativa y bonificable por antigüedad');
+        mkRow('rowE60', 'E60', 'Suma Remunerativa y bonificable por antigüedad (solo cargos)');
+      }
 
-  function isCargoSeleccionado(){
-    const nivel = $('nivel')?.value || '';
-    let cargo = '';
-    if (nivel === 'Primario') cargo = $('cargoPrimario')?.value || '';
-    else if (nivel === 'Secundario') cargo = $('cargoSecundario')?.value || '';
-    else cargo = $('cargoSuperior')?.value || '';
-    return !/^Horas C[aá]tedra/i.test(cargo);
-  }
+      const rowA56 = $('rowA56');
+      const rowE29 = $('rowE29');
+      const rowE66 = $('rowE66');
+      const rowE60 = $('rowE60');
 
-  function refreshExtrasVisibility(){ ensureExtraRows();
-    const esCargo = isCargoSeleccionado();
-    if (rowA56) rowA56.style.display = (optA56 && optA56.checked) ? 'table-row' : 'none';
-    if (rowE66) rowE66.style.display = (optE66 && optE66.checked) ? 'table-row' : 'none';
-    if (rowE60) rowE60.style.display = (optE60 && optE60.checked && esCargo) ? 'table-row' : 'none';
-    if (rowE29) rowE29.style.display = (chkSuplente && chkSuplente.checked && esCargo) ? 'table-row' : 'none';
-  }
+      function isCargoSeleccionado() {
+        const nivel = $('nivel')?.value || '';
+        let cargo = '';
+        if (nivel === 'Primario') cargo = $('cargoPrimario')?.value || '';
+        else if (nivel === 'Secundario') cargo = $('cargoSecundario')?.value || '';
+        else cargo = $('cargoSuperior')?.value || '';
+        return !/^Horas C[aá]tedra/i.test(cargo);
+      }
 
-  function bind(el, ev){ if (el) el.addEventListener(ev, function(){ refreshExtrasVisibility(); if (typeof update==='function') update(); }); }
+      function refreshExtrasVisibility() {
+        ensureExtraRows();
+        const esCargo = isCargoSeleccionado();
+        if (rowA56) rowA56.style.display = (optA56 && optA56.checked) ? 'table-row' : 'none';
+        if (rowE66) rowE66.style.display = (optE66 && optE66.checked) ? 'table-row' : 'none';
+        if (rowE60) rowE60.style.display = (optE60 && optE60.checked && esCargo) ? 'table-row' : 'none';
+        if (rowE29) rowE29.style.display = (chkSuplente && chkSuplente.checked && esCargo) ? 'table-row' : 'none';
+      }
 
-  function __extrasInit(){ ensureExtraRows();
-    refreshExtrasVisibility();
-    // Bind changes
-    ['nivel','cargoPrimario','cargoSecundario','cargoSuperior','baja','suplente',
-     'optA56','optE66','optE60','radioDocente','antiguedadAnios','indiceMes','indiceMesPrev']
-     .forEach(id => { const el = $(id); if (el){ bind(el,'change'); bind(el,'input'); }});
-  }
+      function bind(el, ev) { if (el) el.addEventListener(ev, function () { refreshExtrasVisibility(); if (typeof update === 'function') update(); }); }
 
-  // Run immediately if DOM is already ready; otherwise bind to DOMContentLoaded
-  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', __extrasInit); } else { __extrasInit(); if (typeof update==='function') update(); }
+      function __extrasInit() {
+        ensureExtraRows();
+        refreshExtrasVisibility();
+        // Bind changes
+        ['nivel', 'cargoPrimario', 'cargoSecundario', 'cargoSuperior', 'baja', 'suplente',
+          'optA56', 'optE66', 'optE60', 'radioDocente', 'antiguedadAnios', 'indiceMes', 'indiceMesPrev']
+          .forEach(id => { const el = $(id); if (el) { bind(el, 'change'); bind(el, 'input'); } });
+      }
 
-  // Also observe the base table for updates that might rewrite DOM
-  const target = $('liqBlock');
-  if (target && 'MutationObserver' in window){
-    const mo = new MutationObserver(()=>refreshExtrasVisibility());
-    mo.observe(target, { childList:true, subtree:true });
-  // short-lived enforcement in case of late DOM updates
-  let __count=0; const __iv=setInterval(()=>{ try { refreshExtrasVisibility(); } catch(e){} if(++__count>10) clearInterval(__iv); }, 200);
-  }
-})();
-</script>
+      // Run immediately if DOM is already ready; otherwise bind to DOMContentLoaded
+      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', __extrasInit); } else { __extrasInit(); if (typeof update === 'function') update(); }
+
+      // Also observe the base table for updates that might rewrite DOM
+      const target = $('liqBlock');
+      if (target && 'MutationObserver' in window) {
+        const mo = new MutationObserver(() => refreshExtrasVisibility());
+        mo.observe(target, { childList: true, subtree: true });
+        // short-lived enforcement in case of late DOM updates
+        let __count = 0; const __iv = setInterval(() => { try { refreshExtrasVisibility(); } catch (e) { } if (++__count > 10) clearInterval(__iv); }, 200);
+      }
+    })();
+  </script>
 
 </body>
+
 </html>
