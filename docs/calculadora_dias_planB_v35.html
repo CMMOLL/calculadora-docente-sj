@@ -487,16 +487,26 @@
         </div>
         <div class="result" id="liqBlock">
           <div class="title">Liquidación</div>
-          <div id="indicesRow"
-            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;"><label
-              class="muted">Índice del mes
-              <input id="indiceMes" step="0.0001" style="width:12ch; margin-left:6px;" type="number" value="787.1022" />
+          <div id="indicesRow" style="display:flex; align-items:center; gap:12px; margin-bottom:6px;">
+
+            <!-- Índice para los 30 días o menos -->
+            <label class="muted" style="display:flex; align-items:center; gap:6px;">
+              Índice del mes
+              <input id="indiceMes" step="0.0001" style="width:12ch;" type="number" />
             </label>
-            <div id="indicePrevToolbar" style="display:none;"><label class="muted">Índice mes anterior
-                <input id="indiceMesPrev_clone" name="indiceMesPrev_clone" step="0.0001" style="width:110px;"
-                  type="number" value="772.4261" />
-              </label></div>
+
+            <!-- Selector de período para elegir qué índice usar en los 30 días -->
+            <select id="indiceMesPeriodo" style="max-width: 200px;"></select>
+
+            <!-- Índice del mes anterior (excedente > 30 días) -->
+            <label class="muted" style="display:flex; align-items:center; gap:6px; margin-left:12px;">
+              Índice mes anterior
+              <input id="indiceMesPrev" step="0.0001" style="width:12ch;" type="number" readonly />
+            </label>
+
           </div>
+
+
           <div class="row"
             style="display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin:8px 0 4px 0;"><label
               class="muted">Antigüedad (años)
@@ -1264,6 +1274,168 @@
       });
       document.getElementById('btnDescargarIndices').addEventListener('click', descargarIndicesJSON);
     })();
+  </script>
+
+  <script>
+    // ===== Utilidades de fecha =====
+    function parseDMY(s) {
+      if (!s) return null;
+      if (s.includes('/')) { const [dd, mm, yy] = s.split('/').map(x => x.trim()); return new Date(+yy, +mm - 1, +dd); }
+      if (s.includes('-')) return new Date(s); // para inputs type="date"
+      return null;
+    }
+    function ym(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; }
+    function prevMonth(ymm) { const [y, m] = ymm.split('-').map(Number); return ym(new Date(y, m - 2, 1)); }
+
+    // ===== Estado =====
+    let INDICES = null; // { '2025-08': 787.1022, ... }
+
+    // ===== Carga de indices.json =====
+    async function cargarIndices() {
+      const res = await fetch('indices.json', { cache: 'no-store' });
+      const data = await res.json();
+      if (!data || !data.indices) throw new Error('indices.json inválido');
+      INDICES = data.indices;
+    }
+
+    // Último período con índice hacia atrás (incluido)
+    function lastAvailableIndexBeforeOrSame(ymm) {
+      let cur = ymm;
+      for (let i = 0; i < 48; i++) {
+        if (INDICES[cur] != null) return cur;
+        const [y, m] = cur.split('-').map(Number);
+        const d = new Date(y, m - 2, 1);
+        cur = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      }
+      return null;
+    }
+
+    // ===== Reglas pedidas =====
+    // (a) 30 días: índice del mes de liquidación si existe; si NO, último disponible anterior.
+    // (b) Excedente: índice del mes anterior; EXCEPCIÓN: si el mes de liquidación no tiene índice, usar el mismo de (a).
+    function getIndicesPara(mesLiqui, diasTot) {
+      const tieneMes = INDICES[mesLiqui] != null;
+      const idx30 = tieneMes ? INDICES[mesLiqui] : INDICES[lastAvailableIndexBeforeOrSame(mesLiqui)];
+      let idxEx = null;
+      if ((diasTot | 0) > 30) {
+        if (tieneMes) {
+          const mesAnt = prevMonth(mesLiqui);
+          idxEx = INDICES[lastAvailableIndexBeforeOrSame(mesAnt)];
+        } else {
+          idxEx = idx30; // excepción (si aún no existe el índice del mes de liquidación)
+        }
+      }
+      return { idx30, idxEx };
+    }
+
+    // ===== Integración con tu UI (sin paneles) =====
+    function diasEntreFechas($ini, $fin) {
+      const di = parseDMY($ini?.value); const df = parseDMY($fin?.value);
+      if (!di || !df) return 0;
+      // Criterio de tu app: inicio incluido, fin NO
+      const ms = (df - di);
+      return Math.max(0, Math.floor(ms / 86400000));
+    }
+
+    // Crea el <select> al lado de #indiceMes si no existe
+    function ensurePeriodoSelect($idx30) {
+      let sel = document.getElementById('indiceMesPeriodo');
+      if (!sel) {
+        sel = document.createElement('select');
+        sel.id = 'indiceMesPeriodo';
+        sel.style.maxWidth = '200px';
+        sel.style.marginLeft = '8px';
+        // Insertarlo justo después del input de índice
+        $idx30.insertAdjacentElement('afterend', sel);
+      }
+      return sel;
+    }
+
+    // Poblá el select con "YYYY-MM — valor"
+    function poblarSelectIdx30($sel, mesSugerido) {
+      const existentes = Object.keys(INDICES).sort();
+      $sel.innerHTML = '';
+      existentes.forEach(ymm => {
+        const opt = document.createElement('option');
+        opt.value = ymm;
+        opt.textContent = `${ymm} — ${INDICES[ymm]}`;
+        $sel.appendChild(opt);
+      });
+      if (mesSugerido && INDICES[mesSugerido] != null) {
+        $sel.value = mesSugerido;
+      } else {
+        $sel.value = existentes[existentes.length - 1]; // último disponible
+      }
+    }
+
+    async function initIndicesInline() {
+      await cargarIndices();
+
+      // Tus IDs reales, según tu captura:
+      const $ini = document.getElementById('inicio'); // Fecha Inicio
+      const $fin = document.getElementById('fin');    // Fecha Fin
+
+      // Campo de "Índice del mes" (ya lo tenés):
+      const $idx30 = document.getElementById('indiceMes');
+
+      // Campo "Índice mes anterior":
+      // Usá #indiceMesPrev si lo creaste, si no, usa el que ya tenías oculto (#indiceMesPrev_clone) y lo rellenamos igual
+      const $idxPrev = document.getElementById('indiceMesPrev') || document.getElementById('indiceMesPrev_clone');
+      if ($idxPrev) { $idxPrev.readOnly = true; $idxPrev.tabIndex = -1; }
+
+      if (!$ini || !$fin || !$idx30 || !$idxPrev) {
+        console.warn('Faltan elementos: inicio/fin o indiceMes/indiceMesPrev(_clone)');
+        return;
+      }
+
+      // Crear el select de período si no existe
+      const $sel = ensurePeriodoSelect($idx30);
+
+      function recompute() {
+        // Mes de liquidación = mes de FECHA FIN (si no hay, uso el siguiente al último índice para preselección)
+        const df = parseDMY($fin?.value);
+        const mesLiqui = df ? ym(df) : (() => {
+          const ex = Object.keys(INDICES).sort(); const ult = ex[ex.length - 1];
+          const d = new Date(ult + '-01'); d.setMonth(d.getMonth() + 1); return ym(d);
+        })();
+
+        // Poblar select (solo la primera vez)
+        if ($sel.options.length === 0) poblarSelectIdx30($sel, mesLiqui);
+
+        // Días totales para decidir si hay excedente
+        const diasTot = diasEntreFechas($ini, $fin);
+
+        // Regla automática base
+        const { idx30, idxEx } = getIndicesPara(mesLiqui, diasTot);
+
+        // Auto-elegir período 30d (si no hay índice del mes, tomar el anterior disponible)
+        const periodo30 = (INDICES[mesLiqui] != null) ? mesLiqui : lastAvailableIndexBeforeOrSame(mesLiqui);
+        if (periodo30) $sel.value = periodo30;
+
+        // Volcar valores
+        const val30 = ($sel.value && INDICES[$sel.value] != null) ? INDICES[$sel.value] : (idx30 ?? '');
+        $idx30.value = val30;
+        if ($idxPrev) $idxPrev.value = (idxEx != null) ? idxEx : '';
+
+        // (Opcional) disparar tu recálculo general:
+        // if (window.recalcularLiquidacion) window.recalcularLiquidacion();
+      }
+
+      // Si el usuario elige otro período para los 30 días
+      $sel.addEventListener('change', () => {
+        const val = INDICES[$sel.value];
+        if (val != null) $idx30.value = val;
+        // if (window.recalcularLiquidacion) window.recalcularLiquidacion();
+      });
+
+      // Recalcular al cambiar fechas
+      [$ini, $fin].forEach($e => $e && $e.addEventListener('change', recompute));
+
+      // Primera corrida
+      recompute();
+    }
+
+    document.addEventListener('DOMContentLoaded', initIndicesInline);
   </script>
 
 </body>
