@@ -1,11 +1,11 @@
 
-:root { --card-bg:#fff; --muted:#666; --border:#e7e7f3; --ink:#222; }
+:root { --card-bg:#92eadad7; --muted:#666; --border:#e7e7f3; --ink:#222; }
 
 /* Base */
 html,body{height:100%}
 body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial;
-  background:#f6f7fb; margin:0; padding:24px; color:var(--ink);
+  background:#8bb7cb; margin:0; padding:24px; color:var(--ink);
 }
 
 /* Container */
@@ -93,3 +93,98 @@ select { padding:6px 10px; border:1px solid #d6d6e7; border-radius:10px; backgro
 /* Fila altura uniforme */
 #liqBlock .tabla-codigos thead th,
 #liqBlock .tabla-codigos tbody td{ height: 28px; }
+
+/* ===== Extras (checkboxes) ===== */
+#optExtras {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 12px;
+  color: var(--muted);
+}
+
+#optExtras > span.label {
+  margin-right: 4px;
+}
+
+#optExtras label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+/* Wrap en pantallas angostas */
+@media (max-width: 680px) {
+  #optExtras {
+    flex-wrap: wrap;
+    gap: 8px 12px; /* filas x columnas */
+    margin-left: 0;
+  }
+}
+
+/* Contenedor principal de 3 columnas (versión v34) */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 420px;  /* ejemplo que usábamos */
+  column-gap: 48px;
+}
+
+/* ===== Layout 3 columnas ===== */
+.grid {
+  display: grid;
+  /* izq: 340px  | centro: crece entre 560–760 | der: 360px  */
+  grid-template-columns: 340px minmax(560px, 760px) 360px;
+  column-gap: 48px;
+  align-items: start; /* que todo arranque arriba */
+}
+
+/* Mapeo de columnas (usando tus clases/ids actuales) */
+.leftCol        { grid-column: 1; }
+#liqBlock,
+.col-center     { grid-column: 2; }
+.rightCol,
+.col-right      { grid-column: 3; }
+
+/* La columna derecha se queda “pegada” al top al hacer scroll */
+.rightCol,
+.col-right {
+  position: sticky;
+  top: 96px;        /* ajustá si querés que baje/suba */
+  align-self: start;
+}
+
+/* Asegura que los cards de la derecha usen el ancho de su columna */
+.rightCol > * ,
+.col-right > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Responsive: en pantallas chicas, apilamos todo */
+@media (max-width: 1366px) {
+  .grid {
+    grid-template-columns: 1fr;
+    row-gap: 24px;
+  }
+  .rightCol,
+  .col-right {
+    position: static; /* sin sticky en móvil */
+  }
+}
+
+.rightCol { top: 30px; }  /* subí/bajá ese 96px a gusto */
+
+.grid {
+  grid-template-columns: 340px minmax(600px, 820px) 360px;
+}
+.rightCol,
+.col-right {
+  position: sticky;
+  top: 30px;      /* subí/bajá a 60/96 si querés más aire */
+  align-self: start;
+}
+
+.wrap { max-width: 1480px; margin: 0 auto; padding: 0 24px; }
+.grid { grid-template-columns: 300px minmax(520px, 760px) 320px; }
