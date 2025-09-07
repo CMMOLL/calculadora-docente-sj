@@ -1,0 +1,34 @@
+# ── Sistema / OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editor/IDE
+.vscode/
+.history/
+.idea/
+*.code-workspace
+
+# ── Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ── Builds / caches (por si sumás tooling a futuro)
+dist/
+build/
+out/
+coverage/
+.tmp/
+.cache/
+.parcel-cache/
+.next/
+.vercel/
+
+# ── Node (si agregás scripts de build)
+node_modules/
+
+# ── Variables de entorno (si algún día las usás)
+.env
+.env.*
