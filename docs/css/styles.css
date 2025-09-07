@@ -62,7 +62,8 @@ label { display:block; font-size:14px; margin:10px 0 4px; color:#333; }
   /* Hace que el card de "Liquidación" ocupe todo el ancho del track central */
 #liqBlock {
   display: block;    /* antes heredaba inline-block de .result */
-  width: 100%;       /* llena el track del grid (.grid-2) */
+  width: 100%; /* llena el track del grid (.grid-2) */
+  margin-top: 0px;      
 }
 
 .muted { color:var(--muted); font-size: 13px; }
