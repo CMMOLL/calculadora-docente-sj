@@ -5,10 +5,40 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Liquidación de Sueldos</title>
-  <link rel="stylesheet" href="css/styles.css?v=YYYYMMDDHHmm">
   <link rel="icon" href="images/favicon-32x32.png" type="image/png" />
   <link rel="stylesheet" href="css/styles.css" />
+  <link id="app-css" rel="stylesheet" href="css/styles.css">
 </head>
+
+<script>
+(async () => {
+  const cssPath = "css/styles.css";
+  let version = "";
+
+  try {
+    // Pedimos SOLO cabeceras para obtener ETag / Last-Modified
+    const res = await fetch(cssPath, { method: "HEAD", cache: "no-store" });
+    version =
+      (res.headers.get("etag") || res.headers.get("last-modified") || "").replace(/"/g,"");
+  } catch (e) {
+    // Fallback: timestamp (por si algo raro impide leer cabeceras)
+    version = String(Date.now());
+  }
+
+  // Guardamos la versión para reutilizar en otros assets (JSON, imágenes, etc.)
+  window.__assetVersion = version || String(Date.now());
+
+  // Actualizamos el href del <link> para forzar recarga si cambió el contenido
+  const link = document.getElementById("app-css");
+  if (link) {
+    const url = new URL(link.getAttribute("href"), location.href);
+    url.searchParams.set("v", window.__assetVersion);
+    // Sólo reasignamos si cambió para evitar recargas innecesarias
+    if (link.href !== url.href) link.href = url.pathname + "?" + url.searchParams.toString();
+  }
+})();
+</script>
+
 
 <body>
   <div class="card">
