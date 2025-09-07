@@ -1,24 +1,32 @@
-# Calculadora Docente – Repo base
+# Liquidación de Sueldos Docentes – SJ
 
-App de cálculo en un solo `index.html` (HTML+CSS+JS). Los parámetros variables están en `data/current.json`.
-Un workflow mensual archiva `current.json` en `data/YYYY/MM.json` para mantener historial.
+Calculadora simple (HTML+CSS+JS) para estimar liquidaciones docentes con criterio **30/360**, desgloses por mes, **días de aguinaldo** y **décimas**.  
+👉 **Versión en vivo:** https://cmmoll.github.io/Liquidacion-Sueldos-Docentes-SJ/
 
-## Estructura
-```
+---
+
+## ✨ Funcionalidades
+- Cálculo por **30/360** con desgloses mensuales.
+- **Décimas** visibles/ocultas según reglas (BAJA/SUPLENTE).
+- Panel de **índices** y radio.
+- UI limpia y responsive (layout 2/3 columnas).
+- Datos externos en JSON (índices y horas cátedra).
+
+---
+
+## 📁 Estructura
+```text
 /
-├── .github/workflows/archive-data.yml
-├── data/
-│   ├── current.json
-│   ├── 2024/.gitkeep
-│   └── 2025/.gitkeep
-├── index.html
-└── README.md
-```
-
-## Paso a paso (administrador)
-1. **Editar** `data/current.json` con los valores del mes (índices, puntos, cargos).
-2. **Commit + push** a `main`.
-3. La página (si está en GitHub Pages o local) leerá `./data/current.json` cuando lo activemos en el código.
-4. El día 1, el workflow copia `current.json` a `data/YYYY/MM.json`. También podés ejecutarlo manualmente en *Actions* > *Run workflow*.
-
-> Nota: por ahora el `index.html` está **sin cambios** (no lee el JSON todavía). Se activa en el siguiente paso.
+├─ .github/                 # Workflows / configuración de GitHub
+├─ docs/                    # 🔸 Carpeta publicada por GitHub Pages (main/docs)
+│  ├─ index.html            # App principal (home)
+│  ├─ css/
+│  │  └─ styles.css
+│  ├─ images/
+│  │  └─ favicon-*.png
+│  ├─ data/
+│  │  ├─ current.json
+│  │  ├─ indices.json
+│  │  └─ horas_catedra.json
+│  └─ .nojekyll             # Desactiva Jekyll para Pages
+└─ README.md                # Este archivo
