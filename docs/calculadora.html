@@ -364,9 +364,11 @@
 
     const inputInicio = document.getElementById('inicio');
     const inputFin = document.getElementById('fin');
-    const inputBaja = document.getElementById('baja');
     const liqBlock = document.getElementById('liqBlock');
+    const inputSuplente = document.getElementById('suplente');
+    const inputBaja = document.getElementById('baja');
     const complementoBox = document.getElementById('complementoBox');
+
     const liqDato = {
       diasLiq: document.getElementById('diasLiq'),
       a01: document.getElementById('a01Importe'),
@@ -518,6 +520,7 @@
       const start = parseDate(inputInicio.value);
       const end = parseDate(inputFin.value);
       const baja = inputBaja.checked;
+      const suplente = inputSuplente.checked;
 
       if (baja) { finLabel2.textContent = 'INCLUIDO'; } else { finLabel2.textContent = 'NO incluido'; }
 
@@ -542,7 +545,8 @@
       const decimasData = calcularDecimas(rows);
       decimasTotal.textContent = decimasData.total;
       decimasDetalle.textContent = decimasData.detalle || '—';
-      decimasBlock.style.display = (baja && decimasData.total > 0) ? 'block' : 'none';
+      decimasBlock.style.display = (baja && suplente && decimasData.total > 0) ? 'block' : 'none';
+
 
       calculateLiq(start, end, baja);
     }
