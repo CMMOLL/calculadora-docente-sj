@@ -51,7 +51,20 @@ label { display:block; font-size:14px; margin:10px 0 4px; color:#333; }
 }
 
 /* === Visual de resultados/controles (igual v34) === */
-.result { background:#f7f7fb; border:1px solid var(--border); padding:14px; border-radius:12px; margin-top: 14px; display:inline-block; }
+.result { 
+  background:#f7f7fb; 
+  border:1px solid var(--border);
+  padding:14px; 
+  border-radius:12px;
+  margin-top: 14px;
+  display:inline-block;
+  }
+  /* Hace que el card de "Liquidación" ocupe todo el ancho del track central */
+#liqBlock {
+  display: block;    /* antes heredaba inline-block de .result */
+  width: 100%;       /* llena el track del grid (.grid-2) */
+}
+
 .muted { color:var(--muted); font-size: 13px; }
 .title { font-weight: 600; font-size: 16px; }
 input[type="date"] { width: 14ch; padding:10px 12px; border:1px solid #d6d6e7; border-radius:12px; outline:none; }
@@ -127,16 +140,16 @@ select { padding:6px 10px; border:1px solid #d6d6e7; border-radius:10px; backgro
 /* Contenedor principal de 3 columnas (versión v34) */
 .grid-2 {
   display: grid;
-  grid-template-columns: 1fr 1fr 420px;  /* ejemplo que usábamos */
-  column-gap: 48px;
+  grid-template-columns: 1100px 1fr 360px;
+  column-gap: 48px;/* espacio entre columnas*/
 }
 
 /* ===== Layout 3 columnas ===== */
 .grid {
   display: grid;
   /* izq: 340px  | centro: crece entre 560–760 | der: 360px  */
-  grid-template-columns: 340px minmax(560px, 760px) 360px;
-  column-gap: 48px;
+  grid-template-columns: 340px 760px 360px;
+  column-gap: 48px; /* espacio entre columnas*/
   align-items: start; /* que todo arranque arriba */
 }
 
@@ -188,3 +201,4 @@ select { padding:6px 10px; border:1px solid #d6d6e7; border-radius:10px; backgro
 
 .wrap { max-width: 1480px; margin: 0 auto; padding: 0 24px; }
 .grid { grid-template-columns: 300px minmax(520px, 760px) 320px; }
+
