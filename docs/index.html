@@ -140,6 +140,7 @@
             style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;"><label
               class="muted">Índice del mes
               <input id="indiceMes" step="0.0001" style="width:auto-size"; margin-left:6px;" type="number" value="787.1022" />
+              <select id="indicePeriodo" aria-label="Mes y año del índice"></select>
             </label>
             <div id="indicePrevToolbar" style="display:none;"><label class="muted">Índice mes anterior
                 <input id="indiceMesPrev_clone" name="indiceMesPrev_clone" step="0.0001" style="width:auto-size;"
@@ -341,7 +342,106 @@
     </aside>
   </div>
   </div>
-  <script>
+ <script>
+
+
+/* Selector Mes-Año para el índice */
+(function () {
+  const MES_ABR = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const INDICES_URL = 'data/indices.json';
+
+  const indiceInput   = document.getElementById('indiceMes');
+  const prevInput     = document.getElementById('indiceMesPrev');
+  const periodoSelect = document.getElementById('indicePeriodo');
+
+  function labelDeClave(ym) {
+    const [y, m] = ym.split('-').map(Number);
+    return `${MES_ABR[m-1]}-${y}`;
+  }
+  function toFixed4(n) {
+    const x = Number(n);
+    return Number.isFinite(x) ? x.toFixed(4) : '';
+  }
+  function prevYM(k) {
+    let [y, m] = k.split('-').map(Number);
+    m -= 1; if (m === 0) { y -= 1; m = 12; }
+    return `${y}-${String(m).padStart(2,'0')}`;
+  }
+
+  function enableScrollable(sel, visibleRows=6) {
+    function open() { sel.size = Math.min(visibleRows, sel.options.length); sel.dataset.open = '1'; sel.focus(); }
+    function close() { sel.size = 1; delete sel.dataset.open; }
+
+    sel.size = 1;                         // colapsado por defecto
+    sel.addEventListener('mousedown', e => {
+      if (!sel.dataset.open) { e.preventDefault(); open(); }
+    });
+    sel.addEventListener('blur', close);
+    sel.addEventListener('keydown', ev => { if (ev.key === 'Escape') { close(); ev.preventDefault(); }});
+    // cuando cambia, aplicamos y cerramos
+    sel.addEventListener('change', () => { close(); sel.dispatchEvent(new Event('apply')); });
+  }
+
+  async function initIndicePeriodo() {
+    let mapa = {};
+    try {
+      const v = window.__assetVersion ? `?v=${window.__assetVersion}` : '';
+      const res = await fetch(INDICES_URL + v, { cache: 'no-store' });
+      const json = await res.json();
+      mapa = json.indices || json;             // soporta ambos formatos
+    } catch (e) {
+      console.warn('No se pudo cargar data/indices.json', e);
+      return;
+    }
+
+    // 2024 completo y 2025 hasta agosto inclusive
+    const claves = Object.keys(mapa)
+      .filter(k => /^\d{4}-\d{2}$/.test(k))
+      .filter(k => {
+        const y = +k.slice(0,4), m = +k.slice(5,7);
+        return (y === 2024) || (y === 2025 && m <= 8);
+      })
+      .sort()        // ascendente
+      .reverse();    // descendente (p.ej. 2025-08, 2025-07, …)
+
+    // rellenar opciones (desc)
+    periodoSelect.innerHTML = '';
+    for (const k of claves) {
+      const opt = document.createElement('option');
+      opt.value = k;
+      opt.textContent = labelDeClave(k);
+      periodoSelect.appendChild(opt);
+    }
+
+    function setFromKey(k) {
+      // índice del mes seleccionado
+      indiceInput.value = toFixed4(mapa[k] ?? '');
+      // índice del mes anterior si existe
+      const kPrev = prevYM(k);
+      if (mapa[kPrev] != null) prevInput.value = toFixed4(mapa[kPrev]);
+      // recalcular pantalla
+      if (typeof update === 'function') update();
+      else indiceInput.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    if (claves.length) {
+      // tomar el MÁS reciente (primer elemento, no el último)
+      periodoSelect.selectedIndex = 0;
+      setFromKey(claves[0]);
+    }
+
+    // cuando el usuario elige en la lista
+    periodoSelect.addEventListener('apply', () => setFromKey(periodoSelect.value));
+
+    // activa “lista de 6 con scroll” al abrir
+    enableScrollable(periodoSelect, 6);
+  }
+
+  if (document.readyState !== 'loading') initIndicePeriodo();
+  else document.addEventListener('DOMContentLoaded', initIndicePeriodo);
+})();
+
+
     // ===== Utilidades
     function toUTCDate(y, m, d) { return new Date(Date.UTC(y, m, d)); }
     function parseDate(s) { if (!s) return null; const [y, m, d] = s.split('-').map(Number); if (!y || !m || !d) return null; return toUTCDate(y, m - 1, d); }
