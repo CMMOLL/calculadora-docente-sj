@@ -1,23 +1,46 @@
 
-:root { --card-bg:#92eadad7; --muted:#666; --border:#e7e7f3; --ink:#222; }
+:root {
+  --card-bg:#92eadad7;
+  --muted:#666; 
+  --border:#e7e7f3; 
+  --ink:#222; 
+}
 
 /* Base */
 html,body{height:100%}
 body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial;
-  background:#8bb7cb; margin:0; padding:24px; color:var(--ink);
+  background:#8bb7cb;
+  margin:0;
+  padding:24px;
+  color:var(--ink);
 }
 
 /* Container */
-.card { max-width: 1500px; width: min(95vw, 1500px); margin: 0 auto; }
-h1 { margin: 0 0 8px 0; font-size: 22px; }
+.card { 
+  max-width: 1500px; 
+  width: min(95vw, 1500px);
+  margin: 0 auto;
+}
+h1 { 
+  margin: 0 0 8px 0;
+  font-size: 22px;
+}
 
 /* Labels */
-label { display:block; font-size:14px; margin:10px 0 4px; color:#333; }
+label { display:block; 
+  font-size:14px; 
+  margin:10px 0 4px; 
+  color:#333; 
+}
 
 /* === Layout v34 (tres columnas) === */
 /* Contenedor maestro: usamos flex para lograr 3 columnas prácticas */
-.grid{ display:flex; gap:48px; align-items:flex-start; }
+.grid{ 
+  display:flex; 
+  gap:48px; 
+  align-items:flex-start; 
+}
 
 /* Columna izquierda: selectores de nivel/cargo, fija en alto */
 .leftCol{
@@ -35,19 +58,42 @@ label { display:block; font-size:14px; margin:10px 0 4px; color:#333; }
   top:12px;
   align-self:start;
 }
-.stack{ grid-column:2; grid-row:1; }
-#liqBlock{ grid-column:2; grid-row:2; }
+.stack{ 
+  grid-column:2; 
+  grid-row:1; 
+}
+#liqBlock{ 
+  grid-column:2; 
+  grid-row:2; 
+}
 
 /* Columna derecha: apilada (Desglose / Aguinaldo / Décimas) */
-.rightCol{ width: min(420px, 40vw); display:flex; flex-direction:column; gap:24px; }
-.months-box{ display:block; }
-#sacBox, #decimasBox{ grid-column:auto; grid-row:auto; }
-#decimasDetalle{ display:none !important; }
+.rightCol{ 
+  width: min(420px, 40vw); 
+  display:flex; 
+  flex-direction:column; 
+  gap:24px; 
+}
+.months-box{
+  display:block; 
+  }
+#sacBox, #decimasBox{ 
+  grid-column:auto; 
+  grid-row:auto; 
+}
+#decimasDetalle{ 
+  display:none !important; 
+}
 
 /* Responsive */
 @media (max-width: 1200px){
-  .grid{ flex-direction:column; gap:24px; }
-  .leftCol{ min-width:0; grid-template-columns:1fr; }
+  .grid{ flex-direction:column; 
+    gap:24px; 
+  }
+  .leftCol{ 
+    min-width:0; 
+    grid-template-columns:1fr; 
+  }
 }
 
 /* === Visual de resultados/controles (igual v34) === */
@@ -58,8 +104,8 @@ label { display:block; font-size:14px; margin:10px 0 4px; color:#333; }
   border-radius:12px;
   margin-top: 14px;
   display:inline-block;
-  }
-  /* Hace que el card de "Liquidación" ocupe todo el ancho del track central */
+}
+/* Hace que el card de "Liquidación" ocupe todo el ancho del track central */
 #liqBlock {
   display: block;    /* antes heredaba inline-block de .result */
   width: 100%; /* llena el track del grid (.grid-2) */
