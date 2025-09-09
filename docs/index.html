@@ -135,6 +135,29 @@
         </div>
         <div class="result" id="liqBlock">
           <div class="title">Liquidación</div>
+
+<div class="row" id="indicesRow" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+  <label class="muted" style="position:relative; display:inline-flex; align-items:center; gap:8px;">
+    Índice del mes
+    <input id="indiceMes" step="0.0001" style="width:auto-size; margin-left:6px;" type="number" value="787.1022" />
+    <!-- Custom dropdown, SIN <select> -->
+    <div id="custom-select" class="custom-select">
+      <div id="selected-option" class="selected-option">—</div>
+      <div id="options-container" class="options-container" style="display:none;"></div>
+    </div>
+  </label>
+
+  <div id="indicePrevToolbar" style="display:none;">
+    <label class="muted">
+      Índice mes anterior
+      <input id="indiceMesPrev_clone" name="indiceMesPrev_clone" step="0.0001" style="width:auto-size;" type="number" value="772.4261" />
+    </label>
+  </div>
+</div>
+
+
+
+<!-- Código viejo (eliminar si funciona el cambio)
           <div id="indicesRow"
             style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;"><label
               class="muted">Índice del mes
@@ -146,6 +169,7 @@
                   type="number" value="772.4261" />
               </label></div>
           </div>
+-->
           <div class="row"
             style="display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin:8px 0 4px 0;"><label
               class="muted">Antigüedad (años)
@@ -344,14 +368,16 @@
  <script>
 
 
-/* Selector Mes-Año para el índice */
+/* Selector Mes-Año para el índice (custom dropdown) */
 (function () {
   const MES_ABR = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   const INDICES_URL = 'data/indices.json';
 
   const indiceInput   = document.getElementById('indiceMes');
   const prevInput     = document.getElementById('indiceMesPrev');
-  const periodoSelect = document.getElementById('indicePeriodo');
+  const customSelect  = document.getElementById('custom-select');
+  const selectedOption = document.getElementById('selected-option');
+  const optionsContainer = document.getElementById('options-container');
 
   function labelDeClave(ym) {
     const [y, m] = ym.split('-').map(Number);
@@ -367,78 +393,78 @@
     return `${y}-${String(m).padStart(2,'0')}`;
   }
 
-  function enableScrollable(sel, visibleRows=6) {
-    function open() { sel.size = Math.min(visibleRows, sel.options.length); sel.dataset.open = '1'; sel.focus(); }
-    function close() { sel.size = 1; delete sel.dataset.open; }
-
-    sel.size = 1;                         // colapsado por defecto
-    sel.addEventListener('mousedown', e => {
-      if (!sel.dataset.open) { e.preventDefault(); open(); }
-    });
-    sel.addEventListener('blur', close);
-    sel.addEventListener('keydown', ev => { if (ev.key === 'Escape') { close(); ev.preventDefault(); }});
-    // cuando cambia, aplicamos y cerramos
-    sel.addEventListener('change', () => { close(); sel.dispatchEvent(new Event('apply')); });
-  }
-
   async function initIndicePeriodo() {
     let mapa = {};
     try {
       const v = window.__assetVersion ? `?v=${window.__assetVersion}` : '';
       const res = await fetch(INDICES_URL + v, { cache: 'no-store' });
       const json = await res.json();
-      mapa = json.indices || json;             // soporta ambos formatos
+      mapa = json.indices || json;
     } catch (e) {
       console.warn('No se pudo cargar data/indices.json', e);
       return;
     }
 
-    // 2024 completo y 2025 hasta agosto inclusive
     const claves = Object.keys(mapa)
       .filter(k => /^\d{4}-\d{2}$/.test(k))
       .filter(k => {
         const y = +k.slice(0,4), m = +k.slice(5,7);
         return (y === 2024) || (y === 2025 && m <= 8);
       })
-      .sort()        // ascendente
-      .reverse();    // descendente (p.ej. 2025-08, 2025-07, …)
+      .sort()
+      .reverse();
 
-    // rellenar opciones (desc)
-    periodoSelect.innerHTML = '';
+    // Construir opciones (DIVs)
+    optionsContainer.innerHTML = '';
     for (const k of claves) {
-      const opt = document.createElement('option');
-      opt.value = k;
-      opt.textContent = labelDeClave(k);
-      periodoSelect.appendChild(opt);
+      const optionDiv = document.createElement('div');
+      optionDiv.className = 'option';
+      optionDiv.dataset.value = k;
+      optionDiv.textContent = labelDeClave(k);
+      optionsContainer.appendChild(optionDiv);
     }
 
     function setFromKey(k) {
-      // índice del mes seleccionado
       indiceInput.value = toFixed4(mapa[k] ?? '');
-      // índice del mes anterior si existe
       const kPrev = prevYM(k);
       if (mapa[kPrev] != null) prevInput.value = toFixed4(mapa[kPrev]);
-      // recalcular pantalla
+      selectedOption.textContent = labelDeClave(k);
+      optionsContainer.style.display = 'none';
       if (typeof update === 'function') update();
       else indiceInput.dispatchEvent(new Event('input', { bubbles: true }));
     }
 
-    if (claves.length) {
-      // tomar el MÁS reciente (primer elemento, no el último)
-      periodoSelect.selectedIndex = 0;
-      setFromKey(claves[0]);
-    }
+    // Set inicial: el más reciente
+    if (claves.length) setFromKey(claves[0]);
 
-    // cuando el usuario elige en la lista
-    periodoSelect.addEventListener('apply', () => setFromKey(periodoSelect.value));
+    // Toggle del menú
+    customSelect.addEventListener('click', (ev) => {
+      // Evita que el click burbujee y cierre inmediatamente
+      ev.stopPropagation();
+      const open = optionsContainer.style.display === 'block';
+      optionsContainer.style.display = open ? 'none' : 'block';
+    });
 
-    // activa “lista de 6 con scroll” al abrir
-    enableScrollable(periodoSelect, 6);
+    // Selección de una opción
+    optionsContainer.addEventListener('click', (e) => {
+      const el = e.target.closest('.option');
+      if (!el) return;
+      const value = el.dataset.value;
+      setFromKey(value);
+    });
+
+    // Cerrar al click afuera o al hacer scroll
+    document.addEventListener('click', () => { optionsContainer.style.display = 'none'; });
+    window.addEventListener('scroll', () => { optionsContainer.style.display = 'none'; }, { passive: true });
   }
 
   if (document.readyState !== 'loading') initIndicePeriodo();
   else document.addEventListener('DOMContentLoaded', initIndicePeriodo);
 })();
+
+
+
+
 
 
     // ===== Utilidades
