@@ -364,50 +364,62 @@
  <script>
 
 
-/* Selector Mes-Año con <select> nativo (sin estilos inline) */
+/* Selector Mes-Año con <select> nativo, 6 visibles sin reflow + excepción de mes actual faltante */
 (function () {
   const MES_ABR = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   const INDICES_URL = 'data/indices.json';
 
-  const selPeriodo   = document.getElementById('indicePeriodo');
-  const indiceInput  = document.getElementById('indiceMes');            // visible (solo lectura)
-  const prevInput    = document.getElementById('indiceMesPrev');        // oculto (verdad de cálculo)
+  const selPeriodo  = document.getElementById('indicePeriodo'); // <select>
+  const indiceInput = document.getElementById('indiceMes');     // visible (readonly)
+  const prevCalc    = document.getElementById('indiceMesPrev'); // oculto (cálculo)
 
-  if (!selPeriodo || !indiceInput || !prevInput) return;
+  if (!selPeriodo || !indiceInput || !prevCalc) return;
 
-  function labelDeClave(ym) {
-    const [y, m] = ym.split('-').map(Number);
-    return `${MES_ABR[m-1]}-${y}`;
-  }
-  function toFixed4(n) {
+  const now   = new Date();
+  const curYM = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+
+  const toFixed4 = n => {
     const x = Number(n);
     return Number.isFinite(x) ? x.toFixed(4) : '';
-  }
-  function prevYM(k) {
+  };
+  const labelDeClave = ym => {
+    const [y, m] = ym.split('-').map(Number);
+    return `${MES_ABR[m-1]}-${y}`;
+  };
+  const prevYM = k => {
     let [y, m] = k.split('-').map(Number);
     m -= 1; if (m === 0) { y -= 1; m = 12; }
     return `${y}-${String(m).padStart(2,'0')}`;
-  }
+  };
 
   let mapa = {};
+  let claves = [];
+  let latest = null;
 
   function aplicarPeriodo(k) {
-    if (!k) return;
+    if (!k || !mapa[k]) return;
     const v = Number(mapa[k]);
     indiceInput.value = toFixed4(v);
 
-    const kp = prevYM(k);
-    const vp = Number(mapa[kp]);
-    // actualizamos el input oculto (la lógica de sync ya copia al clone visible)
-    prevInput.value = toFixed4(vp);
+    // Excepción: si el mes calendario no existe y estamos en el último disponible,
+    // "Índice mes anterior" = mismo valor
+    const hasCurrent = mapa[curYM] != null;
+    let prevValue;
+    if (!hasCurrent && k === latest) {
+      prevValue = v;
+    } else {
+      const kp = prevYM(k);
+      prevValue = Number(mapa[kp]);
+    }
+    prevCalc.value = toFixed4(prevValue);
 
-    // Disparar recálculo (la app ya escucha estos eventos)
-    indiceInput.dispatchEvent(new Event('input', { bubbles: true }));
-    prevInput.dispatchEvent(new Event('input', { bubbles: true }));
+    // Recalcular
+    indiceInput.dispatchEvent(new Event('input', { bubbles:true }));
+    prevCalc.dispatchEvent(new Event('input', { bubbles:true }));
     if (typeof update === 'function') { try { update(); } catch {} }
   }
 
-  async function initIndicePeriodo() {
+  async function init() {
     try {
       const v = window.__assetVersion ? `?v=${window.__assetVersion}` : '';
       const res = await fetch(INDICES_URL + v, { cache: 'no-store' });
@@ -415,20 +427,16 @@
       mapa = json.indices || json;
     } catch (e) {
       console.warn('No se pudo cargar data/indices.json', e);
-      selPeriodo.innerHTML = '';
-      indiceInput.value = '';
-      prevInput.value = '';
+      selPeriodo.innerHTML = ''; indiceInput.value = ''; prevCalc.value = '';
       return;
     }
 
-    // Filtramos (2024 completo y 2025 hasta 08 inclusive)
-    const claves = Object.keys(mapa)
+    // Construir opciones (todas, orden desc)
+    claves = Object.keys(mapa)
       .filter(k => /^\d{4}-\d{2}$/.test(k))
-      .filter(k => { const y = +k.slice(0,4), m = +k.slice(5,7); return (y === 2024) || (y === 2025 && m <= 8); })
       .sort()
       .reverse();
 
-    // Construimos <option> (más reciente primero)
     selPeriodo.innerHTML = '';
     for (const k of claves) {
       const opt = document.createElement('option');
@@ -437,19 +445,24 @@
       selPeriodo.appendChild(opt);
     }
 
-    // Selección inicial
-    if (claves.length) {
-      selPeriodo.value = claves[0];
+    latest = claves[0] || null;
+
+    // Selección inicial: último disponible
+    if (latest) {
+      selPeriodo.value = latest;
       aplicarPeriodo(selPeriodo.value);
     }
 
     // Cambio de período
-    selPeriodo.addEventListener('change', () => aplicarPeriodo(selPeriodo.value));
+    selPeriodo.addEventListener('change', () => {
+      aplicarPeriodo(selPeriodo.value);
+    });
+
   }
 
-  if (document.readyState !== 'loading') initIndicePeriodo();
-  else document.addEventListener('DOMContentLoaded', initIndicePeriodo);
-})();;
+  if (document.readyState !== 'loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
 
 
 
@@ -904,6 +917,26 @@
         let __count = 0; const __iv = setInterval(() => { try { refreshExtrasVisibility(); } catch (e) { } if (++__count > 10) clearInterval(__iv); }, 200);
       }
     })();
+  </script>
+  <script>
+  /* Antigüedad: solo input numérico; limpiar restos y mantener look unificado */
+  (function () {
+    // Limpiar posibles restos/fantasmas
+    document.querySelectorAll('#antiguedadSelect, #antiguedadPeriodo, #antiguedadOptions, .antiguedad-ghost')
+      .forEach(node => node.remove());
+
+    const input = document.getElementById('antiguedadAnios');
+    if (!input) return;
+
+    // Asegurar tipeo libre con límites razonables (0..40). Ajustar si tu lógica cambia.
+    const clamp = n => Math.max(0, Math.min(40, Number(n) || 0));
+    input.addEventListener('input', () => {
+      const n = clamp(input.value);
+      if (String(n) !== String(input.value)) input.value = String(n);
+      input.dispatchEvent(new Event('input', { bubbles:true }));
+      if (typeof update === 'function') { try { update(); } catch {} }
+    });
+  })();
   </script>
 
 </body>

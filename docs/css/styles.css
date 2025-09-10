@@ -291,3 +291,124 @@ select { padding:6px 10px; border:1px solid #d6d6e7; border-radius:10px; backgro
   max-height: 10.5em;
   overflow-y: auto;
 }
+/* ===== Interacciones y look de controles ===== */
+select,
+input[type="radio"],
+input[type="checkbox"],
+label[for] {
+  cursor: pointer;
+}
+
+/* Hover/focus con borde dorado en controles seleccionables */
+select:hover,
+select:focus,
+input[type="radio"]:focus,
+input[type="checkbox"]:focus {
+  outline: none;
+  border-color: #d4a017 !important; /* dorado suave */
+  box-shadow: 0 0 0 2px rgba(212,160,23,0.2);
+}
+
+/* Presentación compacta de los campos numéricos “solo visualización” */
+.num-display[readonly] {
+  width: 10ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  appearance: textfield;
+}
+.num-display[readonly]::-webkit-outer-spin-button,
+.num-display[readonly]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Cuando el select se “expande” a lista (size=6), que tenga límite y scroll */
+#indicePeriodo[size="6"] {
+  max-height: 11.5em;          /* ~6 filas */
+  overflow-y: auto;
+}
+/* ===== Interacciones y look de controles ===== */
+
+/* Cursor “manito” en controles seleccionables */
+select,
+input[type="radio"],
+input[type="checkbox"],
+input[type="date"],
+label[for] {
+  cursor: pointer;
+}
+
+/* Hover/focus con borde dorado en controles clave */
+select:hover,
+select:focus,
+input[type="radio"]:focus,
+input[type="checkbox"]:focus,
+input[type="date"]:hover,
+input[type="date"]:focus {
+  outline: none;
+  border-color: #d4a017 !important; /* dorado suave */
+  box-shadow: 0 0 0 2px rgba(212,160,23,0.2);
+}
+
+/* Campos numéricos “solo visualización” (compactos, sin flechitas) */
+.num-display[readonly] {
+  width: 10ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  appearance: textfield;
+}
+.num-display[readonly]::-webkit-outer-spin-button,
+.num-display[readonly]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Select de período: ancho mínimo razonable */
+#indicePeriodo {
+  min-width: 120px;
+}
+
+/* Si en algún momento se usa <select size="...">, limitar y permitir scroll
+   (NO lo activamos por JS para evitar reflow del layout) */
+#indicePeriodo[size] {
+  max-height: 11.5em;  /* ~6 filas */
+  overflow-y: auto;
+}
+/* Señal de interacción consistente */
+select,
+input[type="radio"],
+input[type="checkbox"],
+input[type="date"],
+label[for],
+#antiguedadAnios { cursor: pointer; }
+
+select:hover, select:focus,
+input[type="date"]:hover, input[type="date"]:focus,
+input[type="radio"]:focus, input[type="checkbox"]:focus,
+#antiguedadAnios:hover, #antiguedadAnios:focus,
+#antiguedadSelect:hover,  #antiguedadSelect:focus {
+  outline: none;
+  border-color: #d4a017 !important;
+  box-shadow: 0 0 0 2px rgba(212,160,23,.2);
+}
+
+/* Campos de índice solo visual (compactos y redondeados) */
+.num-display[readonly]{
+  width: 10ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  appearance: textfield;
+  border: 1px solid #d6d6e7;
+  border-radius: 10px;
+  padding: 6px 8px;
+}
+.num-display[readonly]::-webkit-outer-spin-button,
+.num-display[readonly]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* Bordes redondeados en campos y selectores */
+.num-display[readonly],
+#indicePeriodo,
+#antiguedadSelect { border-radius: 10px; }
+
+/* (Opcional) Ancho mínimo razonable del select de índice */
+#indicePeriodo { min-width: 120px; }
