@@ -139,18 +139,14 @@
 <div class="row" id="indicesRow" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
   <label class="muted" style="position:relative; display:inline-flex; align-items:center; gap:8px;">
     Índice del mes
-    <input id="indiceMes" step="0.0001" style="width:auto-size; margin-left:6px;" type="number" value="787.1022" />
-    <!-- Custom dropdown, SIN <select> -->
-    <div id="custom-select" class="custom-select">
-      <div id="selected-option" class="selected-option">—</div>
-      <div id="options-container" class="options-container" style="display:none;"></div>
-    </div>
+    <input id="indiceMes" step="0.0001" class="num-display" type="number" value="787.1022" readonly />
+    <select id="indicePeriodo" aria-label="Mes y año del índice"></select>
   </label>
 
   <div id="indicePrevToolbar" style="display:none;">
     <label class="muted">
       Índice mes anterior
-      <input id="indiceMesPrev_clone" name="indiceMesPrev_clone" step="0.0001" style="width:auto-size;" type="number" value="772.4261" />
+      <input id="indiceMesPrev_clone" name="indiceMesPrev_clone" step="0.0001" class="num-display" type="number" value="772.4261" readonly />
     </label>
   </div>
 </div>
@@ -368,16 +364,16 @@
  <script>
 
 
-/* Selector Mes-Año para el índice (custom dropdown) */
+/* Selector Mes-Año con <select> nativo (sin estilos inline) */
 (function () {
   const MES_ABR = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   const INDICES_URL = 'data/indices.json';
 
-  const indiceInput   = document.getElementById('indiceMes');
-  const prevInput     = document.getElementById('indiceMesPrev');
-  const customSelect  = document.getElementById('custom-select');
-  const selectedOption = document.getElementById('selected-option');
-  const optionsContainer = document.getElementById('options-container');
+  const selPeriodo   = document.getElementById('indicePeriodo');
+  const indiceInput  = document.getElementById('indiceMes');            // visible (solo lectura)
+  const prevInput    = document.getElementById('indiceMesPrev');        // oculto (verdad de cálculo)
+
+  if (!selPeriodo || !indiceInput || !prevInput) return;
 
   function labelDeClave(ym) {
     const [y, m] = ym.split('-').map(Number);
@@ -393,8 +389,25 @@
     return `${y}-${String(m).padStart(2,'0')}`;
   }
 
+  let mapa = {};
+
+  function aplicarPeriodo(k) {
+    if (!k) return;
+    const v = Number(mapa[k]);
+    indiceInput.value = toFixed4(v);
+
+    const kp = prevYM(k);
+    const vp = Number(mapa[kp]);
+    // actualizamos el input oculto (la lógica de sync ya copia al clone visible)
+    prevInput.value = toFixed4(vp);
+
+    // Disparar recálculo (la app ya escucha estos eventos)
+    indiceInput.dispatchEvent(new Event('input', { bubbles: true }));
+    prevInput.dispatchEvent(new Event('input', { bubbles: true }));
+    if (typeof update === 'function') { try { update(); } catch {} }
+  }
+
   async function initIndicePeriodo() {
-    let mapa = {};
     try {
       const v = window.__assetVersion ? `?v=${window.__assetVersion}` : '';
       const res = await fetch(INDICES_URL + v, { cache: 'no-store' });
@@ -402,65 +415,41 @@
       mapa = json.indices || json;
     } catch (e) {
       console.warn('No se pudo cargar data/indices.json', e);
+      selPeriodo.innerHTML = '';
+      indiceInput.value = '';
+      prevInput.value = '';
       return;
     }
 
+    // Filtramos (2024 completo y 2025 hasta 08 inclusive)
     const claves = Object.keys(mapa)
       .filter(k => /^\d{4}-\d{2}$/.test(k))
-      .filter(k => {
-        const y = +k.slice(0,4), m = +k.slice(5,7);
-        return (y === 2024) || (y === 2025 && m <= 8);
-      })
+      .filter(k => { const y = +k.slice(0,4), m = +k.slice(5,7); return (y === 2024) || (y === 2025 && m <= 8); })
       .sort()
       .reverse();
 
-    // Construir opciones (DIVs)
-    optionsContainer.innerHTML = '';
+    // Construimos <option> (más reciente primero)
+    selPeriodo.innerHTML = '';
     for (const k of claves) {
-      const optionDiv = document.createElement('div');
-      optionDiv.className = 'option';
-      optionDiv.dataset.value = k;
-      optionDiv.textContent = labelDeClave(k);
-      optionsContainer.appendChild(optionDiv);
+      const opt = document.createElement('option');
+      opt.value = k;
+      opt.textContent = labelDeClave(k);
+      selPeriodo.appendChild(opt);
     }
 
-    function setFromKey(k) {
-      indiceInput.value = toFixed4(mapa[k] ?? '');
-      const kPrev = prevYM(k);
-      if (mapa[kPrev] != null) prevInput.value = toFixed4(mapa[kPrev]);
-      selectedOption.textContent = labelDeClave(k);
-      optionsContainer.style.display = 'none';
-      if (typeof update === 'function') update();
-      else indiceInput.dispatchEvent(new Event('input', { bubbles: true }));
+    // Selección inicial
+    if (claves.length) {
+      selPeriodo.value = claves[0];
+      aplicarPeriodo(selPeriodo.value);
     }
 
-    // Set inicial: el más reciente
-    if (claves.length) setFromKey(claves[0]);
-
-    // Toggle del menú
-    customSelect.addEventListener('click', (ev) => {
-      // Evita que el click burbujee y cierre inmediatamente
-      ev.stopPropagation();
-      const open = optionsContainer.style.display === 'block';
-      optionsContainer.style.display = open ? 'none' : 'block';
-    });
-
-    // Selección de una opción
-    optionsContainer.addEventListener('click', (e) => {
-      const el = e.target.closest('.option');
-      if (!el) return;
-      const value = el.dataset.value;
-      setFromKey(value);
-    });
-
-    // Cerrar al click afuera o al hacer scroll
-    document.addEventListener('click', () => { optionsContainer.style.display = 'none'; });
-    window.addEventListener('scroll', () => { optionsContainer.style.display = 'none'; }, { passive: true });
+    // Cambio de período
+    selPeriodo.addEventListener('change', () => aplicarPeriodo(selPeriodo.value));
   }
 
   if (document.readyState !== 'loading') initIndicePeriodo();
   else document.addEventListener('DOMContentLoaded', initIndicePeriodo);
-})();
+})();;
 
 
 

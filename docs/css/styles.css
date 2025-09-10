@@ -262,3 +262,32 @@ select { padding:6px 10px; border:1px solid #d6d6e7; border-radius:10px; backgro
 .wrap { max-width: 1480px; margin: 0 auto; padding: 0 24px; }
 .grid { grid-template-columns: 300px minmax(520px, 760px) 320px; }
 
+/* ===== Presentación compacta y solo visualización ===== */
+.num-display {
+  width: 10ch;                 /* tamaño compacto aproximado al contenido */
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* quitar flechas en number para que sea realmente solo lectura visual */
+.num-display[readonly]::-webkit-outer-spin-button,
+.num-display[readonly]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.num-display[readonly] {
+  appearance: textfield;
+}
+
+/* Select de período al lado del índice */
+#indicePeriodo {
+  margin-left: 8px;
+  min-width: 110px;
+}
+
+/* Si alguna vez se usa <select size=...> (lista abierta), que sea scrollable */
+#indicePeriodo[size] {
+  height: auto;
+  max-height: 10.5em;
+  overflow-y: auto;
+}
