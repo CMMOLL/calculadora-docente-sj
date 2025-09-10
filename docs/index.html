@@ -927,6 +927,13 @@
 
     const input = document.getElementById('antiguedadAnios');
     if (!input) return;
+    // Atributos mínimos del control (no tocar estructura HTML)
+    try {
+      input.setAttribute('type', 'number');
+      if (!input.hasAttribute('min'))  input.setAttribute('min', '0'); else input.min = '0';
+      if (!input.hasAttribute('max'))  input.setAttribute('max', '40'); else input.max = '40';
+      if (!input.hasAttribute('step')) input.setAttribute('step', '1'); else input.step = '1';
+    } catch (e) { /* noop */ }
 
     // Asegurar tipeo libre con límites razonables (0..40). Ajustar si tu lógica cambia.
     const clamp = n => Math.max(0, Math.min(40, Number(n) || 0));

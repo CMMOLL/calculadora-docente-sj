@@ -412,3 +412,168 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 
 /* (Opcional) Ancho mínimo razonable del select de índice */
 #indicePeriodo { min-width: 120px; }
+/* Antigüedad: look compacto y redondeado (2 dígitos) */
+#antiguedadAnios {
+  /* ancho para 2 dígitos + padding/flechas; si el tema lo estira, forzamos con !important */
+  width: 5.5ch !important;   /* ~2 dígitos cómodos */
+  min-width: 5.5ch !important;
+  max-width: 6ch;
+
+  border-radius: 10px !important;
+  padding: 6px 8px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+
+  /* Por si alguna regla global lo hace block/100% */
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+/* El hover/focus dorado ya existe para inputs; lo reforzamos por si el tema lo pisa */
+#antiguedadAnios:hover,
+#antiguedadAnios:focus {
+  outline: none;
+  border-color: #d4a017 !important;
+  box-shadow: 0 0 0 2px rgba(212,160,23,0.2);
+  cursor: pointer;
+}
+/* Antigüedad: borde fino + ancho 2 dígitos sin que tape el spinner */
+#antiguedadAnios {
+  /* Borde y radio iguales al resto (quitar look “negrita”) */
+  border: 1px solid #d6d6e7 !important;
+  border-radius: 10px !important;
+
+  /* Tipografía y caja */
+  font-weight: 400;                  /* asegurar que no se vea “bold” */
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  text-align: right;
+  box-sizing: border-box;
+  display: inline-block;
+
+  /* Ancho compacto para 2 dígitos + espacio del spinner */
+  /* (las flechitas ocupan ~2em; reservamos padding-right para que no tapen) */
+  width: 8ch !important;             /* 2 dígitos cómodos + padding */
+  min-width: 8ch !important;
+  max-width: 9ch;
+  padding: 6px 2.2em 6px 8px;        /* ← espacio derecho para el spinner */
+}
+
+/* El hover/focus dorado ya existe, lo reforzamos por si hay overrides */
+#antiguedadAnios:hover,
+#antiguedadAnios:focus {
+  outline: none;
+  border-color: #d4a017 !important;
+  box-shadow: 0 0 0 2px rgba(212,160,23,0.2);
+  cursor: pointer;
+}
+/* Antigüedad: que las flechitas no tapen los dígitos */
+#antiguedadAnios {
+  /* mantener borde fino y redondeado (sin “negrita”) */
+  border: 1px solid #d6d6e7 !important;
+  border-radius: 10px !important;
+
+  /* caja y tipografía */
+  box-sizing: border-box;
+  display: inline-block;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  text-align: right;
+
+  /* ancho compacto (2 dígitos) — no lo cambiamos */
+  width: 8ch !important;
+  min-width: 8ch !important;
+  max-width: 9ch;
+
+  /* *** clave: más espacio a la derecha para el spinner *** */
+  /* si aún tapa, subir a 2.9em o 3em */
+  padding: 6px 2.8em 6px 8px;
+}
+
+/* Hover/focus dorado (mantener comportamiento) */
+#antiguedadAnios:hover,
+#antiguedadAnios:focus {
+  outline: none;
+  border-color: #d4a017 !important;
+  box-shadow: 0 0 0 2px rgba(212,160,23,0.2);
+  cursor: pointer;
+}
+/* — Antigüedad (años): dos dígitos visibles + spinner sin superposición — */
+#antiguedadAnios {
+  /* ancho = 2ch de texto + espacio reservado para el spinner */
+  width: calc(2ch + 2.6em);
+  min-width: calc(2ch + 2.6em);
+
+  /* espacio interno: reservamos a la derecha para el spinner */
+  padding: 4px 2.1em 4px .45em;
+
+  /* look consistente con el resto */
+  border: 1px solid #d6d6e7;
+  border-radius: 10px;
+  box-sizing: content-box;
+
+  /* legibilidad de números y alineación */
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+/* Hover/focus dorado (igual al resto) */
+#antiguedadAnios:hover,
+#antiguedadAnios:focus {
+  outline: none;
+  border-color: #d4a017 !important;
+  box-shadow: 0 0 0 2px rgba(212,160,23,.2);
+  cursor: pointer;
+}
+
+/* WebKit: evitamos que el spinner “invada” el área de texto */
+#antiguedadAnios::-webkit-outer-spin-button,
+#antiguedadAnios::-webkit-inner-spin-button {
+  margin-left: .2em;   /* empujón leve a la derecha */
+}
+
+/* (Opcional) Windows/Chrome tiende a engordar el borde en focus:
+   normalizamos el grosor para que no se vea “negrita” */
+#antiguedadAnios:focus {
+  border-width: 1px;
+}
+/* Antigüedad: ancho compacto (2 dígitos), sin superposición del spinner */
+#antiguedadAnios {
+  /* Borde/look unificado (fino, redondeado) */
+  border: 1px solid #d6d6e7 !important;
+  border-radius: 10px !important;
+
+  /* Caja y tipografía */
+  box-sizing: content-box;           /* conserva espacio real del contenido */
+  display: inline-block;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+  line-height: 1.2;
+
+  /* Ancho justo: 2 dígitos + espacio reservado para el spinner */
+  /* (más compacto que antes, sin cortar los números) */
+  width: 6.4ch !important;
+  min-width: 6.4ch !important;
+  max-width: 6.8ch;
+
+  /* Reservar lugar para el spinner a la derecha (sin tapar los dígitos) */
+  padding: 6px 2.1em 6px 8px;        /* ↑ si aún roza, subir a 2.2em */
+}
+
+/* Hover/focus dorado (mantener comportamiento) */
+#antiguedadAnios:hover,
+#antiguedadAnios:focus {
+  outline: none;
+  border-color: #d4a017 !important;
+  box-shadow: 0 0 0 2px rgba(212,160,23,0.2);
+  cursor: pointer;
+}
+
+/* WebKit: empuje sutil del spinner (si el navegador lo respeta) */
+#antiguedadAnios::-webkit-inner-spin-button,
+#antiguedadAnios::-webkit-outer-spin-button {
+  margin-left: .15em; /* opcional; algunos motores lo ignoran y no afecta */
+}
