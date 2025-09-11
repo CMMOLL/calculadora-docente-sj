@@ -169,7 +169,7 @@
           <div class="row"
             style="display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin:8px 0 4px 0;"><label
               class="muted">Antigüedad (años)
-              <input id="antiguedadAnios" min="0" step="1" style="width:8ch; margin-left:6px;" type="number"
+              <input id="antiguedadAnios" min="0" step="1" type="number"
                 value="0" /> <span class="pill" id="antiguedadPct" style="margin-left:8px;">0%</span>
               <label class="muted">Radio
                 <select id="radioDocente" style="margin-left:6px;">
@@ -944,6 +944,20 @@
       if (typeof update === 'function') { try { update(); } catch {} }
     });
   })();
+  const input = document.getElementById('antiguedadAnios');
+
+const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
+const digitCount = v => String(Math.trunc(Math.abs(Number(v)) || 0)).length;
+
+function ajustarAncho() {
+  const needed = clamp(digitCount(input.value) + 1, 4, 10);
+  input.style.width = `${needed}ch`;
+}
+
+ajustarAncho();
+input.addEventListener('input', ajustarAncho);
+input.addEventListener('change', ajustarAncho);
+
   </script>
 
 </body>
