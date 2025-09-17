@@ -403,10 +403,9 @@
   let latest = null;
 
   function aplicarPeriodo(k) {
-    if (!k || !mapa[k]) return;
+    if (!k || !mapa[k]) return Promise.resolve(false);
     const v = Number(mapa[k]);
     indiceInput.value = toFixed4(v);
-
     // Excepción: si el mes calendario no existe y estamos en el último disponible,
     // "Índice mes anterior" = mismo valor
     const hasCurrent = mapa[curYM] != null;
@@ -418,11 +417,21 @@
       prevValue = Number(mapa[kp]);
     }
     prevCalc.value = toFixed4(prevValue);
+    const prevClone = document.getElementById('indiceMesPrev_clone');
+    if (prevClone) prevClone.value = toFixed4(prevValue);
 
-    // Recalcular
-    indiceInput.dispatchEvent(new Event('input', { bubbles:true }));
-    prevCalc.dispatchEvent(new Event('input', { bubbles:true }));
-    if (typeof update === 'function') { try { update(); } catch {} }
+    const runRecalc = () => {
+      indiceInput.dispatchEvent(new Event('input', { bubbles:true }));
+      prevCalc.dispatchEvent(new Event('input', { bubbles:true }));
+      if (typeof update === 'function') { try { update(); } catch {} }
+    };
+
+    const ensure = window.CODIGOS?.E66?.ensureLoaded(k);
+    if (ensure && typeof ensure.then === 'function') {
+      return ensure.then(() => { runRecalc(); return true; });
+    }
+    runRecalc();
+    return Promise.resolve(true);
   }
 
   async function init() {
@@ -456,12 +465,27 @@
     // Selección inicial: último disponible
     if (latest) {
       selPeriodo.value = latest;
-      aplicarPeriodo(selPeriodo.value);
+      const resInit = aplicarPeriodo(selPeriodo.value);
+      if (resInit && typeof resInit.then === 'function') {
+        resInit.catch(() => {});
+      } else {
+        window.CODIGOS?.E66?.ensureLoaded(selPeriodo.value).then(() => {
+          if (typeof update === 'function') { try { update(); } catch {} }
+        });
+      }
     }
 
     // Cambio de período
     selPeriodo.addEventListener('change', () => {
-      aplicarPeriodo(selPeriodo.value);
+      const clave = selPeriodo.value;
+      const res = aplicarPeriodo(clave);
+      if (res && typeof res.then === 'function') {
+        res.catch(() => {});
+        return;
+      }
+      window.CODIGOS?.E66?.ensureLoaded(clave).then(() => {
+        if (typeof update === 'function') { try { update(); } catch {} }
+      });
     });
 
   }
