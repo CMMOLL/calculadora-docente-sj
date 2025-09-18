@@ -36,6 +36,49 @@
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
   }
 
+  function pctE60(antigAnios){
+    const a = Math.max(0, Math.floor(Number(antigAnios || 0)));
+    if (a === 0) return 0.00;
+    if (a === 1) return 0.10;
+    if (a <= 4) return 0.15;
+    if (a <= 6) return 0.30;
+    if (a <= 9) return 0.40;
+    if (a <= 11) return 0.50;
+    if (a <= 14) return 0.60;
+    if (a <= 16) return 0.70;
+    if (a <= 19) return 0.80;
+    if (a <= 21) return 1.00;
+    if (a <= 23) return 1.10;
+    if (a === 24) return 1.20;
+    if (a <= 27) return 1.30;
+    if (a <= 29) return 1.40;
+    if (a <= 31) return 1.50;
+    if (a <= 33) return 1.60;
+    return 1.70;
+  }
+
+  function calcE60Mensual(indice, antigAnios){
+    const base0 = Math.round(Number(indice || 0) * 39 * 100) / 100;
+    const factor = 1 + pctE60(antigAnios);
+    return base0 * factor;
+  }
+
+  function calcE60Prorrateado(indice, dias, antigAnios){
+    const imp30 = calcE60Mensual(indice, antigAnios);
+    return Math.round((imp30 / 30 * Number(dias || 0)) * 100) / 100;
+  }
+
+  window.CODIGOS.E60 = {
+    id: "E60",
+    soloTipo: "CARGO",
+    getImporteBase({ dias = 30, antigAnios = 0, indiceActual }){
+      return calcE60Prorrateado(indiceActual, dias, antigAnios);
+    },
+    getImporteComplemento({ dias = 0, antigAnios = 0, indiceAnterior }){
+      return calcE60Prorrateado(indiceAnterior, dias, antigAnios);
+    }
+  };
+
   window.CODIGOS.E66 = {
     _cache: new Map(),   // key: "YYYY-MM" -> { vigente, previa }
     _lastKey: null,
@@ -87,3 +130,4 @@
     }
   };
 })();
+

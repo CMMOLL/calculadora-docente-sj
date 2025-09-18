@@ -289,6 +289,11 @@
                     <td>$</td>
                     <td id="a04Exc">0,00</td>
                   </tr>
+                  <tr id="rowF60" style="display:none;">
+                    <td title="Complemento del código E60 (mes anterior)"><b>F60</b></td>
+                    <td>$</td>
+                    <td id="f60Importe">0,00</td>
+                  </tr>
                   <tr id="rowF66" style="display:none;">
                     <td title="Complemento del código E66 (mes anterior)"><b>F66</b></td>
                     <td>$</td>
@@ -688,7 +693,7 @@
       const a01 = (sueldoBasico / 30) * diasBase;
       const a03 = (sueldoBasico * (antiguedadPts / 100)) / 30 * diasBase;
       const a04 = (sueldoBasico * (radioPorcentaje / 100)) / 30 * diasBase;
-      const totalParcial = a01 + a03 + a04;
+      let totalParcial = a01 + a03 + a04;
 
       const sueldoBasicoExc = isHoras(cargo) ? (horas * 15 * indicePrev) : (puntos * indicePrev);
       const a01Exc = (sueldoBasicoExc / 30) * diasExc;
@@ -698,20 +703,21 @@
       liqDato.a01.textContent = fmtAR(a01);
       liqDato.a03.textContent = fmtAR(a03);
       liqDato.a04.textContent = fmtAR(a04);
-      liqDato.totalParcial.textContent = fmtAR(totalParcial);
       liqDato.a01Exc.textContent = fmtAR(a01Exc);
       liqDato.a03Exc.textContent = fmtAR(a03Exc);
       liqDato.a04Exc.textContent = fmtAR(a04Exc);
 
+      let e66Base = 0, e66Exc = 0;
+      let e60Base = 0, e60Exc = 0;
+
       /* === E66 base (30 días) + F66 complemento (excedentes con mes anterior) === */
       (function calcE66() {
         const chk      = document.getElementById('optE66');
-        const outBase  = document.getElementById('e66Importe');   // columna izquierda
-        const rowF66   = document.getElementById('rowF66');       // fila nuevo complemento
-        const outComp  = document.getElementById('f66Importe');   // columna derecha (F66)
+        const outBase  = document.getElementById('e66Importe');
+        const rowF66   = document.getElementById('rowF66');
+        const outComp  = document.getElementById('f66Importe');
         if (!chk || !outBase) return;
 
-        // Detectar tipo y parámetros
         const cargoTxt   = (document.getElementById('cargoPrimario')?.value
                          || document.getElementById('cargoSecundario')?.value
                          || document.getElementById('cargoSuperior')?.value || '');
@@ -723,39 +729,75 @@
                                               || '1') || 1) : 1;
         const antigAnios = parseFloat(document.getElementById('antiguedadAnios')?.value || '0') || 0;
 
-        // ✅ Usar las variables NUMÉRICAS ya calculadas en esta función
-        const diasBaseCalc = diasBase;  // 0..30
-        const diasExcCalc  = diasExc;   // >=0
+        const diasBaseCalc = Number(diasBase) || 0;
+        const diasExcCalc  = Number(diasExc) || 0;
 
-        let e66Base = 0, e66Exc = 0;
-        if (chk.checked && window.CODIGOS?.E66) {
+        const sumarE66 = chk.checked && window.CODIGOS?.E66;
+        if (sumarE66) {
           const E66 = window.CODIGOS.E66;
-          // BASE = mes vigente (E66.json)
           e66Base = E66.getImporte({ tipo, horas, dias: diasBaseCalc, antigAnios }) || 0;
-          // COMPLEMENTO = SIEMPRE mes anterior (E66_prev.json), si existe
           e66Exc  = (typeof E66.getImportePrev === 'function')
             ? (E66.getImportePrev({ tipo, horas, dias: diasExcCalc, antigAnios }) || 0)
             : 0;
+        } else {
+          e66Base = 0;
+          e66Exc = 0;
         }
 
-        // Pintar importes
-        outBase.textContent = e66Base.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        if (outComp) outComp.textContent = e66Exc.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        outBase.textContent = (e66Base || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        if (outComp) outComp.textContent = (e66Exc || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-        // Mostrar/ocultar filas
-        if (rowF66) rowF66.style.display = (chk.checked && e66Exc > 0) ? '' : 'none';
+        if (rowF66) rowF66.style.display = (sumarE66 && e66Exc > 0) ? 'table-row' : 'none';
 
-        // Sumar SOLO la base al Total Parcial (columna izquierda)
-        const SUMA_E66_AL_TOTAL = true;
-        if (SUMA_E66_AL_TOTAL) {
-          const el = document.getElementById('totalParcial');
-          if (el) {
-            const num = (el.textContent || '0').replace(/\./g,'').replace(',', '.');
-            const nuevo = (parseFloat(num) || 0) + e66Base; // 👈 solo el base
-            el.textContent = nuevo.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          }
+        if (sumarE66) {
+          totalParcial += Number(e66Base || 0);
         }
       })();
+
+      /* === E60 base (30 días) + F60 complemento (índice mes anterior) === */
+      (function calcE60() {
+        const chk = document.getElementById('optE60');
+        const outBase = document.getElementById('e60Importe');
+        const outComp = document.getElementById('f60Importe');
+        const rowE60 = document.getElementById('rowE60');
+        const rowF60 = document.getElementById('rowF60');
+        if (!chk || !outBase) return;
+
+        const esCargo = !isHoras(cargo);
+        const diasBaseCalc = Number(diasBase) || 0;
+        const diasExcCalc  = Number(diasExc) || 0;
+
+        const usarE60 = chk.checked && esCargo && window.CODIGOS?.E60;
+
+        if (usarE60) {
+          e60Base = window.CODIGOS.E60.getImporteBase({
+            dias: diasBaseCalc,
+            antigAnios: antiguedadAnios,
+            indiceActual: indice
+          }) || 0;
+
+          e60Exc = window.CODIGOS.E60.getImporteComplemento({
+            dias: diasExcCalc,
+            antigAnios: antiguedadAnios,
+            indiceAnterior: indicePrev
+          }) || 0;
+        } else {
+          e60Base = 0;
+          e60Exc = 0;
+        }
+
+        outBase.textContent = (e60Base || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        if (outComp) outComp.textContent = (e60Exc || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        if (rowE60) rowE60.style.display = (chk.checked && esCargo) ? 'table-row' : 'none';
+        if (rowF60) rowF60.style.display = (usarE60 && diasExcCalc > 0) ? 'table-row' : 'none';
+
+        if (usarE60) {
+          totalParcial += Number(e60Base || 0);
+        }
+      })();
+
+      liqDato.totalParcial.textContent = fmtAR(totalParcial);
     }
     function update() {
       const start = parseDate(inputInicio.value);
