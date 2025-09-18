@@ -1,0 +1,13 @@
+{
+  "mes": "2024-08",
+  "descripcion": "E66 - Importes por 30 días (CARGOS) y por 1 hora cátedra en 30 días (HCNM/HCNS)",
+  "tramos": [
+    { "desde": 0,  "hasta": 0,  "importes": { "CARGOS": 36826.00, "HCNM": 2046.00, "HCNS": 2455.00 } },
+    { "desde": 1,  "hasta": 4,  "importes": { "CARGOS": 42964.00, "HCNM": 2387.00, "HCNS": 2864.00 } },
+    { "desde": 5,  "hasta": 9,  "importes": { "CARGOS": 61377.00, "HCNM": 3410.00, "HCNS": 4092.00 } },
+    { "desde": 10, "hasta": 16, "importes": { "CARGOS": 67515.00, "HCNM": 3751.00, "HCNS": 4501.00 } },
+    { "desde": 17, "hasta": 24, "importes": { "CARGOS": 70584.00, "HCNM": 3921.00, "HCNS": 4706.00 } },
+    { "desde": 25, "hasta": 29, "importes": { "CARGOS": 73655.00, "HCNM": 4092.00, "HCNS": 4910.00 } },
+    { "desde": 30, "hasta": 99, "importes": { "CARGOS": 79790.00, "HCNM": 4433.00, "HCNS": 5319.00 } }
+  ]
+}
