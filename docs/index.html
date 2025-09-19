@@ -39,6 +39,7 @@
 </script>
 
 <script src="js/codigos.js"></script>
+<script src='js/codigos/e66.js'></script>
 
 <body>
   <div class="card">
@@ -710,47 +711,72 @@
       let e66Base = 0, e66Exc = 0;
       let e60Base = 0, e60Exc = 0;
 
-      /* === E66 base (30 días) + F66 complemento (excedentes con mes anterior) === */
-      (function calcE66() {
-        const chk      = document.getElementById('optE66');
-        const outBase  = document.getElementById('e66Importe');
-        const rowF66   = document.getElementById('rowF66');
-        const outComp  = document.getElementById('f66Importe');
-        if (!chk || !outBase) return;
+      /* === E66 (30d escalado por índice) + F66 (excedente mes anterior) === */
+      (async function calcE66(){
+        const chk = document.getElementById('optE66');
+        const rowE = document.getElementById('rowE66');
+        const rowF = document.getElementById('rowF66');
+        const outE = document.getElementById('e66Importe');
+        const outF = document.getElementById('f66Importe');
 
-        const cargoTxt   = (document.getElementById('cargoPrimario')?.value
+        const usar = chk?.checked === true;
+        const ymSel = document.getElementById('indicePeriodo')?.value
+                   || document.getElementById('indiceMes')?.value
+                   || '';
+
+        let tipo = 'CARGOS';
+        let horas = 1;
+        if (typeof getTipoCargo === 'function') {
+          tipo = getTipoCargo() || 'CARGOS';
+        } else {
+          const cargoTxt = (document.getElementById('cargoPrimario')?.value
                          || document.getElementById('cargoSecundario')?.value
                          || document.getElementById('cargoSuperior')?.value || '');
-        const esHoras    = /^Horas C[aá]tedra/i.test(cargoTxt);
-        const nivel      = document.getElementById('nivel')?.value || '';
-        const tipo       = esHoras ? (nivel === 'Nivel Superior' ? 'HCNS' : 'HCNM') : 'CARGOS';
-        const horas      = esHoras ? (parseFloat(document.getElementById('horasSec')?.value
-                                              || document.getElementById('horasSup')?.value
-                                              || '1') || 1) : 1;
-        const antigAnios = parseFloat(document.getElementById('antiguedadAnios')?.value || '0') || 0;
-
-        const diasBaseCalc = Number(diasBase) || 0;
-        const diasExcCalc  = Number(diasExc) || 0;
-
-        const sumarE66 = chk.checked && window.CODIGOS?.E66;
-        if (sumarE66) {
-          const E66 = window.CODIGOS.E66;
-          e66Base = E66.getImporte({ tipo, horas, dias: diasBaseCalc, antigAnios }) || 0;
-          e66Exc  = (typeof E66.getImportePrev === 'function')
-            ? (E66.getImportePrev({ tipo, horas, dias: diasExcCalc, antigAnios }) || 0)
-            : 0;
-        } else {
-          e66Base = 0;
-          e66Exc = 0;
+          const esHoras = /^Horas C[aá]tedra/i.test(cargoTxt);
+          const nivelSel = document.getElementById('nivel')?.value || '';
+          tipo = esHoras ? (nivelSel === 'Nivel Superior' ? 'HCNS' : 'HCNM') : 'CARGOS';
         }
 
-        outBase.textContent = (e66Base || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        if (outComp) outComp.textContent = (e66Exc || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        if (tipo === 'HCNM' || tipo === 'HCNS') {
+          const horasSec = Number(document.getElementById('horasSec')?.value || 0);
+          const horasSup = Number(document.getElementById('horasSup')?.value || 0);
+          horas = horasSup > 0 ? horasSup : (horasSec > 0 ? horasSec : 1);
+        }
 
-        if (rowF66) rowF66.style.display = (sumarE66 && e66Exc > 0) ? 'table-row' : 'none';
+        const antigAnios = Number(document.getElementById('antiguedadAnios')?.value || 0);
 
-        if (sumarE66) {
-          totalParcial += Number(e66Base || 0);
+        if (rowE) rowE.style.display = usar ? 'table-row' : 'none';
+        if (rowF) rowF.style.display = 'none';
+
+        const resetOutputs = () => {
+          if (outE) outE.textContent = '0,00';
+          if (outF) outF.textContent = '0,00';
+        };
+
+        if (!usar || !ymSel || !window.CODIGOS?.E66) {
+          resetOutputs();
+          return;
+        }
+
+        try {
+          const base = await window.CODIGOS.E66.getImporte({
+            ym: ymSel, tipo, horas, dias: Number(diasBase || 0), antigAnios
+          });
+          const exc = await window.CODIGOS.E66.getImportePrev({
+            ym: ymSel, tipo, horas, dias: Number(diasExc || 0), antigAnios
+          });
+
+          if (outE) outE.textContent = (base || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          if (outF) outF.textContent = (exc || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          if (rowF && Number(diasExc || 0) > 0) rowF.style.display = 'table-row';
+
+          if (typeof totalParcial === 'number') {
+            totalParcial += Number(base || 0);
+            liqDato.totalParcial.textContent = fmtAR(totalParcial);
+          }
+        } catch (err) {
+          console.warn('E66 calc error:', err);
+          resetOutputs();
         }
       })();
 
@@ -1096,82 +1122,10 @@ input.addEventListener('change', ajustarAncho);
 
   </script>
 
-  <script>
-(function(){
-  // Idempotente
-  window.CODIGOS = window.CODIGOS || {};
-  if (window.CODIGOS.E66 && window.CODIGOS.E66.getE66MensualForMonth) return;
-
-  let __E66_BASE = null;
-
-  async function loadE66Base(){
-    if (__E66_BASE) return __E66_BASE;
-    const v = window.__assetVersion ? `?v=${window.__assetVersion}` : '';
-    const res = await fetch('data/codigos/E66.base.json' + v, { cache: 'no-store' });
-    __E66_BASE = await res.json();
-    return __E66_BASE;
-  }
-
-  // Busca el tramo por antigüedad (inclusive)
-  function findTramo(base, antigAnios){
-    const a = Math.max(0, Math.floor(Number(antigAnios||0)));
-    const arr = Array.isArray(base?.tramos) ? base.tramos : [];
-    return arr.find(t =>
-      a >= Number(t?.desde ?? -9999) && a <= Number(t?.hasta ??  9999)
-    ) || null;
-  }
-
-  function getIndice(m){
-    return (typeof window.getIndiceByMonth === 'function')
-      ? Number(window.getIndiceByMonth(m) || 0)
-      : 0;
-  }
-
-  // Devuelve el importe mensual (30d) de E66 para un mes dado, escalando contra ENE-2024
-  async function getE66MensualForMonth(ctx){
-    // ctx: { month:'YYYY-MM', tipo:'CARGOS'|'HCNM'|'HCNS', antigAnios:number }
-    const base = await loadE66Base();
-    const tramo = findTramo(base, ctx.antigAnios);
-    if (!tramo || !tramo.importes) return 0;
-
-    const key = String(ctx.tipo || 'CARGOS').toUpperCase(); // 'CARGOS'|'HCNM'|'HCNS'
-    const mensualBase = Number(tramo.importes[key] || 0);
-    const idxBase = getIndice(base.mes || base.baselineMonth || '2024-01');
-    const idxMes  = getIndice(ctx.month);
-
-    if (!mensualBase || !idxBase || !idxMes) return 0;
-    // Escalamiento proporcional: E66(m) = E66(ene-2024, tramo) * (Idx(m)/Idx(ene-2024))
-    return Math.round((mensualBase * (idxMes / idxBase)) * 100) / 100;
-  }
-
-  // Calcula E66 (30 días del mes actual) y F66 (excedente con mes anterior)
-  async function calcE66_F66(ctx){
-    // ctx: { monthActual, monthPrev, diasBase, diasExc, tipo, antigAnios }
-    const mensualPrev = await getE66MensualForMonth({
-      month: ctx.monthPrev, tipo: ctx.tipo, antigAnios: ctx.antigAnios
-    });
-    const mensualAct  = await getE66MensualForMonth({
-      month: ctx.monthActual, tipo: ctx.tipo, antigAnios: ctx.antigAnios
-    });
-
-    const e66Base = Math.round(((mensualAct  / 30) * Number(ctx.diasBase||0)) * 100) / 100;
-    const f66Exc  = Math.round(((mensualPrev / 30) * Number(ctx.diasExc ||0)) * 100) / 100;
-
-    return { e66Base, f66Exc };
-  }
-
-  window.CODIGOS.E66 = { loadE66Base, getE66MensualForMonth, calcE66_F66 };
-
-  // Por si faltara el listener del checkbox
-  try {
-    const el = document.getElementById('optE66');
-    if (el && !el.__hookedE66) {
-      el.addEventListener('change', () => (typeof update==='function') && update());
-      el.__hookedE66 = true;
-    }
-  } catch {}
-})();
-  </script>
-</body>
+  </body>
 
 </html>
+
+
+
+
