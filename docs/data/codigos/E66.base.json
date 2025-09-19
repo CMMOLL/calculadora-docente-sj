@@ -1,0 +1,13 @@
+{
+  "baselineMonth": "2024-01",
+  "CARGOS": [
+    { "clave": "default", "mensual": 0 }
+  ],
+  "HCNM": [
+    { "clave": "default", "mensual": 0 }
+  ],
+  "HCNS": [
+    { "clave": "default", "mensual": 0 }
+  ],
+  "overrides": []
+}
