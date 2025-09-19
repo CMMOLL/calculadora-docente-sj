@@ -1096,7 +1096,82 @@ input.addEventListener('change', ajustarAncho);
 
   </script>
 
+  <script>
+(function(){
+  // Idempotente
+  window.CODIGOS = window.CODIGOS || {};
+  if (window.CODIGOS.E66 && window.CODIGOS.E66.getE66MensualForMonth) return;
+
+  let __E66_BASE = null;
+
+  async function loadE66Base(){
+    if (__E66_BASE) return __E66_BASE;
+    const v = window.__assetVersion ? `?v=${window.__assetVersion}` : '';
+    const res = await fetch('data/codigos/E66.base.json' + v, { cache: 'no-store' });
+    __E66_BASE = await res.json();
+    return __E66_BASE;
+  }
+
+  // Busca el tramo por antigüedad (inclusive)
+  function findTramo(base, antigAnios){
+    const a = Math.max(0, Math.floor(Number(antigAnios||0)));
+    const arr = Array.isArray(base?.tramos) ? base.tramos : [];
+    return arr.find(t =>
+      a >= Number(t?.desde ?? -9999) && a <= Number(t?.hasta ??  9999)
+    ) || null;
+  }
+
+  function getIndice(m){
+    return (typeof window.getIndiceByMonth === 'function')
+      ? Number(window.getIndiceByMonth(m) || 0)
+      : 0;
+  }
+
+  // Devuelve el importe mensual (30d) de E66 para un mes dado, escalando contra ENE-2024
+  async function getE66MensualForMonth(ctx){
+    // ctx: { month:'YYYY-MM', tipo:'CARGOS'|'HCNM'|'HCNS', antigAnios:number }
+    const base = await loadE66Base();
+    const tramo = findTramo(base, ctx.antigAnios);
+    if (!tramo || !tramo.importes) return 0;
+
+    const key = String(ctx.tipo || 'CARGOS').toUpperCase(); // 'CARGOS'|'HCNM'|'HCNS'
+    const mensualBase = Number(tramo.importes[key] || 0);
+    const idxBase = getIndice(base.mes || base.baselineMonth || '2024-01');
+    const idxMes  = getIndice(ctx.month);
+
+    if (!mensualBase || !idxBase || !idxMes) return 0;
+    // Escalamiento proporcional: E66(m) = E66(ene-2024, tramo) * (Idx(m)/Idx(ene-2024))
+    return Math.round((mensualBase * (idxMes / idxBase)) * 100) / 100;
+  }
+
+  // Calcula E66 (30 días del mes actual) y F66 (excedente con mes anterior)
+  async function calcE66_F66(ctx){
+    // ctx: { monthActual, monthPrev, diasBase, diasExc, tipo, antigAnios }
+    const mensualPrev = await getE66MensualForMonth({
+      month: ctx.monthPrev, tipo: ctx.tipo, antigAnios: ctx.antigAnios
+    });
+    const mensualAct  = await getE66MensualForMonth({
+      month: ctx.monthActual, tipo: ctx.tipo, antigAnios: ctx.antigAnios
+    });
+
+    const e66Base = Math.round(((mensualAct  / 30) * Number(ctx.diasBase||0)) * 100) / 100;
+    const f66Exc  = Math.round(((mensualPrev / 30) * Number(ctx.diasExc ||0)) * 100) / 100;
+
+    return { e66Base, f66Exc };
+  }
+
+  window.CODIGOS.E66 = { loadE66Base, getE66MensualForMonth, calcE66_F66 };
+
+  // Por si faltara el listener del checkbox
+  try {
+    const el = document.getElementById('optE66');
+    if (el && !el.__hookedE66) {
+      el.addEventListener('change', () => (typeof update==='function') && update());
+      el.__hookedE66 = true;
+    }
+  } catch {}
+})();
+  </script>
 </body>
 
 </html>
-
