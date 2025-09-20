@@ -24,15 +24,28 @@
     return 1.70;
   }
 
+  function normalizarIndiceCargos(indice){
+    if (indice && typeof indice === 'object'){
+      const val = indice.cargos ?? indice.CARGOS ?? indice.base ?? indice.valor ?? indice.value;
+      if (val != null) return Number(val) || 0;
+    }
+    return Number(indice || 0);
+  }
+
   function calcE60Mensual(indice, antigAnios){
-    const base0 = Math.round(Number(indice || 0) * 39 * 100) / 100;
+    const indiceCargos = normalizarIndiceCargos(indice);
+    if (!indiceCargos) return 0;
+    const base = indiceCargos * 39;
     const factor = 1 + pctE60(antigAnios);
-    return base0 * factor;
+    const total = base * factor;
+    return Math.round(total * 100) / 100;
   }
 
   function calcE60Prorrateado(indice, dias, antigAnios){
-    const imp30 = calcE60Mensual(indice, antigAnios);
-    return Math.round((imp30 / 30 * Number(dias || 0)) * 100) / 100;
+    const importeMensual = calcE60Mensual(indice, antigAnios);
+    const diasCalc = Number(dias || 0);
+    if (!importeMensual || !diasCalc) return 0;
+    return Math.round(((importeMensual / 30) * diasCalc) * 100) / 100;
   }
 
   window.CODIGOS.E60 = {
@@ -131,3 +144,4 @@
     if (el && !el.__hookedE66) { el.addEventListener('change', () => (typeof update==='function') && update()); el.__hookedE66 = true; }
   } catch {}
 })();
+

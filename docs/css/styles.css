@@ -493,3 +493,5 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 }
 
 
+
+.celda-complemento { display:inline-flex; align-items:center; gap:6px; margin-left:12px; white-space:nowrap; }

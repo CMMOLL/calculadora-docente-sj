@@ -243,15 +243,15 @@
                     <td>$</td>
                     <td id="e29Importe">0,00</td>
                   </tr>
-                  <tr id="rowE66" style="display:none;">
+                  <tr id="rowE66" data-codigo="E66" style="display:none;">
                     <td title="Suma Remunerativa y bonificable por antigüedad"><b>E66</b></td>
                     <td>$</td>
-                    <td id="e66Importe">0,00</td>
+                    <td><span id="e66Importe">0,00</span></td>
                   </tr>
-                  <tr id="rowE60" style="display:none;">
+                  <tr id="rowE60" data-codigo="E60" style="display:none;">
                     <td title="Suma Remunerativa y bonificable por antigüedad (solo cargos)"><b>E60</b></td>
                     <td>$</td>
-                    <td id="e60Importe">0,00</td>
+                    <td><span id="e60Importe">0,00</span></td>
                   </tr>
                 </tbody>
                 <tfoot>
@@ -286,19 +286,20 @@
                     <td id="a03Exc">0,00</td>
                   </tr>
                   <tr>
+                  <tr>
                     <td><b>A04</b> Radio</td>
                     <td>$</td>
                     <td id="a04Exc">0,00</td>
-                  </tr>
-                  <tr id="rowF60" style="display:none;">
-                    <td title="Complemento del código E60 (mes anterior)"><b>F60</b></td>
-                    <td>$</td>
-                    <td id="f60Importe">0,00</td>
                   </tr>
                   <tr id="rowF66" style="display:none;">
                     <td title="Complemento del código E66 (mes anterior)"><b>F66</b></td>
                     <td>$</td>
                     <td id="f66Importe">0,00</td>
+                  </tr>
+                  <tr id="rowF60" style="display:none;">
+                    <td title="Complemento del código E60 (mes anterior)"><b>F60</b></td>
+                    <td>$</td>
+                    <td id="f60Importe">0,00</td>
                   </tr>
                 </tbody>
               </table>
@@ -712,12 +713,21 @@
       let e60Base = 0, e60Exc = 0;
 
       /* === E66 (30d escalado por índice) + F66 (excedente mes anterior) === */
+      function updateComplementoRow(code, visible, valor) {
+        const row = document.getElementById('row' + code);
+        const cellId = code === 'F66' ? 'f66Importe' : 'f60Importe';
+        const cell = document.getElementById(cellId);
+        if (row) row.style.display = visible ? 'table-row' : 'none';
+        if (cell) {
+          const value = visible ? Number(valor || 0) : 0;
+          cell.textContent = fmtAR(value);
+        }
+      }
+
       (async function calcE66(){
         const chk = document.getElementById('optE66');
         const rowE = document.getElementById('rowE66');
-        const rowF = document.getElementById('rowF66');
         const outE = document.getElementById('e66Importe');
-        const outF = document.getElementById('f66Importe');
 
         const usar = chk?.checked === true;
         const ymSel = document.getElementById('indicePeriodo')?.value
@@ -746,11 +756,10 @@
         const antigAnios = Number(document.getElementById('antiguedadAnios')?.value || 0);
 
         if (rowE) rowE.style.display = usar ? 'table-row' : 'none';
-        if (rowF) rowF.style.display = 'none';
 
         const resetOutputs = () => {
           if (outE) outE.textContent = '0,00';
-          if (outF) outF.textContent = '0,00';
+          updateComplementoRow('F66', false);
         };
 
         if (!usar || !ymSel || !window.CODIGOS?.E66) {
@@ -767,8 +776,8 @@
           });
 
           if (outE) outE.textContent = (base || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          if (outF) outF.textContent = (exc || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          if (rowF && Number(diasExc || 0) > 0) rowF.style.display = 'table-row';
+          // Solo Complemento para F66:
+          updateComplementoRow('F66', usar && (Number(diasExc || 0) > 0), exc);
 
           if (typeof totalParcial === 'number') {
             totalParcial += Number(base || 0);
@@ -784,9 +793,7 @@
       (function calcE60() {
         const chk = document.getElementById('optE60');
         const outBase = document.getElementById('e60Importe');
-        const outComp = document.getElementById('f60Importe');
         const rowE60 = document.getElementById('rowE60');
-        const rowF60 = document.getElementById('rowF60');
         if (!chk || !outBase) return;
 
         const esCargo = !isHoras(cargo);
@@ -812,11 +819,11 @@
           e60Exc = 0;
         }
 
-        outBase.textContent = (e60Base || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        if (outComp) outComp.textContent = (e60Exc || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        if (outBase) outBase.textContent = (e60Base || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
         if (rowE60) rowE60.style.display = (chk.checked && esCargo) ? 'table-row' : 'none';
-        if (rowF60) rowF60.style.display = (usarE60 && diasExcCalc > 0) ? 'table-row' : 'none';
+        // Solo Complemento para F60:
+        updateComplementoRow('F60', usarE60 && (Number(diasExc) > 0), e60Exc);
 
         if (usarE60) {
           totalParcial += Number(e60Base || 0);
@@ -1125,6 +1132,7 @@ input.addEventListener('change', ajustarAncho);
   </body>
 
 </html>
+
 
 
 
