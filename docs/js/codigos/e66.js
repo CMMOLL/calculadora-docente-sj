@@ -1,69 +1,85 @@
-// docs/js/codigos/e66.js
+// js/codigos/e66.js
 (function () {
-  window.CODIGOS = window.CODIGOS || {};
-  if (window.CODIGOS.E66?.getImporte && window.CODIGOS.E66?.getImportePrev) return;
+  const MOD = {};
+  const INDICES_URL = 'data/indices.json';
+  const BASE_URL    = 'data/codigos/E66.base.json'; // Ene-2024
 
-  const BASE_PATH = 'data/codigos/E66.base.json'; // archivo ÚNICO
-  let __BASE = null;
+  // Cache
+  let indicesMap = null;      // { "YYYY-MM": number }
+  let baseData   = null;      // { mes/baselineMonth, tramos:[{desde,hasta,importes:{...}}] }
+  let baseYM     = '2024-01'; // mes base
+  let baseIndex  = null;      // índice(2024-01)
 
-  function idx(ym){
-    return (typeof window.getIndiceByMonth === 'function')
-      ? Number(window.getIndiceByMonth(ym) || 0) : 0;
-  }
-  function prevYM(ym){
-    if (!/^\d{4}-\d{2}$/.test(String(ym||''))) return '';
-    const [y,m] = ym.split('-').map(Number);
-    const d = new Date(y, m-1, 1); d.setMonth(d.getMonth()-1);
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-  }
-
-  async function loadBase(){
-    if (__BASE) return __BASE;
+  // Utils
+  const prevYM = k => {
+    let [y, m] = k.split('-').map(Number);
+    m -= 1; if (m === 0) { y -= 1; m = 12; }
+    return `${y}-${String(m).padStart(2,'0')}`;
+  };
+  async function loadJSON(url){
     const v = window.__assetVersion ? `?v=${window.__assetVersion}` : '';
-    const res = await fetch(BASE_PATH + v, { cache: 'no-store' });
-    if (!res.ok) { console.warn('[E66] No se pudo cargar', BASE_PATH, res.status); __BASE = { mes:'2024-01', tramos:[] }; return __BASE; }
-    __BASE = await res.json();
-    return __BASE;
+    const r = await fetch(url + v, { cache: 'no-store' });
+    if (!r.ok) throw new Error('No se pudo cargar: ' + url);
+    return r.json();
+  }
+  async function ensureIndices(){
+    if (indicesMap) return;
+    const j = await loadJSON(INDICES_URL);
+    indicesMap = j.indices || j; // soporta {indices:{...}} o {...}
+  }
+  async function ensureBase(){
+    if (baseData) return;
+    baseData = await loadJSON(BASE_URL);
+    baseYM = baseData.baselineMonth || baseData.mes || baseYM;
+    await ensureIndices();
+    baseIndex = Number(indicesMap[baseYM]);
+    if (!Number.isFinite(baseIndex)) throw new Error('Índice base no disponible para ' + baseYM);
   }
 
-  function findTramo(base, antigAnios){
-    const a = Math.max(0, Math.floor(Number(antigAnios||0)));
-    const arr = Array.isArray(base?.tramos) ? base.tramos : [];
-    return arr.find(t => a >= Number(t?.desde ?? -1) && a <= Number(t?.hasta ?? 999)) || null;
+  // Selecciona tramo por antigüedad y devuelve el importe base (30 días) de Ene-2024
+  function getBaseValorE66({ tipo, horas, antigAnios }) {
+    if (!baseData || !Array.isArray(baseData.tramos)) return 0;
+    const a = Number(antigAnios) || 0;
+    const tramo = baseData.tramos.find(tr => a >= Number(tr.desde) && a <= Number(tr.hasta));
+    if (!tramo || !tramo.importes) return 0;
+    let base30 = Number(tramo.importes[tipo]) || 0;
+    // Si alguna modalidad por hora necesitara factor, aplicarlo aquí.
+    return base30;
   }
 
-  async function mensualEscalado({ month, tipo, antigAnios }){
-    const base = await loadBase();
-    const tramo = findTramo(base, antigAnios);
-    if (!tramo?.importes) return 0;
+  function calcEscalado({ ym, dias, tipo, horas, antigAnios, usarMesAnterior }) {
+    const d = Number(dias) || 0;
+    if (d <= 0) return 0;
 
-    const key = String(tipo || 'CARGOS').toUpperCase(); // 'CARGOS'|'HCNM'|'HCNS'
-    const mensualBase = Number(tramo.importes[key] || 0);
+    const refYM  = usarMesAnterior ? prevYM(ym) : ym;
+    const idxRef = Number(indicesMap[refYM]);
+    if (!Number.isFinite(idxRef) || !Number.isFinite(baseIndex) || baseIndex <= 0) return 0;
 
-    const ymBase = base.mes || base.baselineMonth || '2024-01';
-    const baseIdx = idx(ymBase);
-    const mesIdx  = idx(month);
-    if (!mensualBase || !baseIdx || !mesIdx) return 0;
+    const base30 = getBaseValorE66({ tipo, horas, antigAnios }); // Ene-2024
+    if (!Number.isFinite(base30) || base30 <= 0) return 0;
 
-    // E66(m) = E66(ene-2024, tramo) * (Idx(m) / Idx(ene-2024))
-    return Math.round((mensualBase * (mesIdx / baseIdx)) * 100) / 100;
+    const factor  = idxRef / baseIndex;      // variación índice vs Ene-2024
+    const prorr   = (base30 / 30) * d;       // prorrateo por días
+    return prorr * factor;
   }
 
-  async function getImporte({ ym, tipo='CARGOS', horas=1, dias=0, antigAnios=0 }){
-    if (!ym) return 0;
-    const mensual = await mensualEscalado({ month: ym, tipo, antigAnios });
-    const mensualAjustado = (tipo === 'HCNM' || tipo === 'HCNS') ? (mensual * Number(horas||1)) : mensual;
-    return Math.round(((mensualAjustado / 30) * Number(dias||0)) * 100) / 100;
-  }
+  MOD.ensureLoaded = async function (ym) {
+    await ensureIndices();
+    await ensureBase();
+  };
 
-  async function getImportePrev({ ym, tipo='CARGOS', horas=1, dias=0, antigAnios=0 }){
-    const prev = prevYM(ym); if (!prev) return 0;
-    const mensualPrev = await mensualEscalado({ month: prev, tipo, antigAnios });
-    const mensualAjustado = (tipo === 'HCNM' || tipo === 'HCNS') ? (mensualPrev * Number(horas||1)) : mensualPrev;
-    return Math.round(((mensualAjustado / 30) * Number(dias||0)) * 100) / 100;
-  }
+  // E66 (índice del mes seleccionado)
+  MOD.getImporte = function ({ ym, tipo, horas, dias, antigAnios }) {
+    try { return calcEscalado({ ym, dias, tipo, horas, antigAnios, usarMesAnterior:false }); }
+    catch { return 0; }
+  };
 
-  async function ensureLoaded(){ await loadBase(); return true; }
+  // F66 (índice del mes anterior)
+  MOD.getImportePrev = function ({ ym, tipo, horas, dias, antigAnios }) {
+    try { return calcEscalado({ ym, dias, tipo, horas, antigAnios, usarMesAnterior:true }); }
+    catch { return 0; }
+  };
 
-  window.CODIGOS.E66 = { ensureLoaded, getImporte, getImportePrev };
+  window.CODIGOS = window.CODIGOS || {};
+  window.CODIGOS.E66 = MOD;
 })();
