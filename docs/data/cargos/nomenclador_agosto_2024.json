@@ -1,0 +1,1708 @@
+{
+  "baselineMonth": "2024-08",
+  "cargos": [
+    {
+      "id": 1,
+      "categoria": 1,
+      "denominacion": "Supervisor General",
+      "A01": 1147,
+      "A32": 570,
+      "A44": 410,
+      "hs_catedra": 40,
+      "total_puntos": 2127
+    },
+    {
+      "id": 2,
+      "categoria": 2,
+      "denominacion": "Supervisor",
+      "A01": 1114,
+      "A32": 285,
+      "A44": 410,
+      "hs_catedra": 40,
+      "total_puntos": 1809
+    },
+    {
+      "id": 3,
+      "categoria": 3,
+      "denominacion": "Secretario Técnico",
+      "A01": 1114,
+      "A32": 285,
+      "A44": 410,
+      "hs_catedra": 40,
+      "total_puntos": 1809
+    },
+    {
+      "id": 4,
+      "categoria": 4,
+      "denominacion": "Miembro de Junta de Clasificación Docente",
+      "A01": 1114,
+      "A32": 285,
+      "A44": 410,
+      "hs_catedra": 40,
+      "total_puntos": 1809
+    },
+    {
+      "id": 8,
+      "categoria": 8,
+      "denominacion": "Vice Director E.N.I. / J.I.N.Z.",
+      "A01": 681,
+      "A32": 215,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 896
+    },
+    {
+      "id": 9,
+      "categoria": 9,
+      "denominacion": "Director 1º Categoría - Educación Primaria - Un Turno",
+      "A01": 702,
+      "A32": 250,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 952
+    },
+    {
+      "id": 10,
+      "categoria": 10,
+      "denominacion": "Director 1º Categoría - Educación Primaria - Dos Turnos - EMER",
+      "A01": 786,
+      "A32": 250,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1036
+    },
+    {
+      "id": 11,
+      "categoria": 11,
+      "denominacion": "Director 2º Categoría - Educación Primaria - Un Turno",
+      "A01": 653,
+      "A32": 231,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 884
+    },
+    {
+      "id": 12,
+      "categoria": 12,
+      "denominacion": "Director 2º Categoría - Educación Primaria - Dos Turnos - EMER",
+      "A01": 730,
+      "A32": 231,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 961
+    },
+    {
+      "id": 13,
+      "categoria": 13,
+      "denominacion": "Director 3º Categoría - Educación Primaria - Un Turno",
+      "A01": 624,
+      "A32": 216,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 840
+    },
+    {
+      "id": 14,
+      "categoria": 14,
+      "denominacion": "Director 3º Categoría - Educación Primaria - Dos Turnos - EMER",
+      "A01": 653,
+      "A32": 216,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 869
+    },
+    {
+      "id": 17,
+      "categoria": 17,
+      "denominacion": "Vice Director 1º Categoría - Educación Primaria - Jornada Simple / EMER",
+      "A01": 681,
+      "A32": 215,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 896
+    },
+    {
+      "id": 18,
+      "categoria": 18,
+      "denominacion": "Vice Director 2º Categoría - Educación Primaria - Jornada Simple / EMER",
+      "A01": 628,
+      "A32": 215,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 843
+    },
+    {
+      "id": 19,
+      "categoria": 19,
+      "denominacion": "Director Albergue 1º Categoría - Jornada Completa",
+      "A01": 1040,
+      "A32": 285,
+      "A44": 300,
+      "hs_catedra": 45,
+      "total_puntos": 1625
+    },
+    {
+      "id": 20,
+      "categoria": 20,
+      "denominacion": "Director Albergue 2º Categoría - Jornada Completa",
+      "A01": 968,
+      "A32": 285,
+      "A44": 300,
+      "hs_catedra": 45,
+      "total_puntos": 1553
+    },
+    {
+      "id": 21,
+      "categoria": 21,
+      "denominacion": "Director Albergue",
+      "A01": 886,
+      "A32": 285,
+      "A44": 34,
+      "hs_catedra": 45,
+      "total_puntos": 1205
+    },
+    {
+      "id": 22,
+      "categoria": 22,
+      "denominacion": "Vice Director Albergue 2º Categoría - Jornada Extendida",
+      "A01": 786,
+      "A32": 215,
+      "A44": 34,
+      "hs_catedra": 37,
+      "total_puntos": 1035
+    },
+    {
+      "id": 23,
+      "categoria": 23,
+      "denominacion": "Director 1º Categoría - Educación Primaria Adultos - Coordinador Pedagógico del PRO.P.A.A.",
+      "A01": 702,
+      "A32": 250,
+      "A44": null,
+      "hs_catedra": 15,
+      "total_puntos": 952
+    },
+    {
+      "id": 24,
+      "categoria": 24,
+      "denominacion": "Director 2º Categoría - Educación Primaria Adultos",
+      "A01": 643,
+      "A32": 231,
+      "A44": null,
+      "hs_catedra": 15,
+      "total_puntos": 874
+    },
+    {
+      "id": 25,
+      "categoria": 25,
+      "denominacion": "Director 3º Categoría - Educación Primaria Adultos",
+      "A01": 624,
+      "A32": 216,
+      "A44": null,
+      "hs_catedra": 15,
+      "total_puntos": 840
+    },
+    {
+      "id": 27,
+      "categoria": 27,
+      "denominacion": "Vice Director - Educación Primaria Adultos - Coordinador Pedagógico del PRO.P.A.A.",
+      "A01": 637,
+      "A32": 215,
+      "A44": null,
+      "hs_catedra": 15,
+      "total_puntos": 852
+    },
+    {
+      "id": 28,
+      "categoria": 28,
+      "denominacion": "Director Educación Especial (Un Turno)",
+      "A01": 749,
+      "A32": 285,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1034
+    },
+    {
+      "id": 29,
+      "categoria": 29,
+      "denominacion": "Vice Director Educación Especial (Un Turno)",
+      "A01": 650,
+      "A32": 248,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 898
+    },
+    {
+      "id": 30,
+      "categoria": 30,
+      "denominacion": "Director Educación Especial (Dos Turno)",
+      "A01": 767,
+      "A32": 285,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1052
+    },
+    {
+      "id": 31,
+      "categoria": 31,
+      "denominacion": "Vice Director Educación Especial (Dos Turno)",
+      "A01": 700,
+      "A32": 285,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 985
+    },
+    {
+      "id": 32,
+      "categoria": 32,
+      "denominacion": "Director de Educación en Contexto de Encierro / Domiciliaria u Hospitalaria (Educación Primaria o de Secundaria)",
+      "A01": 760,
+      "A32": 285,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1045
+    },
+    {
+      "id": 33,
+      "categoria": 33,
+      "denominacion": "Vice Director de Educación en Contexto de Encierro / Domiciliaria u Hospitalaria (Educación Primaria o de Secundaria)",
+      "A01": 660,
+      "A32": 248,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 908
+    },
+    {
+      "id": 34,
+      "categoria": 34,
+      "denominacion": "Director 1º Categoría - Escuela Técnica de Capacitación Laboral",
+      "A01": 685,
+      "A32": 250,
+      "A44": null,
+      "hs_catedra": 15,
+      "total_puntos": 935
+    },
+    {
+      "id": 35,
+      "categoria": 35,
+      "denominacion": "Director 2º Categoría - Escuela Técnica de Capacitación Laboral",
+      "A01": 642,
+      "A32": 231,
+      "A44": null,
+      "hs_catedra": 15,
+      "total_puntos": 873
+    },
+    {
+      "id": 36,
+      "categoria": 36,
+      "denominacion": "Director 3º Categoría - Escuela Técnica de Capacitación Laboral",
+      "A01": 624,
+      "A32": 216,
+      "A44": null,
+      "hs_catedra": 15,
+      "total_puntos": 840
+    },
+    {
+      "id": 38,
+      "categoria": 38,
+      "denominacion": "Vice Director - Escuela Técnica de Capacitación Laboral",
+      "A01": 594,
+      "A32": 215,
+      "A44": null,
+      "hs_catedra": 15,
+      "total_puntos": 809
+    },
+    {
+      "id": 39,
+      "categoria": 39,
+      "denominacion": "Director / Rector 1º Categoría - Educación Secundaria - (Un Turno)",
+      "A01": 890,
+      "A32": 275,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1165
+    },
+    {
+      "id": 40,
+      "categoria": 40,
+      "denominacion": "Director / Rector 1º Categoría - Educación Secundaria - (Dos Turnos)",
+      "A01": 913,
+      "A32": 275,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1188
+    },
+    {
+      "id": 41,
+      "categoria": 41,
+      "denominacion": "Director / Rector 1º Categoría - Educación Secundaria - (Tres Turnos)",
+      "A01": 1000,
+      "A32": 275,
+      "A44": null,
+      "hs_catedra": 45,
+      "total_puntos": 1275
+    },
+    {
+      "id": 42,
+      "categoria": 42,
+      "denominacion": "Vice Director / Vice Rector 1º Categoría - Educación Secundaria",
+      "A01": 771,
+      "A32": 229,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1000
+    },
+    {
+      "id": 43,
+      "categoria": 43,
+      "denominacion": "Director / Rector 2º Categoría - Educación Secundaria - (Un Turno)",
+      "A01": 810,
+      "A32": 262,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1072
+    },
+    {
+      "id": 44,
+      "categoria": 44,
+      "denominacion": "Director / Rector 2º Categoría - Educación Secundaria - (Dos Turnos)",
+      "A01": 831,
+      "A32": 262,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1093
+    },
+    {
+      "id": 45,
+      "categoria": 45,
+      "denominacion": "Director / Rector 2º Categoría - Educación Secundaria - (Tres Turnos)",
+      "A01": 899,
+      "A32": 262,
+      "A44": null,
+      "hs_catedra": 45,
+      "total_puntos": 1161
+    },
+    {
+      "id": 46,
+      "categoria": 46,
+      "denominacion": "Vice Director / Vice Rector 2º Categoría - Educación Secundaria",
+      "A01": 702,
+      "A32": 202,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 904
+    },
+    {
+      "id": 47,
+      "categoria": 47,
+      "denominacion": "Director / Rector 3º Categoría - Educación Secundaria - (Un Turno)",
+      "A01": 731,
+      "A32": 232,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 963
+    },
+    {
+      "id": 48,
+      "categoria": 48,
+      "denominacion": "Director / Rector 3º Categoría - Educación Secundaria - (Dos Turnos)",
+      "A01": 750,
+      "A32": 232,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 982
+    },
+    {
+      "id": 49,
+      "categoria": 49,
+      "denominacion": "Vice Director / Vice Rector 3º Categoría - Educación Secundaria",
+      "A01": 651,
+      "A32": 191,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 842
+    },
+    {
+      "id": 50,
+      "categoria": 50,
+      "denominacion": "Director 1º Categoría - Educación Secundaria Técnica - (Un Turno)",
+      "A01": 749,
+      "A32": 275,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1024
+    },
+    {
+      "id": 51,
+      "categoria": 51,
+      "denominacion": "Director 1º Categoría - Educación Secundaria Técnica - (Dos Turnos)",
+      "A01": 913,
+      "A32": 282,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1195
+    },
+    {
+      "id": 52,
+      "categoria": 52,
+      "denominacion": "Director 1º Categoría - Educación Secundaria Técnica - (Tres Turnos)",
+      "A01": 1000,
+      "A32": 285,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1285
+    },
+    {
+      "id": 53,
+      "categoria": 53,
+      "denominacion": "Vice Director 1º Categoría - Educación Secundaria Técnica",
+      "A01": 771,
+      "A32": 229,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1000
+    },
+    {
+      "id": 55,
+      "categoria": 55,
+      "denominacion": "Director 2º Categoría - Educación Secundaria Técnica - (Dos Turnos)",
+      "A01": 831,
+      "A32": 267,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1098
+    },
+    {
+      "id": 56,
+      "categoria": 56,
+      "denominacion": "Vice Director 2º Categoría - Educación Secundaria Técnica",
+      "A01": 702,
+      "A32": 202,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 904
+    },
+    {
+      "id": 57,
+      "categoria": 57,
+      "denominacion": "Director 3º Categoría - Educación Secundaria Técnica - (Dos Turnos)",
+      "A01": 750,
+      "A32": 238,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 988
+    },
+    {
+      "id": 58,
+      "categoria": 58,
+      "denominacion": "Vice Director 3º Categoría - Educación Secundaria Técnica",
+      "A01": 641,
+      "A32": 191,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 832
+    },
+    {
+      "id": 59,
+      "categoria": 59,
+      "denominacion": "Director 1º Categoría - Educación Secundaria Agrotécnica",
+      "A01": 1000,
+      "A32": 285,
+      "A44": 200,
+      "hs_catedra": 45,
+      "total_puntos": 1485
+    },
+    {
+      "id": 60,
+      "categoria": 60,
+      "denominacion": "Director 2º Categoría - Educación Secundaria Agrotécnica",
+      "A01": 909,
+      "A32": 285,
+      "A44": 200,
+      "hs_catedra": 45,
+      "total_puntos": 1394
+    },
+    {
+      "id": 61,
+      "categoria": 61,
+      "denominacion": "Director 3º Categoría - Educación Secundaria Agrotécnica",
+      "A01": 826,
+      "A32": 285,
+      "A44": 200,
+      "hs_catedra": 45,
+      "total_puntos": 1311
+    },
+    {
+      "id": 63,
+      "categoria": 63,
+      "denominacion": "Director Misión Monotécnica o Director de Misión de Cultura Rural y Doméstica",
+      "A01": 768,
+      "A32": 275,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1043
+    },
+    {
+      "id": 64,
+      "categoria": 64,
+      "denominacion": "Director De Centro de Formación Profesional 1º Categoría",
+      "A01": 768,
+      "A32": 275,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1043
+    },
+    {
+      "id": 65,
+      "categoria": 65,
+      "denominacion": "Director De Centro de Formación Profesional 2º Categoría",
+      "A01": 724,
+      "A32": 262,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 986
+    },
+    {
+      "id": 66,
+      "categoria": 66,
+      "denominacion": "Director De Centro de Formación Profesional 3º Categoría",
+      "A01": 646,
+      "A32": 232,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 878
+    },
+    {
+      "id": 67,
+      "categoria": 67,
+      "denominacion": "Director 1º Categoría - Educación Secundaria Adultos",
+      "A01": 746,
+      "A32": 223,
+      "A44": null,
+      "hs_catedra": 25,
+      "total_puntos": 969
+    },
+    {
+      "id": 68,
+      "categoria": 68,
+      "denominacion": "Director 2º Categoría - Educación Secundaria Adultos",
+      "A01": 714,
+      "A32": 223,
+      "A44": null,
+      "hs_catedra": 25,
+      "total_puntos": 937
+    },
+    {
+      "id": 69,
+      "categoria": 69,
+      "denominacion": "Director 3º Categoría - Educación Secundaria Adultos",
+      "A01": 639,
+      "A32": 223,
+      "A44": null,
+      "hs_catedra": 25,
+      "total_puntos": 862
+    },
+    {
+      "id": 70,
+      "categoria": 70,
+      "denominacion": "Director C.E.F. Nº 20",
+      "A01": 686,
+      "A32": 250,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 936
+    },
+    {
+      "id": 71,
+      "categoria": 71,
+      "denominacion": "Vice Director C.E.F. Nº 20",
+      "A01": 590,
+      "A32": 209,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 799
+    },
+    {
+      "id": 72,
+      "categoria": 72,
+      "denominacion": "Director Escuela de la Familia",
+      "A01": 690,
+      "A32": 285,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 975
+    },
+    {
+      "id": 73,
+      "categoria": 73,
+      "denominacion": "Director / Rector de Educación Superior - Un Turno",
+      "A01": 832,
+      "A32": 285,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1117
+    },
+    {
+      "id": 74,
+      "categoria": 74,
+      "denominacion": "Director / Rector de Educación Superior - Dos Turnos",
+      "A01": 853,
+      "A32": 285,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1138
+    },
+    {
+      "id": 76,
+      "categoria": 76,
+      "denominacion": "Director de Escuelas de Educación Secundaria y Superior - Dos Turnos",
+      "A01": 843,
+      "A32": 285,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1128
+    },
+    {
+      "id": 77,
+      "categoria": 77,
+      "denominacion": "Director de Escuelas de Educación Secundaria y Superior - Tres Turnos",
+      "A01": 990,
+      "A32": 285,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1275
+    },
+    {
+      "id": 78,
+      "categoria": 78,
+      "denominacion": "Director / Rector - Escuelas Normales",
+      "A01": 1000,
+      "A32": 285,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1285
+    },
+    {
+      "id": 79,
+      "categoria": 79,
+      "denominacion": "Vice Director / vicerrector Educación Superior",
+      "A01": 721,
+      "A32": 253,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 974
+    },
+    {
+      "id": 83,
+      "categoria": 83,
+      "denominacion": "Director Biblioteca Magisterio",
+      "A01": 676,
+      "A32": 250,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 926
+    },
+    {
+      "id": 84,
+      "categoria": 84,
+      "denominacion": "Regente 1º Categoría - Jornada Completa - (Escuelas Agrotécnicas)",
+      "A01": 673,
+      "A32": 285,
+      "A44": null,
+      "hs_catedra": 32,
+      "total_puntos": 958
+    },
+    {
+      "id": 85,
+      "categoria": 85,
+      "denominacion": "Regente Educación Superior",
+      "A01": 647,
+      "A32": 225,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 872
+    },
+    {
+      "id": 86,
+      "categoria": 86,
+      "denominacion": "Regente 1º Categoría - Educación Secundaria",
+      "A01": 706,
+      "A32": 202,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 908
+    },
+    {
+      "id": 87,
+      "categoria": 87,
+      "denominacion": "Regente 2º Categoría - Educación Secundaria",
+      "A01": 611,
+      "A32": 191,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 802
+    },
+    {
+      "id": 88,
+      "categoria": 88,
+      "denominacion": "Regente 3º Categoría - Educación Secundaria",
+      "A01": 597,
+      "A32": 185,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 782
+    },
+    {
+      "id": 89,
+      "categoria": 89,
+      "denominacion": "Sub Regente 1º Categoría - Educación Secundaria",
+      "A01": 607,
+      "A32": 185,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 792
+    },
+    {
+      "id": 90,
+      "categoria": 90,
+      "denominacion": "Sub Regente 2º Categoría - Educación Secundaria",
+      "A01": 599,
+      "A32": 177,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 776
+    },
+    {
+      "id": 91,
+      "categoria": 91,
+      "denominacion": "Vice Director o Coordinador General de Enseñanza Práctica - Jornada Completa - Escuelas Agrotécnicas",
+      "A01": 764,
+      "A32": 285,
+      "A44": null,
+      "hs_catedra": 45,
+      "total_puntos": 1049
+    },
+    {
+      "id": 92,
+      "categoria": 92,
+      "denominacion": "Jefe Sectorial - Educación Secundaria - Escuelas Agrotécnicas",
+      "A01": 696,
+      "A32": 275,
+      "A44": null,
+      "hs_catedra": 32,
+      "total_puntos": 971
+    },
+    {
+      "id": 93,
+      "categoria": 93,
+      "denominacion": "Jefe General de Enseñanza Práctica 1º Categoría",
+      "A01": 655,
+      "A32": 217,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 872
+    },
+    {
+      "id": 94,
+      "categoria": 94,
+      "denominacion": "Jefe General de Enseñanza Práctica 2º Categoría",
+      "A01": 623,
+      "A32": 202,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 825
+    },
+    {
+      "id": 95,
+      "categoria": 95,
+      "denominacion": "Jefe General de Enseñanza Práctica 3º Categoría",
+      "A01": 607,
+      "A32": 185,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 792
+    },
+    {
+      "id": 96,
+      "categoria": 96,
+      "denominacion": "Jefe de Trabajos Prácticos de Laboratorio - Jefe de Laboratorio - Jefe de Trabajos Prácticos",
+      "A01": 450,
+      "A32": 133,
+      "A44": null,
+      "hs_catedra": 16,
+      "total_puntos": 583
+    },
+    {
+      "id": 97,
+      "categoria": 97,
+      "denominacion": "Jefe de Sección - Escuelas Técnicas",
+      "A01": 544,
+      "A32": 136,
+      "A44": null,
+      "hs_catedra": 24,
+      "total_puntos": 680
+    },
+    {
+      "id": 98,
+      "categoria": 98,
+      "denominacion": "Ayudante de Secretaría",
+      "A01": 445,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 445
+    },
+    {
+      "id": 99,
+      "categoria": 99,
+      "denominacion": "Pro Secretario 1º  Categoría - Educación Secundaria / Superior",
+      "A01": 486,
+      "A32": 139,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 625
+    },
+    {
+      "id": 100,
+      "categoria": 100,
+      "denominacion": "Pro Secretario 2º  Categoría - Educación Secundaria",
+      "A01": 478,
+      "A32": 132,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 610
+    },
+    {
+      "id": 101,
+      "categoria": 101,
+      "denominacion": "Pro Secretario 3º  Categoría - Educación Secundaria",
+      "A01": 471,
+      "A32": 128,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 599
+    },
+    {
+      "id": 102,
+      "categoria": 102,
+      "denominacion": "Pro Secretario - Educación Superior",
+      "A01": 518,
+      "A32": 165,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 683
+    },
+    {
+      "id": 103,
+      "categoria": 103,
+      "denominacion": "Secretario 1º Categoría - Educación Secundaria o Centro de Formación Profesional",
+      "A01": 531,
+      "A32": 200,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 731
+    },
+    {
+      "id": 104,
+      "categoria": 104,
+      "denominacion": "Secretario 2º Categoría - Educación Secundaria o Centro de Formación Profesional",
+      "A01": 518,
+      "A32": 139,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 657
+    },
+    {
+      "id": 105,
+      "categoria": 105,
+      "denominacion": "Secretario 3º Categoría - Educación Secundaria o Centro de Formación Profesional",
+      "A01": 499,
+      "A32": 132,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 631
+    },
+    {
+      "id": 106,
+      "categoria": 106,
+      "denominacion": "Secretario - Educación Superior",
+      "A01": 531,
+      "A32": 200,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 731
+    },
+    {
+      "id": 107,
+      "categoria": 107,
+      "denominacion": "Secretario - Educación Especial (E.E.E. José A. Terry) o Escuela en Contextos de Encierro",
+      "A01": 517,
+      "A32": 200,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 717
+    },
+    {
+      "id": 108,
+      "categoria": 108,
+      "denominacion": "Secretario Educación Secundaria (Escuelas Agrotécnicas)",
+      "A01": 531,
+      "A32": 200,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 731
+    },
+    {
+      "id": 109,
+      "categoria": 109,
+      "denominacion": "Sub - Jefe de Preceptores 1º Categoría - Educación Secundaria",
+      "A01": 463,
+      "A32": 131,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 594
+    },
+    {
+      "id": 110,
+      "categoria": 110,
+      "denominacion": "Sub - Jefe de Preceptores 2º Categoría - Educación Secundaria",
+      "A01": 442,
+      "A32": 130,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 572
+    },
+    {
+      "id": 111,
+      "categoria": 111,
+      "denominacion": "Jefe de Preceptores 1º Categoría - Educación Secundaria",
+      "A01": 465,
+      "A32": 131,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 596
+    },
+    {
+      "id": 112,
+      "categoria": 112,
+      "denominacion": "Jefe de Preceptores 2º Categoría - Educación Secundaria",
+      "A01": 463,
+      "A32": 131,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 594
+    },
+    {
+      "id": 113,
+      "categoria": 113,
+      "denominacion": "Jefe de Preceptores 3º Categoría - Educación Secundaria",
+      "A01": 460,
+      "A32": 130,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 590
+    },
+    {
+      "id": 114,
+      "categoria": 114,
+      "denominacion": "Jefe de Preceptores 1º Categoría - Jornada Completa - Escuelas Agrotécnicas",
+      "A01": 521,
+      "A32": 154,
+      "A44": null,
+      "hs_catedra": 45,
+      "total_puntos": 675
+    },
+    {
+      "id": 115,
+      "categoria": 115,
+      "denominacion": "Jefe de Preceptores - Educación Superior",
+      "A01": 465,
+      "A32": 131,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 596
+    },
+    {
+      "id": 116,
+      "categoria": 116,
+      "denominacion": "Maestro de Grado - Educación Primaria - Jornada Simple",
+      "A01": 450,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 450
+    },
+    {
+      "id": 117,
+      "categoria": 117,
+      "denominacion": "Maestro de Grado - Educación Primaria Adultos",
+      "A01": 450,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 15,
+      "total_puntos": 450
+    },
+    {
+      "id": 118,
+      "categoria": 118,
+      "denominacion": "Educador de PRO.P.A.A. - Educación Primaria",
+      "A01": 450,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 15,
+      "total_puntos": 450
+    },
+    {
+      "id": 119,
+      "categoria": 119,
+      "denominacion": "Maestro de Grado - Opción",
+      "A01": 450,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 16,
+      "total_puntos": 450
+    },
+    {
+      "id": 120,
+      "categoria": 120,
+      "denominacion": "Maestro de Educación Inicial - Jornada Simple",
+      "A01": 450,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 450
+    },
+    {
+      "id": 121,
+      "categoria": 121,
+      "denominacion": "Maestro de Grado de Educación Especial",
+      "A01": 471,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 20,
+      "total_puntos": 471
+    },
+    {
+      "id": 122,
+      "categoria": 122,
+      "denominacion": "Maestro de Grado / Inicial / Especial de Educación en Contextos de Encierro Domiciliaria u Hospitalaria",
+      "A01": 481,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 481
+    },
+    {
+      "id": 123,
+      "categoria": 123,
+      "denominacion": "Maestro de Grupo Escolar (E.E.E. José A. Terry / E.E.E. Bilingüe para Sordos)",
+      "A01": 505,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 25,
+      "total_puntos": 505
+    },
+    {
+      "id": 124,
+      "categoria": 124,
+      "denominacion": "Maestro de Grado - Centro de Formación Profesional",
+      "A01": 450,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 16,
+      "total_puntos": 450
+    },
+    {
+      "id": 125,
+      "categoria": 125,
+      "denominacion": "Maestro de Enseñanza Práctica - Escuelas de Capacitación Laboral",
+      "A01": 450,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 15,
+      "total_puntos": 450
+    },
+    {
+      "id": 126,
+      "categoria": 126,
+      "denominacion": "Maestro de Enseñanza Práctica - Educación Secundaria Técnica o Agrotécnica",
+      "A01": 450,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 16,
+      "total_puntos": 450
+    },
+    {
+      "id": 127,
+      "categoria": 127,
+      "denominacion": "Instructor - Centro de Formación Profesional",
+      "A01": 664,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 24,
+      "total_puntos": 664
+    },
+    {
+      "id": 128,
+      "categoria": 128,
+      "denominacion": "Maestro de Cultura Rural y Doméstica",
+      "A01": 445,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 16,
+      "total_puntos": 445
+    },
+    {
+      "id": 129,
+      "categoria": 129,
+      "denominacion": "Maestro Ayudante de Enseñanza Práctica - Educación Secundaria Técnica",
+      "A01": 445,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 16,
+      "total_puntos": 445
+    },
+    {
+      "id": 130,
+      "categoria": 130,
+      "denominacion": "Maestro de Grado (Escuela Normal)",
+      "A01": 450,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 450
+    },
+    {
+      "id": 131,
+      "categoria": 131,
+      "denominacion": "Maestro de Enseñanza Práctica (Cargos Residuales Escuelas Normales)",
+      "A01": 420,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 12,
+      "total_puntos": 420
+    },
+    {
+      "id": 132,
+      "categoria": 132,
+      "denominacion": "Instructor Agrícola - Jornada Simple",
+      "A01": 456,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 16,
+      "total_puntos": 456
+    },
+    {
+      "id": 133,
+      "categoria": 133,
+      "denominacion": "Instructor Agrícola - Jornada Completa",
+      "A01": 802,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 32,
+      "total_puntos": 802
+    },
+    {
+      "id": 134,
+      "categoria": 134,
+      "denominacion": "Maestro de Especialidades - Educación Inicial y/o Primaria - Jornada Simple",
+      "A01": 431,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 12,
+      "total_puntos": 431
+    },
+    {
+      "id": 135,
+      "categoria": 135,
+      "denominacion": "Maestro de Especialidades - Educación Especial",
+      "A01": 466,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 12,
+      "total_puntos": 466
+    },
+    {
+      "id": 136,
+      "categoria": 136,
+      "denominacion": "Maestro de Especialidades - Educación en Contextos de Encierro Domiciliaria u Hospitalaria",
+      "A01": 476,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 12,
+      "total_puntos": 476
+    },
+    {
+      "id": 137,
+      "categoria": 137,
+      "denominacion": "Maestro Especial (Centro Polivalente de Arte)",
+      "A01": 441,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 12,
+      "total_puntos": 441
+    },
+    {
+      "id": 138,
+      "categoria": 138,
+      "denominacion": "Profesor de Centro de Educación Física Nº 20",
+      "A01": 414,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 15,
+      "total_puntos": 414
+    },
+    {
+      "id": 139,
+      "categoria": 139,
+      "denominacion": "Profesor Asistente de Trabajo Prácticos (Instituto de Educación Física)",
+      "A01": 450,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 15,
+      "total_puntos": 450
+    },
+    {
+      "id": 140,
+      "categoria": 140,
+      "denominacion": "Profesor Jefe de Trabajos Prácticos - Educación Superior",
+      "A01": 459,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 18,
+      "total_puntos": 459
+    },
+    {
+      "id": 141,
+      "categoria": 141,
+      "denominacion": "Ayudante de Trabajos Prácticos - Ayudante de Clases Prácticas",
+      "A01": 446,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 16,
+      "total_puntos": 446
+    },
+    {
+      "id": 142,
+      "categoria": 142,
+      "denominacion": "Ayudante Técnico de Trabajos Prácticos - Ayudante de Trabajos Prácticos de Laboratorio - Educación Secundaria y Superior",
+      "A01": 446,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 16,
+      "total_puntos": 446
+    },
+    {
+      "id": 143,
+      "categoria": 143,
+      "denominacion": "Ayudante de Misión Monotécnica",
+      "A01": 446,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 16,
+      "total_puntos": 446
+    },
+    {
+      "id": 144,
+      "categoria": 144,
+      "denominacion": "Ayudante de Gabinete Jornada Completa",
+      "A01": 516,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 516
+    },
+    {
+      "id": 145,
+      "categoria": 145,
+      "denominacion": "Ayudante de Cátedra (Centro Polivalente de Arte)",
+      "A01": 446,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 16,
+      "total_puntos": 446
+    },
+    {
+      "id": 146,
+      "categoria": 146,
+      "denominacion": "Profesional de Gabinete",
+      "A01": 471,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 15,
+      "total_puntos": 471
+    },
+    {
+      "id": 147,
+      "categoria": 147,
+      "denominacion": "Asesor Pedagógico",
+      "A01": 618,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 618
+    },
+    {
+      "id": 148,
+      "categoria": 148,
+      "denominacion": "Celador de Internados",
+      "A01": 850,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 60,
+      "total_puntos": 850
+    },
+    {
+      "id": 149,
+      "categoria": 149,
+      "denominacion": "Celador de Educación Especial",
+      "A01": 466,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 35,
+      "total_puntos": 466
+    },
+    {
+      "id": 150,
+      "categoria": 150,
+      "denominacion": "Maestro Celador de Internados",
+      "A01": 830,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 830
+    },
+    {
+      "id": 151,
+      "categoria": 151,
+      "denominacion": "Maestro Celador de Educación Especial",
+      "A01": 468,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 20,
+      "total_puntos": 468
+    },
+    {
+      "id": 152,
+      "categoria": 152,
+      "denominacion": "Bibliotecario - Educación Secundaria / Superior / Biblioteca de Magisterio",
+      "A01": 450,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 20,
+      "total_puntos": 450
+    },
+    {
+      "id": 153,
+      "categoria": 153,
+      "denominacion": "Preceptor de Educación Secundaria o de Educación Superior",
+      "A01": 445,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 445
+    },
+    {
+      "id": 154,
+      "categoria": 154,
+      "denominacion": "Preceptor de Educación Secundaria - Educación en Contextos de Encierro",
+      "A01": 440,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 440
+    },
+    {
+      "id": 156,
+      "categoria": 156,
+      "denominacion": "Director 1º Categoría Educación Inicial E.N.I. / J.I.N.Z.",
+      "A01": 786,
+      "A32": 250,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 1036
+    },
+    {
+      "id": 157,
+      "categoria": 157,
+      "denominacion": "Director 2º Categoría Educación Inicial E.N.I. / J.I.N.Z.",
+      "A01": 730,
+      "A32": 231,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 961
+    },
+    {
+      "id": 158,
+      "categoria": 158,
+      "denominacion": "Director 3º Categoría Educación Inicial E.N.I. / J.I.N.Z.",
+      "A01": 698,
+      "A32": 216,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 914
+    },
+    {
+      "id": 159,
+      "categoria": 159,
+      "denominacion": "Director 1º Categoría Educación Primaria - Jornada Extendida",
+      "A01": 786,
+      "A32": 250,
+      "A44": null,
+      "hs_catedra": 37,
+      "total_puntos": 1036
+    },
+    {
+      "id": 160,
+      "categoria": 160,
+      "denominacion": "Director 1º Categoría Educación Primaria - Jornada Completa",
+      "A01": 1040,
+      "A32": 250,
+      "A44": 100,
+      "hs_catedra": 45,
+      "total_puntos": 1390
+    },
+    {
+      "id": 161,
+      "categoria": 161,
+      "denominacion": "Director 2º Categoría Educación Primaria - Jornada Extendida",
+      "A01": 730,
+      "A32": 231,
+      "A44": null,
+      "hs_catedra": 37,
+      "total_puntos": 961
+    },
+    {
+      "id": 162,
+      "categoria": 162,
+      "denominacion": "Director 2º Categoría Educación Primaria - Jornada Completa",
+      "A01": 968,
+      "A32": 231,
+      "A44": 100,
+      "hs_catedra": 45,
+      "total_puntos": 1299
+    },
+    {
+      "id": 163,
+      "categoria": 163,
+      "denominacion": "Director 3º Categoría Educación Primaria - Dos Turnos",
+      "A01": 688,
+      "A32": 216,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 904
+    },
+    {
+      "id": 164,
+      "categoria": 164,
+      "denominacion": "Director 3º Categoría Educación Primaria - Jornada Extendida",
+      "A01": 698,
+      "A32": 216,
+      "A44": null,
+      "hs_catedra": 30,
+      "total_puntos": 914
+    },
+    {
+      "id": 165,
+      "categoria": 165,
+      "denominacion": "Director 3º Categoría Educación Primaria - Jornada Completa",
+      "A01": 926,
+      "A32": 216,
+      "A44": 100,
+      "hs_catedra": 45,
+      "total_puntos": 1242
+    },
+    {
+      "id": 166,
+      "categoria": 166,
+      "denominacion": "Maestro de Grado Educación Primaria Jornada Extendida",
+      "A01": 573,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 37,
+      "total_puntos": 573
+    },
+    {
+      "id": 167,
+      "categoria": 167,
+      "denominacion": "Maestro de Grado Educación Primaria Jornada Completa",
+      "A01": 900,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 45,
+      "total_puntos": 900,
+      "rules": {
+        "doubleIncrement": true
+      }
+    },
+    {
+      "id": 168,
+      "categoria": 168,
+      "denominacion": "Vice Director 1º Categoría - Educación Primaria - Jornada Extendida",
+      "A01": 740,
+      "A32": 215,
+      "A44": null,
+      "hs_catedra": 37,
+      "total_puntos": 955
+    },
+    {
+      "id": 169,
+      "categoria": 169,
+      "denominacion": "Vice Director 2º Categoría - Educación Primaria - Jornada Extendida",
+      "A01": 687,
+      "A32": 215,
+      "A44": null,
+      "hs_catedra": 37,
+      "total_puntos": 902
+    },
+    {
+      "id": 170,
+      "categoria": 170,
+      "denominacion": "Vice Director 1º Categoría - Educación Primaria - Jornada Completa",
+      "A01": 909,
+      "A32": 215,
+      "A44": 100,
+      "hs_catedra": 45,
+      "total_puntos": 1224
+    },
+    {
+      "id": 171,
+      "categoria": 171,
+      "denominacion": "Vice Director 2º Categoría - Educación Primaria - Jornada Completa",
+      "A01": 897,
+      "A32": 215,
+      "A44": 100,
+      "hs_catedra": 45,
+      "total_puntos": 1212
+    },
+    {
+      "id": 172,
+      "categoria": 172,
+      "denominacion": "Vice Director Albergue - Jornada Completa",
+      "A01": 897,
+      "A32": 285,
+      "A44": 300,
+      "hs_catedra": 45,
+      "total_puntos": 1482
+    },
+    {
+      "id": 173,
+      "categoria": 173,
+      "denominacion": "Director Albergue 2º Categoría - Jornada Extendida",
+      "A01": 1000,
+      "A32": 285,
+      "A44": 34,
+      "hs_catedra": 37,
+      "total_puntos": 1319
+    },
+    {
+      "id": 174,
+      "categoria": 174,
+      "denominacion": "Director Albergue 3º Categoría - Jornada Extendida",
+      "A01": 928,
+      "A32": 285,
+      "A44": 34,
+      "hs_catedra": 37,
+      "total_puntos": 1247
+    },
+    {
+      "id": 175,
+      "categoria": 175,
+      "denominacion": "Director 1º Categoría Educación Primaria - Jornada Extendida (Dos Turnos)",
+      "A01": 840,
+      "A32": 250,
+      "A44": null,
+      "hs_catedra": 37,
+      "total_puntos": 1090
+    },
+    {
+      "id": 176,
+      "categoria": 176,
+      "denominacion": "Director 2º Categoría Educación Primaria - Jornada Extendida (Dos Turnos)",
+      "A01": 784,
+      "A32": 231,
+      "A44": null,
+      "hs_catedra": 37,
+      "total_puntos": 1015
+    },
+    {
+      "id": 177,
+      "categoria": 177,
+      "denominacion": "Director Albergue 3º Categoría - Jornada Extendida",
+      "A01": 926,
+      "A32": 285,
+      "A44": 300,
+      "hs_catedra": 45,
+      "total_puntos": 1511
+    },
+    {
+      "id": 178,
+      "categoria": 178,
+      "denominacion": "Secretario 1º Categoría - Educación Secundaria Adultos",
+      "A01": 521,
+      "A32": 200,
+      "A44": null,
+      "hs_catedra": 25,
+      "total_puntos": 721
+    },
+    {
+      "id": 179,
+      "categoria": 179,
+      "denominacion": "Secretario 2º Categoría - Educación Secundaria Adultos",
+      "A01": 508,
+      "A32": 139,
+      "A44": null,
+      "hs_catedra": 25,
+      "total_puntos": 647
+    },
+    {
+      "id": 180,
+      "categoria": 180,
+      "denominacion": "Secretario 3º Categoría - Educación Secundaria Adultos",
+      "A01": 499,
+      "A32": 132,
+      "A44": null,
+      "hs_catedra": 25,
+      "total_puntos": 631
+    },
+    {
+      "id": 181,
+      "categoria": 181,
+      "denominacion": "Pro Secretario 1º Categoría - Educación Secundaria Adultos",
+      "A01": 476,
+      "A32": 139,
+      "A44": null,
+      "hs_catedra": 25,
+      "total_puntos": 615
+    },
+    {
+      "id": 182,
+      "categoria": 182,
+      "denominacion": "Pro Secretario 2º Categoría - Educación Secundaria Adultos",
+      "A01": 468,
+      "A32": 132,
+      "A44": null,
+      "hs_catedra": 25,
+      "total_puntos": 600
+    },
+    {
+      "id": 183,
+      "categoria": 183,
+      "denominacion": "Pro Secretario 3º Categoría - Educación Secundaria Adultos",
+      "A01": 461,
+      "A32": 128,
+      "A44": null,
+      "hs_catedra": 25,
+      "total_puntos": 589
+    },
+    {
+      "id": 184,
+      "categoria": 184,
+      "denominacion": "Preceptor - Educación Secundaria Adultos",
+      "A01": 445,
+      "A32": null,
+      "A44": null,
+      "hs_catedra": 25,
+      "total_puntos": 445
+    }
+  ]
+}

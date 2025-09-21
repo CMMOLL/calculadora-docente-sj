@@ -47,75 +47,36 @@
     <div class="grid-2">
       <div class="leftCol">
         <div class="sidebar">
-          <div>
-            <label>Nivel</label>
-            <select id="nivel">
-              <option value="Primario">Primario</option>
-              <option value="Secundario">Secundario</option>
-              <option value="Nivel Superior">Nivel Superior</option>
+          <!-- === Nuevo bloque: Seleccionar Cargos/Horas Cátedra === -->
+          <div id="cargoHorasBlock" class="result">
+            <label class="title" style="display:block;margin-bottom:8px;">Seleccionar Cargos/Horas Cátedra</label>
+
+            <!-- Lista desplegable principal -->
+            <label class="muted">Lista desplegable</label>
+            <select id="tipoSeleccion">
+              <option value="">— Seleccionar —</option>
+              <option value="CARGOS">Cargos</option>
+              <option value="HCNM">Horas Cátedra Nivel Medio</option>
+              <option value="HCNS">Horas Cátedra Nivel Superior</option>
             </select>
-          </div>
-          <div id="primarioBlock" style="display:none;">
-            <label>(Primario)</label>
-            <select id="cargoPrimario">
-              <option data-cat="" data-pts="" value="">— Seleccionar —</option>
-              <option data-cat="116" data-pts="482" value="Maestro de Grado - Jornada Simple">Maestro de Grado - Jornada
-                Simple</option>
-              <option data-cat="117" data-pts="482" value="Maestro de Grado - Ed. Primaria Adultos">Maestro de Grado -
-                Ed. Primaria Adultos</option>
-              <option data-cat="120" data-pts="482" value="Maestro de Nivel Inicial">Maestro de Nivel Inicial</option>
-              <option data-cat="121" data-pts="503" value="Maestro de Grado de Educación Especial">Maestro de Grado de
-                Educación Especial</option>
-              <option data-cat="134" data-pts="463" value="Maestro de Especialidades">Maestro de Especialidades</option>
-              <option data-cat="135" data-pts="498" value="Maestro de Esp. de Educación Especial">Maestro de Esp. de
-                Educación Especial</option>
-              <option data-cat="149" data-pts="498" value="Celador de Educación Especial">Celador de Educación Especial
-              </option>
-              <option data-cat="151" data-pts="500" value="Maestro Celador de Educación Especial">Maestro Celador de
-                Educación Especial</option>
-              <option data-cat="166" data-pts="605" value="Maestro de Grado - Jornada Extendida">Maestro de Grado -
-                Jornada Extendida</option>
-              <option data-cat="167" data-pts="964" value="Maestro de Grado - Jornada Completa">Maestro de Grado -
-                Jornada Completa</option>
-              <option data-cat="" data-pts="" value="Completar">Completar</option>
-            </select>
-            <div class="muted" id="primarioCatWrap" style="display:none;">Categoría: <span id="primarioCat">—</span> ·
-              Puntos: <span id="primarioPts">—</span></div>
-          </div>
-          <div id="secundarioBlock" style="display:none;">
-            <label>(Secundario)</label>
-            <select id="cargoSecundario">
-              <option data-cat="" data-pts="" value="">— Seleccionar —</option>
-              <option data-cat="" data-pts="" value="Horas Cátedra - Nivel Medio">Horas Cátedra - Nivel Medio</option>
-              <option data-cat="119" data-pts="482" value="Maestro de Opción - Nivel Secundario">Maestro de Opción -
-                Nivel Secundario</option>
-              <option data-cat="125" data-pts="482" value="MEP">MEP</option>
-              <option data-cat="141" data-pts="478" value="Ayudante de Clases Prácticas">Ayudante de Clases Prácticas
-              </option>
-              <option data-cat="152" data-pts="482" value="Bibliotecario">Bibliotecario</option>
-              <option data-cat="153" data-pts="477" value="Preceptor de Nivel Secundario">Preceptor de Nivel Secundario
-              </option>
-              <option data-cat="" data-pts="" value="Completar">Completar</option>
-            </select>
-            <div class="muted" id="secundarioCatWrap" style="display:none;">Categoría: <span id="secundarioCat">—</span>
-              · Puntos: <span id="secundarioPts">—</span></div>
-            <div class="mini" id="horasSecCard" style="display:none;">
-              <div class="mini-top">Carga Horaria</div>
-              <div class="mini-bottom"><input id="horasSec" min="1" step="1" type="number" value="1" /></div>
+
+            <!-- Panel CARGOS: ingresar categoría/ID -->
+            <div id="panelCargos" style="display:none; margin-top:10px;">
+              <label class="muted">Cargos</label>
+              <input id="catId" type="number" min="1" step="1" placeholder="Completar con el número de categoría" style="width:22ch;"/>
+              <div class="muted" style="margin-top:6px;">Ej.: 55, 28, 167…</div>
             </div>
-          </div>
-          <div id="superiorBlock" style="display:none;">
-            <label>(Nivel Superior)</label>
-            <select id="cargoSuperior">
-              <option data-cat="" data-pts="" value="">— Seleccionar —</option>
-              <option data-cat="" data-pts="" value="Horas Cátedra - Nivel Superior">Horas Cátedra - Nivel Superior
-              </option>
-            </select>
-            <div class="muted" id="superiorCatWrap" style="display:none;">Categoría: <span id="superiorCat">—</span>
+
+            <!-- Panel HCNM: horas nivel medio -->
+            <div id="panelHCNM" style="display:none; margin-top:10px;">
+              <label class="muted">Horas Cátedra Nivel Medio</label>
+              <input id="horasHCNM" type="number" min="1" step="1" placeholder="Completar con la cantidad de horas cátedra" style="width:22ch;"/>
             </div>
-            <div class="mini" id="horasSupCard" style="display:none;">
-              <div class="mini-top">Carga Horaria</div>
-              <div class="mini-bottom"><input id="horasSup" min="1" step="1" type="number" value="1" /></div>
+
+            <!-- Panel HCNS: horas nivel superior -->
+            <div id="panelHCNS" style="display:none; margin-top:10px;">
+              <label class="muted">Horas Cátedra Nivel Superior</label>
+              <input id="horasHCNS" type="number" min="1" step="1" placeholder="Completar con la cantidad de horas cátedra" style="width:22ch;"/>
             </div>
           </div>
         </div>
@@ -554,7 +515,10 @@
       if (!el) return; var anios = parseInt(document.getElementById('antiguedadAnios').value || '0');
       var p = getAntiguedad(anios); el.textContent = p.toFixed(0) + '%';
     }
-    function isHoras(cargo) { return cargo.includes('Horas Cátedra'); }
+        function isHoras() {
+      const t = (typeof getTipoCargo === 'function') ? getTipoCargo() : '';
+      return t === 'HCNM' || t === 'HCNS';
+    }
     function isMaestroGradoJornadaCompleta(cargo) { return cargo === "Maestro de Grado - Jornada Completa"; }
 
     const inputInicio = document.getElementById('inicio');
@@ -579,25 +543,6 @@
     const inputIndiceMesPrev = document.getElementById('indiceMesPrev');
     const inputAntiguedad = document.getElementById('antiguedadAnios');
     const selectRadio = document.getElementById('radioDocente');
-    const selectNivel = document.getElementById('nivel');
-    const blockPrimario = document.getElementById('primarioBlock');
-    const selectCargoPrimario = document.getElementById('cargoPrimario');
-    const primarioCat = document.getElementById('primarioCat');
-    const primarioPts = document.getElementById('primarioPts');
-    const primarioCatWrap = document.getElementById('primarioCatWrap');
-    const blockSecundario = document.getElementById('secundarioBlock');
-    const selectCargoSecundario = document.getElementById('cargoSecundario');
-    const secundarioCat = document.getElementById('secundarioCat');
-    const secundarioPts = document.getElementById('secundarioPts');
-    const secundarioCatWrap = document.getElementById('secundarioCatWrap');
-    const inputHorasSec = document.getElementById('horasSec');
-    const horasSecCard = document.getElementById('horasSecCard');
-    const blockSuperior = document.getElementById('superiorBlock');
-    const selectCargoSuperior = document.getElementById('cargoSuperior');
-    const superiorCat = document.getElementById('superiorCat');
-    const superiorCatWrap = document.getElementById('superiorCatWrap');
-    const inputHorasSup = document.getElementById('horasSup');
-    const horasSupCard = document.getElementById('horasSupCard');
     const tbodyMeses = document.getElementById('tbodyMeses');
     const totalDias = document.getElementById('totalDias');
     const periodoLabel = document.getElementById('periodoLabel');
@@ -665,7 +610,7 @@
       return { total: diasTotal, detalle: detalle.join(' · ') };
     }
 
-    function calculateLiq(start, end, baja) {
+            function calculateLiq(start, end, baja) {
       if (!start || !end) {
         liqDato.diasLiq.textContent = '0';
         liqBlock.style.display = 'none';
@@ -673,10 +618,14 @@
         return;
       }
       liqBlock.style.display = 'block';
-      const cargo = selectCargoSecundario.value || selectCargoPrimario.value || selectCargoSuperior.value;
-      const puntosStr = selectCargoPrimario.options[selectCargoPrimario.selectedIndex]?.dataset.pts || selectCargoSecundario.options[selectCargoSecundario.selectedIndex]?.dataset.pts;
-      const puntos = parseFloat(puntosStr);
-      const horas = isHoras(cargo) ? parseFloat(inputHorasSec.value || inputHorasSup.value) : null;
+      const tipoSel = (typeof getTipoCargo === 'function') ? (getTipoCargo() || '') : '';
+      const esHoras = isHoras();
+      const horasSeleccionadas = esHoras ? Number((typeof getHorasSeleccionadas === 'function' ? getHorasSeleccionadas() : 0) || 0) : 0;
+      const categoriaId = esHoras ? 0 : Number((typeof getCategoriaId === 'function' ? getCategoriaId() : 0) || 0);
+
+      // TODO (siguiente paso): cuando integremos el JSON, de acá vamos a traer {A01,A32,A44,total_puntos}
+      let puntos = 0; // se reemplaza con total_puntos del cargo seleccionado
+
       const indice = parseFloat(inputIndiceMes.value) || 0;
       const indicePrev = parseFloat(inputIndiceMesPrev.value) || 0;
       const antiguedadAnios = parseFloat(inputAntiguedad.value) || 0;
@@ -691,13 +640,13 @@
       const mesBaseName = monthNameEs(end.getUTCMonth() + 1);
       liqDato.diasLiq.textContent = `${diasBase} Días - ${mesBaseName} ${end.getUTCFullYear()}`;
       liqDato.diasExc.textContent = diasExc;
-      const sueldoBasico = isHoras(cargo) ? (horas * 15 * indice) : (puntos * indice);
+      const sueldoBasico = esHoras ? (horasSeleccionadas * 15 * indice) : (puntos * indice);
       const a01 = (sueldoBasico / 30) * diasBase;
       const a03 = (sueldoBasico * (antiguedadPts / 100)) / 30 * diasBase;
       const a04 = (sueldoBasico * (radioPorcentaje / 100)) / 30 * diasBase;
       let totalParcial = a01 + a03 + a04;
 
-      const sueldoBasicoExc = isHoras(cargo) ? (horas * 15 * indicePrev) : (puntos * indicePrev);
+      const sueldoBasicoExc = esHoras ? (horasSeleccionadas * 15 * indicePrev) : (puntos * indicePrev);
       const a01Exc = (sueldoBasicoExc / 30) * diasExc;
       const a03Exc = (sueldoBasicoExc * (antiguedadPts / 100)) / 30 * diasExc;
       const a04Exc = (sueldoBasicoExc * (radioPorcentaje / 100)) / 30 * diasExc;
@@ -734,26 +683,9 @@
                    || document.getElementById('indiceMes')?.value
                    || '';
 
-        let tipo = 'CARGOS';
-        let horas = 1;
-        if (typeof getTipoCargo === 'function') {
-          tipo = getTipoCargo() || 'CARGOS';
-        } else {
-          const cargoTxt = (document.getElementById('cargoPrimario')?.value
-                         || document.getElementById('cargoSecundario')?.value
-                         || document.getElementById('cargoSuperior')?.value || '');
-          const esHoras = /^Horas C[aá]tedra/i.test(cargoTxt);
-          const nivelSel = document.getElementById('nivel')?.value || '';
-          tipo = esHoras ? (nivelSel === 'Nivel Superior' ? 'HCNS' : 'HCNM') : 'CARGOS';
-        }
-
-        if (tipo === 'HCNM' || tipo === 'HCNS') {
-          const horasSec = Number(document.getElementById('horasSec')?.value || 0);
-          const horasSup = Number(document.getElementById('horasSup')?.value || 0);
-          horas = horasSup > 0 ? horasSup : (horasSec > 0 ? horasSec : 1);
-        }
-
-        const antigAnios = Number(document.getElementById('antiguedadAnios')?.value || 0);
+        let tipo = tipoSel || 'CARGOS';
+        let horas = esHoras ? (horasSeleccionadas > 0 ? horasSeleccionadas : 1) : 1;
+        const antigAnios = antiguedadAnios;
 
         if (rowE) rowE.style.display = usar ? 'table-row' : 'none';
 
@@ -796,7 +728,7 @@
         const rowE60 = document.getElementById('rowE60');
         if (!chk || !outBase) return;
 
-        const esCargo = !isHoras(cargo);
+        const esCargo = !esHoras;
         const diasBaseCalc = Number(diasBase) || 0;
         const diasExcCalc  = Number(diasExc) || 0;
 
@@ -867,77 +799,6 @@
       calculateLiq(start, end, baja);
     }
 
-    function handleNivelChange() {
-      const nivel = selectNivel.value;
-      blockPrimario.style.display = 'none';
-      blockSecundario.style.display = 'none';
-      blockSuperior.style.display = 'none';
-      if (nivel === 'Primario') {
-        blockPrimario.style.display = 'block';
-        updateCargoPrimario();
-      } else if (nivel === 'Secundario') {
-        blockSecundario.style.display = 'block';
-        updateCargoSecundario();
-      } else if (nivel === 'Nivel Superior') {
-        blockSuperior.style.display = 'block';
-        updateCargoSuperior();
-      }
-      update();
-      // --- Extras visibility (A56/E29/E66/E60) ---
-      (function () {
-        function g(id) { return document.getElementById(id); }
-        const nivel = g('nivel')?.value || '';
-        let cargoTxt = '';
-        if (nivel === 'Primario') cargoTxt = g('cargoPrimario')?.value || '';
-        else if (nivel === 'Secundario') cargoTxt = g('cargoSecundario')?.value || '';
-        else cargoTxt = g('cargoSuperior')?.value || '';
-        const esCargo = !/^Horas C[aá]tedra/i.test(cargoTxt);
-        if (typeof ensureExtraRows === 'function') ensureExtraRows();
-
-        const rowA56 = g('rowA56'), rowE29 = g('rowE29'), rowE66 = g('rowE66'), rowE60 = g('rowE60');
-        const optA56 = g('optA56'), optE66 = g('optE66'), optE60 = g('optE60'), chkSupl = g('suplente');
-
-        if (rowA56) rowA56.style.display = (optA56 && optA56.checked) ? 'table-row' : 'none';
-        if (rowE66) rowE66.style.display = (optE66 && optE66.checked) ? 'table-row' : 'none';
-        if (rowE60) rowE60.style.display = (optE60 && optE60.checked && esCargo) ? 'table-row' : 'none';
-        if (rowE29) rowE29.style.display = (chkSupl && chkSupl.checked && esCargo) ? 'table-row' : 'none';
-      })();
-
-    }
-
-    function updateCargoPrimario() {
-      const option = selectCargoPrimario.options[selectCargoPrimario.selectedIndex];
-      const cat = option?.dataset.cat || '—';
-      const pts = option?.dataset.pts || '—';
-      primarioCat.textContent = cat;
-      primarioPts.textContent = pts;
-      primarioCatWrap.style.display = (cat === '—' && pts === '—') ? 'none' : 'block';
-      adjustSelectWidth(selectCargoPrimario);
-      update();
-    }
-
-    function updateCargoSecundario() {
-      const option = selectCargoSecundario.options[selectCargoSecundario.selectedIndex];
-      const cargo = option?.value || '';
-      const cat = option?.dataset.cat || '—';
-      const pts = option?.dataset.pts || '—';
-      secundarioCat.textContent = cat;
-      secundarioPts.textContent = pts;
-      secundarioCatWrap.style.display = (cat === '—' && pts === '—') ? 'none' : 'block';
-      horasSecCard.style.display = isHoras(cargo) ? 'block' : 'none';
-      adjustSelectWidth(selectCargoSecundario);
-      update();
-    }
-
-    function updateCargoSuperior() {
-      const option = selectCargoSuperior.options[selectCargoSuperior.selectedIndex];
-      const cargo = option?.value || '';
-      superiorCat.textContent = option?.dataset.cat || '—';
-      horasSupCard.style.display = isHoras(cargo) ? 'block' : 'none';
-      adjustSelectWidth(selectCargoSuperior);
-      update();
-    }
-
     // Event Listeners
     inputInicio.addEventListener('change', update);
     inputFin.addEventListener('change', update);
@@ -949,16 +810,7 @@
     selectRadio.addEventListener('change', update);
     selectAnioSAC.addEventListener('change', update);
     selectSemSAC.addEventListener('change', update);
-    inputHorasSec.addEventListener('input', update);
-    inputHorasSup.addEventListener('input', update);
-
-    selectNivel.addEventListener('change', handleNivelChange);
-    selectCargoPrimario.addEventListener('change', updateCargoPrimario);
-    selectCargoSecundario.addEventListener('change', updateCargoSecundario);
-    selectCargoSuperior.addEventListener('change', updateCargoSuperior);
-
     // Initial call to set up the UI correctly
-    handleNivelChange();
     uiUpdateAntigPct();
     update();
   </script>
@@ -1035,12 +887,8 @@
       const rowE60 = $('rowE60');
 
       function isCargoSeleccionado() {
-        const nivel = $('nivel')?.value || '';
-        let cargo = '';
-        if (nivel === 'Primario') cargo = $('cargoPrimario')?.value || '';
-        else if (nivel === 'Secundario') cargo = $('cargoSecundario')?.value || '';
-        else cargo = $('cargoSuperior')?.value || '';
-        return !/^Horas C[aá]tedra/i.test(cargo);
+        const tipo = (typeof getTipoCargo === 'function') ? getTipoCargo() : '';
+        return tipo !== 'HCNM' && tipo !== 'HCNS';
       }
 
       function refreshExtrasVisibility() {
@@ -1058,7 +906,7 @@
         ensureExtraRows();
         refreshExtrasVisibility();
         // Bind changes
-        ['nivel', 'cargoPrimario', 'cargoSecundario', 'cargoSuperior', 'baja', 'suplente',
+        ['tipoSeleccion', 'catId', 'horasHCNM', 'horasHCNS', 'baja', 'suplente',
           'optA56', 'optE66', 'optE60', 'radioDocente', 'antiguedadAnios', 'indiceMes', 'indiceMesPrev']
           .forEach(id => { const el = $(id); if (el) { bind(el, 'change'); bind(el, 'input'); } });
       }
@@ -1129,12 +977,58 @@ input.addEventListener('change', ajustarAncho);
 
   </script>
 
+  <script>
+  /* === Nuevo controlador del menú Cargos/Horas === */
+  (function(){
+    const sel = document.getElementById('tipoSeleccion');
+    const pCargos = document.getElementById('panelCargos');
+    const pHCNM  = document.getElementById('panelHCNM');
+    const pHCNS  = document.getElementById('panelHCNS');
+    const catId  = document.getElementById('catId');
+    const horasM = document.getElementById('horasHCNM');
+    const horasS = document.getElementById('horasHCNS');
+
+    function show(panel){
+      if (pCargos) pCargos.style.display = (panel === 'CARGOS') ? 'block' : 'none';
+      if (pHCNM)  pHCNM.style.display   = (panel === 'HCNM')   ? 'block' : 'none';
+      if (pHCNS)  pHCNS.style.display   = (panel === 'HCNS')   ? 'block' : 'none';
+    }
+
+    sel?.addEventListener('change', () => {
+      show(sel.value || '');
+      if (typeof update === 'function') { try { update(); } catch {} }
+    });
+
+    [catId, horasM, horasS].forEach(el => {
+      if (!el) return;
+      el.addEventListener('input', () => { if (typeof update === 'function') { try { update(); } catch {} } });
+    });
+
+    // === Helpers globales que usa el resto de la app ===
+    window.getTipoCargo = function(){
+      // Devuelve 'CARGOS' | 'HCNM' | 'HCNS' | '' según selección
+      return sel?.value || '';
+    };
+    window.getHorasSeleccionadas = function(){
+      // Según tipo, devuelve número de horas o 0
+      const t = window.getTipoCargo();
+      if (t === 'HCNM') return Number(horasM?.value || 0);
+      if (t === 'HCNS') return Number(horasS?.value || 0);
+      return 0;
+    };
+    window.getCategoriaId = function(){
+      // Solo para CARGOS; devuelve la categoría ingresada (ID del cargo)
+      const t = window.getTipoCargo();
+      if (t === 'CARGOS') return Number(catId?.value || 0);
+      return 0;
+    };
+
+    // Estado inicial
+    show(sel?.value || '');
+  })();
+  </script>
   </body>
 
 </html>
-
-
-
-
 
 
