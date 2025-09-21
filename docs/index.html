@@ -275,6 +275,19 @@
                     <td>$</td>
                     <td id="a04Exc">0,00</td>
                   </tr>
+                  <!-- NUEVO: F56 para complemento de A56 -->
+                  <tr id="rowF56" style="display:none;">
+                    <td title="Complemento del codigo A56 (mes anterior)"><b>F56</b></td>
+                    <td>$</td>
+                    <td id="f56Importe">0,00</td>
+                  </tr>
+
+                  <!-- NUEVO: E29 también se muestra en complemento (mismo código) -->
+                  <tr id="rowE29_comp" style="display:none;">
+                    <td title="Equipamiento Suplentes (en complemento)"><b>E29</b></td>
+                    <td>$</td>
+                    <td id="e29CompImporte">0,00</td>
+                  </tr>
                   <tr id="rowF66" style="display:none;">
                     <td title="Complemento del código E66 (mes anterior)"><b>F66</b></td>
                     <td>$</td>
@@ -555,8 +568,8 @@
           if (typeof update === 'function') { try { update(); } catch {} }
         });
       }
-    }
 
+    }
     // Cambio de período
     selPeriodo.addEventListener('change', () => {
       const clave = selPeriodo.value;
@@ -747,8 +760,8 @@
           __cargoNombre.textContent = '—';
           __cargoNombreWrap.style.display = 'none';
         }
-      }
 
+      }
       const indiceActual = parseFloat(inputIndiceMes.value) || 0;
       const indicePrevio = parseFloat(inputIndiceMesPrev.value) || 0;
       const antiguedadAnios = parseFloat(inputAntiguedad.value) || 0;
@@ -873,14 +886,20 @@
 
       /* === E66 (30d escalado por índice) + F66 (excedente mes anterior) === */
       function updateComplementoRow(code, visible, valor) {
-        const row = document.getElementById('row' + code);
-        const cellId = code === 'F66' ? 'f66Importe' : 'f60Importe';
-        const cell = document.getElementById(cellId);
-        if (row) row.style.display = visible ? 'table-row' : 'none';
-        if (cell) {
-          const value = visible ? Number(valor || 0) : 0;
-          cell.textContent = fmtAR(value);
-        }
+        // Soporta F66, F60, F56 y el “E29 en complemento” (E29C)
+        const rowId = (code === 'E29C') ? 'rowE29_comp' : ('row' + code);
+        const cellId =
+          code === 'F66'  ? 'f66Importe'     :
+          code === 'F60'  ? 'f60Importe'     :
+          code === 'F56'  ? 'f56Importe'     :
+          code === 'E29C' ? 'e29CompImporte' : null;
+
+        const row  = document.getElementById(rowId);
+        const cell = cellId ? document.getElementById(cellId) : null;
+
+        if (row)  row.style.display = visible ? 'table-row' : 'none';
+        if (cell) cell.textContent  = (visible ? Number(valor || 0) : 0)
+                                    .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       }
 
       (async function calcE66(){
@@ -972,6 +991,28 @@
         }
       })();
 
+      // === Complemento: F56 (si A56 tildado) y E29 (mismo código; solo CARGOS) ===
+      (function complementoExtras(){
+        const diasExcNum = Number(diasExc || 0);
+
+        // A56 -> F56 en complemento (si hay excedente)
+        const a56Checked = document.getElementById('optA56')?.checked === true;
+        updateComplementoRow('F56', a56Checked && diasExcNum > 0, 0);
+
+        // E29 en complemento: SOLO si es CARGOS (no HCNM/HCNS), hay excedente y E29 aparece en 30 días
+        const tipoSel = (typeof getTipoCargo === 'function') ? (getTipoCargo() || '') : '';
+        const esHoras = (tipoSel === 'HCNM' || tipoSel === 'HCNS');
+        const esCargo = !esHoras;
+
+        const rowE29Base = document.getElementById('rowE29');
+        const e29BaseVisible = !!rowE29Base && rowE29Base.style.display !== 'none';
+
+        // Regla pedida: E29 en complemento sólo para CARGOS, cuando el E29 base está presente y hay excedente
+        const showE29Comp = esCargo && (diasExcNum > 0) && e29BaseVisible;
+        updateComplementoRow('E29C', showE29Comp, 0);
+
+        // NOTA: Importes = 0,00 por ahora; luego definimos la fórmula.
+      })();
       liqDato.totalParcial.textContent = fmtAR(totalParcial);
     }
     async function update() {
@@ -1015,8 +1056,8 @@
       } catch (err) {
         console.warn('calculateLiq error:', err);
       }
-    }
 
+    }
     // Event Listeners
     inputInicio.addEventListener('change', update);
     inputFin.addEventListener('change', update);
@@ -1599,29 +1640,26 @@ input.addEventListener('change', ajustarAncho);
     }
   })();
   </script>
+  <script>
+  // Safety net: remover text-nodes que sean exactamente "\n"
+  (function(){
+    function cleanNodeTree(root){
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+      const toRemove = [];
+      while (walker.nextNode()){
+        const n = walker.currentNode;
+        if (n.nodeValue && n.nodeValue.trim() === "\\n") toRemove.push(n);
+      }
+      toRemove.forEach(n => n.parentNode && n.parentNode.removeChild(n));
+    }
+    if (document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', () => cleanNodeTree(document.body));
+    } else {
+      cleanNodeTree(document.body);
+    }
+  })();
+  </script>
   </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
