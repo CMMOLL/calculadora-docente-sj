@@ -554,3 +554,8 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 #cargoHorasBlock #catId {
   padding: 6px 10px;
 }
+/* Fila Fechas + BAJA */
+#fechasRow { align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+#fechasRow .date-field label { margin-bottom: 4px; display: block; }
+#bajaGroup { margin-left: 4px; }
+#bajaGroup input { margin: 0; }

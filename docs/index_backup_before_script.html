@@ -1553,56 +1553,9 @@ input.addEventListener('change', ajustarAncho);
       setAutoFin();
     }
   })();
-  </script>\n  <script>
-  // === Autocompletar Fecha Fin con último día del mes actual ===
-  (function(){
-    const inicio = document.getElementById('inicio');
-    const fin    = document.getElementById('fin');
-    if (!inicio || !fin) return;
-
-    // Devuelve YYYY-MM-DD del último día del mes actual (según zona local)
-    function lastDayOfCurrentMonthISO(){
-      const now   = new Date();
-      const y     = now.getFullYear();
-      const m     = now.getMonth();
-      const last  = new Date(y, m + 1, 0);
-      const pad   = n => String(n).padStart(2, '0');
-      return `${y}-${pad(m + 1)}-${pad(last.getDate())}`;
-    }
-
-    function setAutoFin(){
-      fin.value = lastDayOfCurrentMonthISO();
-      fin.dataset.autofill = "1";
-      if (typeof window.update === 'function') { try { window.update(); } catch(_){} }
-    }
-
-    ['input','change'].forEach(ev => {
-      fin.addEventListener(ev, () => { delete fin.dataset.autofill; });
-    });
-
-    ['change','blur'].forEach(ev => {
-      inicio.addEventListener(ev, () => {
-        if (!inicio.value){
-          fin.value = "";
-          delete fin.dataset.autofill;
-          if (typeof window.update === 'function') { try { window.update(); } catch(_){} }
-          return;
-        }
-        if (!fin.value || fin.dataset.autofill === "1"){
-          setAutoFin();
-        }
-      });
-    });
-
-    if (inicio.value && (!fin.value || fin.dataset.autofill === "1")){
-      setAutoFin();
-    }
-  })();
-  </script>
-  </body>
+  </script>\n  </body>
 
 </html>
-
 
 
 
