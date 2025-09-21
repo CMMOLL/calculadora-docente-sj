@@ -65,6 +65,11 @@
               <label class="muted">Cargos</label>
               <input id="catId" type="number" min="1" step="1" placeholder="Completar con el número de categoría" style="width:22ch;"/>
               <div class="muted" style="margin-top:6px;">Ej.: 55, 28, 167…</div>
+              <!-- Denominación del cargo (se muestra solo si hay ID válido) -->
+              <div id="cargoNombreWrap" class="muted" style="margin-top:6px; display:none;">
+                <span>Denominación:</span>
+                <span class="title" id="cargoNombre">—</span>
+              </div>
             </div>
 
             <!-- Panel HCNM: horas nivel medio -->
@@ -335,7 +340,68 @@
     </aside>
   </div>
   </div>
- <script>
+ <!-- === Loader Nomenclador + Índices === -->
+<script>
+(function(){
+  const NOMEN_URLS  = [
+    'data/cargos/nomenclador_agosto_2024.json',
+    'docs/data/cargos/nomenclador_agosto_2024.json'
+  ];
+  const INDICES_URLS = [
+    'data/indices.json',
+    'docs/data/indices.json'
+  ];
+
+  async function fetchFirst(urls){
+    for (const u of urls){
+      try { const r = await fetch(u, {cache:'no-store'}); if (r.ok) return await r.json(); } catch(e){}
+    }
+    throw new Error('No se pudo cargar: ' + urls.join(' | '));
+  }
+
+  let _cargos = null;      // array de cargos
+  let _indices = null;     // { 'YYYY-MM': number }
+  let _baseline = '2024-08';
+
+  async function ensure(){
+    if (_cargos && _indices) return;
+    const [nomen, idx] = await Promise.all([
+      fetchFirst(NOMEN_URLS),
+      fetchFirst(INDICES_URLS)
+    ]);
+    _cargos = (nomen.cargos || []).map(c => ({...c, A32: c.A32 ?? 0, A44: c.A44 ?? 0}));
+    _baseline = nomen.baselineMonth || _baseline;
+    _indices = idx.indices || idx; // soporta ambos formatos
+  }
+
+  function getByCategoria(cat){
+    if (!_cargos) return null;
+    return _cargos.find(c => Number(c.categoria) === Number(cat)) || null;
+  }
+  function getIndice(ym){ return Number(_indices?.[ym] || 0); }
+
+  // Para el futuro (si hubiera doble incremento por categoría)
+  function aplicarDoubleIncrement(montoBase, indiceBaseline, indiceActual, enabled){
+    const base = Number(montoBase || 0);
+    const ib = Number(indiceBaseline || 1), ia = Number(indiceActual || ib);
+    if (!enabled || ib <= 0) return base;
+    const variacion = (ia/ib) - 1;
+    return base * (1 + variacion * 2);
+  }
+
+  window.CARGOS = {
+    ready: async () => { await ensure(); return true; },
+    getByCategoria,
+    getIndice,
+    getBaselineMonth: () => _baseline,
+    aplicarDoubleIncrement
+  };
+
+  // precarga para no demorar la primera consulta
+  window.CARGOS.ready().then(() => { if (typeof update === 'function') { try { const maybe = update(); if (maybe && typeof maybe.catch === 'function') { maybe.catch(err => console.warn('update error:', err)); } } catch(e){} } });
+})();
+</script>
+<script>
 
 
 /* Selector Mes-Año con <select> nativo, 6 visibles sin reflow + excepción de mes actual faltante */
@@ -610,7 +676,7 @@
       return { total: diasTotal, detalle: detalle.join(' · ') };
     }
 
-            function calculateLiq(start, end, baja) {
+            async function calculateLiq(start, end, baja) {
       if (!start || !end) {
         liqDato.diasLiq.textContent = '0';
         liqBlock.style.display = 'none';
@@ -619,15 +685,24 @@
       }
       liqBlock.style.display = 'block';
       const tipoSel = (typeof getTipoCargo === 'function') ? (getTipoCargo() || '') : '';
-      const esHoras = isHoras();
+      const esHoras = (tipoSel === 'HCNM' || tipoSel === 'HCNS');
       const horasSeleccionadas = esHoras ? Number((typeof getHorasSeleccionadas === 'function' ? getHorasSeleccionadas() : 0) || 0) : 0;
       const categoriaId = esHoras ? 0 : Number((typeof getCategoriaId === 'function' ? getCategoriaId() : 0) || 0);
+      const __cargoNombreWrap = document.getElementById("cargoNombreWrap");
+      const __cargoNombre = document.getElementById("cargoNombre");
+      function __setCargoNombre(txt){
+        if (!__cargoNombreWrap || !__cargoNombre) return;
+        if (txt && String(txt).trim()){
+          __cargoNombre.textContent = txt;
+          __cargoNombreWrap.style.display = 'block';
+        } else {
+          __cargoNombre.textContent = '—';
+          __cargoNombreWrap.style.display = 'none';
+        }
+      }
 
-      // TODO (siguiente paso): cuando integremos el JSON, de acá vamos a traer {A01,A32,A44,total_puntos}
-      let puntos = 0; // se reemplaza con total_puntos del cargo seleccionado
-
-      const indice = parseFloat(inputIndiceMes.value) || 0;
-      const indicePrev = parseFloat(inputIndiceMesPrev.value) || 0;
+      const indiceActual = parseFloat(inputIndiceMes.value) || 0;
+      const indicePrevio = parseFloat(inputIndiceMesPrev.value) || 0;
       const antiguedadAnios = parseFloat(inputAntiguedad.value) || 0;
       const radioPorcentaje = parseFloat(selectRadio.value) || 0;
       const antiguedadPts = getAntiguedad(antiguedadAnios);
@@ -640,16 +715,101 @@
       const mesBaseName = monthNameEs(end.getUTCMonth() + 1);
       liqDato.diasLiq.textContent = `${diasBase} Días - ${mesBaseName} ${end.getUTCFullYear()}`;
       liqDato.diasExc.textContent = diasExc;
-      const sueldoBasico = esHoras ? (horasSeleccionadas * 15 * indice) : (puntos * indice);
-      const a01 = (sueldoBasico / 30) * diasBase;
-      const a03 = (sueldoBasico * (antiguedadPts / 100)) / 30 * diasBase;
-      const a04 = (sueldoBasico * (radioPorcentaje / 100)) / 30 * diasBase;
-      let totalParcial = a01 + a03 + a04;
+      let totalParcial = 0;
+      let a01 = 0;
+      let a03 = 0;
+      let a04 = 0;
+      let a01Exc = 0;
+      let a03Exc = 0;
+      let a04Exc = 0;
+      let sueldoBasico = 0;
+      let sueldoBasicoExc = 0;
 
-      const sueldoBasicoExc = esHoras ? (horasSeleccionadas * 15 * indicePrev) : (puntos * indicePrev);
-      const a01Exc = (sueldoBasicoExc / 30) * diasExc;
-      const a03Exc = (sueldoBasicoExc * (antiguedadPts / 100)) / 30 * diasExc;
-      const a04Exc = (sueldoBasicoExc * (radioPorcentaje / 100)) / 30 * diasExc;
+      // ===== Integración Nomenclador CARGOS (A01/A32/A44) =====
+      {
+        if (typeof window.__ensureA32A44Rows === 'function') window.__ensureA32A44Rows();
+        (function resetA3244(){
+          const r32 = document.getElementById('rowA32'), r44 = document.getElementById('rowA44');
+          const c32 = document.getElementById('a32Importe'), c44 = document.getElementById('a44Importe');
+          if (r32) r32.style.display = 'none';
+          if (r44) r44.style.display = 'none';
+          if (c32) c32.textContent = '0,00';
+          if (c44) c44.textContent = '0,00';
+        })();
+
+        if (esHoras) {
+          __setCargoNombre(null);
+          const horasFactor = horasSeleccionadas * 15;
+          sueldoBasico = horasFactor * indiceActual;
+          sueldoBasicoExc = horasFactor * indicePrevio;
+          a01 = (sueldoBasico / 30) * Number(diasBase || 0);
+          a01Exc = (sueldoBasicoExc / 30) * Number(diasExc || 0);
+        } else {
+          try {
+            await (window.CARGOS?.ready?.());
+          } catch (err) {
+            console.warn('CARGOS ready error:', err);
+          }
+          const cargo = window.CARGOS?.getByCategoria?.(categoriaId);
+
+          if (cargo) {
+            __setCargoNombre(cargo.denominacion || "");
+            const A01pts = Number(cargo.A01 || 0);
+            const A32pts = Number(cargo.A32 || 0);
+            const A44pts = Number(cargo.A44 || 0);
+
+            const mA01 = A01pts * indiceActual;
+            const mA32 = A32pts * indiceActual;
+            const mA44 = A44pts * indiceActual;
+
+            sueldoBasico = mA01;
+            sueldoBasicoExc = A01pts * indicePrevio;
+
+            a01 = (mA01 / 30) * Number(diasBase || 0);
+            a01Exc = (sueldoBasicoExc / 30) * Number(diasExc || 0);
+
+            const a01Cell = document.getElementById('a01Importe'); if (a01Cell) a01Cell.textContent = fmtAR(a01);
+            const a01ExcCell = document.getElementById('a01Exc'); if (a01ExcCell) a01ExcCell.textContent = fmtAR(a01Exc);
+
+            const show32 = A32pts > 0;
+            const show44 = A44pts > 0;
+
+            if (show32) {
+              const a32Base = (mA32 / 30) * Number(diasBase || 0);
+              const row32 = document.getElementById('rowA32'); if (row32) row32.style.display = 'table-row';
+              const a32Cell = document.getElementById('a32Importe'); if (a32Cell) a32Cell.textContent = fmtAR(a32Base);
+              totalParcial += Number(a32Base || 0);
+            }
+            if (show44) {
+              const a44Base = (mA44 / 30) * Number(diasBase || 0);
+              const row44 = document.getElementById('rowA44'); if (row44) row44.style.display = 'table-row';
+              const a44Cell = document.getElementById('a44Importe'); if (a44Cell) a44Cell.textContent = fmtAR(a44Base);
+              totalParcial += Number(a44Base || 0);
+            }
+
+            // Nota: A32/A44 NO se pintan en Complemento (excedente), por pedido explícito.
+          } else {
+            __setCargoNombre(null);
+            const a01Cell = document.getElementById('a01Importe'); if (a01Cell) a01Cell.textContent = '0,00';
+            const a01ExcCell = document.getElementById('a01Exc'); if (a01ExcCell) a01ExcCell.textContent = '0,00';
+            const r32 = document.getElementById('rowA32'), r44 = document.getElementById('rowA44');
+            const c32 = document.getElementById('a32Importe'), c44 = document.getElementById('a44Importe');
+            if (r32) r32.style.display = 'none';
+            if (r44) r44.style.display = 'none';
+            if (c32) c32.textContent = '0,00';
+            if (c44) c44.textContent = '0,00';
+            sueldoBasico = 0;
+            sueldoBasicoExc = 0;
+            a01 = 0;
+            a01Exc = 0;
+          }
+        }
+      }
+
+      a03 = (sueldoBasico * (antiguedadPts / 100)) / 30 * Number(diasBase || 0);
+      a04 = (sueldoBasico * (radioPorcentaje / 100)) / 30 * Number(diasBase || 0);
+      a03Exc = (sueldoBasicoExc * (antiguedadPts / 100)) / 30 * Number(diasExc || 0);
+      a04Exc = (sueldoBasicoExc * (radioPorcentaje / 100)) / 30 * Number(diasExc || 0);
 
       liqDato.a01.textContent = fmtAR(a01);
       liqDato.a03.textContent = fmtAR(a03);
@@ -657,6 +817,8 @@
       liqDato.a01Exc.textContent = fmtAR(a01Exc);
       liqDato.a03Exc.textContent = fmtAR(a03Exc);
       liqDato.a04Exc.textContent = fmtAR(a04Exc);
+
+      totalParcial += Number(a01 || 0) + Number(a03 || 0) + Number(a04 || 0);
 
       let e66Base = 0, e66Exc = 0;
       let e60Base = 0, e60Exc = 0;
@@ -738,13 +900,13 @@
           e60Base = window.CODIGOS.E60.getImporteBase({
             dias: diasBaseCalc,
             antigAnios: antiguedadAnios,
-            indiceActual: indice
+            indiceActual: indiceActual
           }) || 0;
 
           e60Exc = window.CODIGOS.E60.getImporteComplemento({
             dias: diasExcCalc,
             antigAnios: antiguedadAnios,
-            indiceAnterior: indicePrev
+            indiceAnterior: indicePrevio
           }) || 0;
         } else {
           e60Base = 0;
@@ -764,7 +926,7 @@
 
       liqDato.totalParcial.textContent = fmtAR(totalParcial);
     }
-    function update() {
+    async function update() {
       const start = parseDate(inputInicio.value);
       const end = parseDate(inputFin.value);
       const baja = inputBaja.checked;
@@ -777,7 +939,11 @@
         renderDesglose([]);
         diasSAC.textContent = '—';
         decimasBlock.style.display = 'none';
-        calculateLiq(null, null, baja);
+        try {
+          await calculateLiq(null, null, baja);
+        } catch (err) {
+          console.warn('calculateLiq error:', err);
+        }
         return;
       }
 
@@ -796,7 +962,11 @@
       decimasBlock.style.display = (baja && suplente && decimasData.total > 0) ? 'block' : 'none';
 
 
-      calculateLiq(start, end, baja);
+      try {
+        await calculateLiq(start, end, baja);
+      } catch (err) {
+        console.warn('calculateLiq error:', err);
+      }
     }
 
     // Event Listeners
@@ -924,6 +1094,38 @@
       }
     })();
   </script>
+<script>
+(function(){
+  function ensureRowIn(tbody, rowId, code, title, cellId, afterCellId){
+    if (document.getElementById(rowId)) return;
+    const tr = document.createElement('tr'); tr.id = rowId;
+    const td1 = document.createElement('td'); td1.title = title; td1.innerHTML = '<b>'+code+'</b>';
+    const td2 = document.createElement('td'); td2.textContent = '$';
+    const td3 = document.createElement('td'); td3.id = cellId; td3.textContent = '0,00';
+    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+    if (afterCellId) {
+      const afterEl = document.getElementById(afterCellId);
+      if (afterEl) afterEl.parentElement.insertAdjacentElement('afterend', tr);
+      else tbody.appendChild(tr);
+    } else {
+      tbody.appendChild(tr);
+    }
+  }
+
+  // Crea A32/A44 en Base y elimina restos en Complemento si existieran
+  window.__ensureA32A44Rows = function(){
+    const tbodyBase = document.getElementById('liqBaseBody') || document.querySelector('#liqBaseBody');
+    if (tbodyBase){
+      const afterId = 'a04Importe'; // insertar tras A04
+      ensureRowIn(tbodyBase, 'rowA32', 'A32', 'Responsabilidad jerárquica', 'a32Importe', afterId);
+      ensureRowIn(tbodyBase, 'rowA44', 'A44', 'Código especial', 'a44Importe', 'a32Importe');
+    }
+    // borrar cualquier fila A32/A44 en Complemento
+    const a32E = document.getElementById('a32Exc'); if (a32E) a32E.closest('tr')?.remove();
+    const a44E = document.getElementById('a44Exc'); if (a44E) a44E.closest('tr')?.remove();
+  };
+})();
+</script>
   <script>
   document.getElementById('optE66')?.addEventListener('change', () => {
     const on = document.getElementById('optE66').checked;
@@ -1030,5 +1232,7 @@ input.addEventListener('change', ajustarAncho);
   </body>
 
 </html>
+
+
 
 
