@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -52,7 +52,7 @@
             <label class="title" style="display:block;margin-bottom:8px;">Seleccionar Cargos/Horas Cátedra</label>
 
             <!-- Lista desplegable principal -->
-            <label class="muted">Lista desplegable</label>
+            <!-- (REMOVIDO) <label class="muted">Lista desplegable</label> -->
             <select id="tipoSeleccion">
               <option value="">— Seleccionar —</option>
               <option value="CARGOS">Cargos</option>
@@ -63,25 +63,36 @@
             <!-- Panel CARGOS: ingresar categoría/ID -->
             <div id="panelCargos" style="display:none; margin-top:10px;">
               <label class="muted">Cargos</label>
-              <input id="catId" type="number" min="1" step="1" placeholder="Completar con el número de categoría" style="width:22ch;"/>
-              <div class="muted" style="margin-top:6px;">Ej.: 55, 28, 167…</div>
+              <input
+                id="catId"
+                type="text"
+                placeholder="Categoría o nombre"
+                autocomplete="off"
+                spellcheck="false"
+                style="width:22ch;"
+              />
+              <!-- (REMOVIDO) <div class="muted" style="margin-top:6px;">Ej.: 55, 28, 167…</div> -->
               <!-- Denominación del cargo (se muestra solo si hay ID válido) -->
               <div id="cargoNombreWrap" class="muted" style="margin-top:6px; display:none;">
                 <span>Denominación:</span>
                 <span class="title" id="cargoNombre">—</span>
               </div>
             </div>
-
-            <!-- Panel HCNM: horas nivel medio -->
-            <div id="panelHCNM" style="display:none; margin-top:10px;">
-              <label class="muted">Horas Cátedra Nivel Medio</label>
-              <input id="horasHCNM" type="number" min="1" step="1" placeholder="Completar con la cantidad de horas cátedra" style="width:22ch;"/>
-            </div>
-
-            <!-- Panel HCNS: horas nivel superior -->
-            <div id="panelHCNS" style="display:none; margin-top:10px;">
-              <label class="muted">Horas Cátedra Nivel Superior</label>
-              <input id="horasHCNS" type="number" min="1" step="1" placeholder="Completar con la cantidad de horas cátedra" style="width:22ch;"/>
+            <!-- NUEVO: Card grande para Horas Cátedra (HCNM/HCNS) -->
+            <div id="horasCard" style="display:none; margin-top:12px;">
+              <div class="horas-card">
+                <label for="horasValor" class="horas-title">Horas Cátedra</label>
+                <input
+                  id="horasValor"
+                  type="number"
+                  min="1"
+                  max="99"
+                  step="1"
+                  inputmode="numeric"
+                  placeholder="por ej. 3"
+                  aria-label="Cantidad de horas cátedra"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -378,6 +389,35 @@
     if (!_cargos) return null;
     return _cargos.find(c => Number(c.categoria) === Number(cat)) || null;
   }
+  function search(text){
+    if (!_cargos || !Array.isArray(_cargos)) return [];
+    const q = String(text || "").trim().toLowerCase();
+    if (!q) return [];
+    const isNum = /^\d+$/.test(q);
+    let results = [];
+    if (isNum) {
+      results = _cargos.filter(c => String(c.categoria || "").startsWith(q));
+    } else {
+      results = _cargos.filter(c => String(c.denominacion || "").toLowerCase().includes(q));
+    }
+    results.sort((a, b) => {
+      const qa = String(a.categoria), qb = String(b.categoria);
+      const dnA = String(a.denominacion || "").toLowerCase();
+      const dnB = String(b.denominacion || "").toLowerCase();
+      const exactA = (isNum && qa === q) || (!isNum && dnA === q);
+      const exactB = (isNum && qb === q) || (!isNum && dnB === q);
+      if (exactA && !exactB) return -1;
+      if (!exactA && exactB) return 1;
+      const startsA = isNum ? qa.startsWith(q) : dnA.startsWith(q);
+      const startsB = isNum ? qb.startsWith(q) : dnB.startsWith(q);
+      if (startsA && !startsB) return -1;
+      if (!startsA && startsB) return 1;
+      if (dnA < dnB) return -1;
+      if (dnA > dnB) return 1;
+      return Number(a.categoria) - Number(b.categoria);
+    });
+    return results.slice(0, 10);
+  }
   function getIndice(ym){ return Number(_indices?.[ym] || 0); }
 
   // Para el futuro (si hubiera doble incremento por categoría)
@@ -394,7 +434,8 @@
     getByCategoria,
     getIndice,
     getBaselineMonth: () => _baseline,
-    aplicarDoubleIncrement
+    aplicarDoubleIncrement,
+    search
   };
 
   // precarga para no demorar la primera consulta
@@ -1229,9 +1270,255 @@ input.addEventListener('change', ajustarAncho);
     show(sel?.value || '');
   })();
   </script>
+  <script>
+  // === Autocomplete y denominación instantánea para #catId ===
+  (function(){
+    const input = document.getElementById('catId');
+    const wrap  = document.getElementById('cargoNombreWrap');
+    const nameEl= document.getElementById('cargoNombre');
+    if (!input || !wrap || !nameEl) return;
+
+    // Estilos mínimos del dropdown (inyectados sin tocar CSS global)
+    const style = document.createElement('style');
+    style.textContent = `
+      .cat-suggest {
+        position: absolute; z-index: 9999; background: #fff; border:1px solid #d6d6e7;
+        border-radius:10px; box-shadow: 0 6px 20px rgba(0,0,0,.12); width: 100%; max-height: 260px;
+        overflow-y: auto; font-size:14px;
+      }
+      .cat-suggest-item { padding:8px 10px; display:flex; gap:8px; align-items:center; }
+      .cat-suggest-item b { min-width: 56px; text-align:right; }
+      .cat-suggest-item:hover, .cat-suggest-item[aria-selected='true'] { background:#f4f6fb; cursor:pointer; }
+      .cat-suggest-empty { padding:8px 10px; color:#666; }
+      .cat-suggest-wrap { position: relative; display: inline-block; width: 22ch; }
+    `;
+    document.head.appendChild(style);
+
+    // Envolver input para posicionar el dropdown
+    const wrapper = document.createElement('div');
+    wrapper.className = 'cat-suggest-wrap';
+    input.parentNode.insertBefore(wrapper, input);
+    wrapper.appendChild(input);
+
+    // Dropdown
+    const dd = document.createElement('div');
+    dd.className = 'cat-suggest';
+    dd.style.display = 'none';
+    wrapper.appendChild(dd);
+
+    let idx = -1;
+    let items = [];
+    let debounceT = null;
+
+    function showName(txt){
+      if (txt && String(txt).trim()){
+        nameEl.textContent = txt;
+        wrap.style.display = 'block';
+      } else {
+        nameEl.textContent = '-';
+        wrap.style.display = 'none';
+      }
+    }
+
+    async function ensureData(){ try { await window.CARGOS?.ready?.(); } catch(_){} }
+
+    function renderList(list){
+      dd.innerHTML = '';
+      items = list || [];
+      idx = -1;
+      if (!items.length){
+        const empty = document.createElement('div');
+        empty.className = 'cat-suggest-empty';
+        empty.textContent = 'Sin coincidencias...';
+        dd.appendChild(empty);
+        dd.style.display = 'block';
+        return;
+      }
+      items.forEach((c, i) => {
+        const el = document.createElement('div');
+        el.className = 'cat-suggest-item';
+        el.setAttribute('role','option');
+        el.setAttribute('data-index', String(i));
+        el.innerHTML = `<b>${c.categoria}</b> <span>${c.denominacion}</span>`;
+        el.addEventListener('mousedown', (ev) => {
+          ev.preventDefault();
+          choose(i);
+        });
+        dd.appendChild(el);
+      });
+      dd.style.display = 'block';
+    }
+
+    function highlight(newIdx){
+      const nodes = dd.querySelectorAll('.cat-suggest-item');
+      nodes.forEach(n => n.setAttribute('aria-selected','false'));
+      idx = newIdx;
+      if (idx >=0 && idx < nodes.length){
+        nodes[idx].setAttribute('aria-selected','true');
+        const n = nodes[idx];
+        const nTop = n.offsetTop, nBottom = nTop + n.offsetHeight;
+        if (dd.scrollTop > nTop) dd.scrollTop = nTop;
+        else if (dd.scrollTop + dd.clientHeight < nBottom) dd.scrollTop = nBottom - dd.clientHeight;
+      }
+    }
+
+    function closeDD(){ dd.style.display = 'none'; dd.innerHTML = ''; items = []; idx = -1; }
+
+    function choose(i){
+      if (i < 0 || i >= items.length) return;
+      const c = items[i];
+      input.value = String(c.categoria);
+      showName(c.denominacion || '');
+      closeDD();
+      if (typeof window.update === 'function') { try { window.update(); } catch(_){} }
+    }
+
+    async function runSearch(){
+      await ensureData();
+      const q = String(input.value || '').trim();
+      if (!q){
+        showName(null);
+        closeDD();
+        return;
+      }
+      const isNum = /^\d+$/.test(q);
+      if (isNum){
+        const cargo = window.CARGOS?.getByCategoria?.(q);
+        showName(cargo?.denominacion || null);
+        if (cargo && String(cargo.categoria) === q){
+          closeDD();
+        } else {
+          const list = window.CARGOS?.search?.(q) || [];
+          if (list.length && String(list[0].categoria) === q){
+            closeDD();
+          } else {
+            renderList(list);
+          }
+        }
+        return;
+      }
+      const list = window.CARGOS?.search?.(q) || [];
+      renderList(list);
+      if (list.length === 1 && String(list[0].denominacion || '').toLowerCase() === q.toLowerCase()){
+        showName(list[0].denominacion);
+      } else {
+        showName(null);
+      }
+    }
+
+    function scheduleSearch(){
+      if (debounceT) clearTimeout(debounceT);
+      debounceT = setTimeout(runSearch, 120);
+    }
+
+    input.addEventListener('input', scheduleSearch);
+    input.addEventListener('focus', scheduleSearch);
+
+    input.addEventListener('keydown', (ev) => {
+      const open = dd.style.display !== 'none';
+      if (ev.key === 'ArrowDown' && open){
+        ev.preventDefault();
+        highlight(Math.min(idx + 1, items.length - 1));
+      } else if (ev.key === 'ArrowUp' && open){
+        ev.preventDefault();
+        highlight(Math.max(idx - 1, 0));
+      } else if (ev.key === 'Enter'){
+        if (open && idx >= 0){
+          ev.preventDefault();
+          choose(idx);
+        } else {
+          runSearch().then(() => {
+            if (!items.length){
+              const c = window.CARGOS?.getByCategoria?.(input.value);
+              if (c) showName(c.denominacion);
+            }
+          });
+        }
+      } else if (ev.key === 'Escape' && open){
+        ev.preventDefault();
+        closeDD();
+      }
+    });
+
+    document.addEventListener('click', (ev) => {
+      if (!wrapper.contains(ev.target)) closeDD();
+    });
+
+  })();
+  </script>
+  <script>
+  (function(){
+    const sel          = document.getElementById('tipoSeleccion');
+    const panelCargos  = document.getElementById('panelCargos');
+    const horasCard    = document.getElementById('horasCard');
+    const horasInput   = document.getElementById('horasValor');
+
+    if (!sel) return;
+
+    // Exponer helpers si no existen (calculateLiq los usa)
+    if (typeof window.getTipoCargo !== 'function') {
+      window.getTipoCargo = () => sel?.value || '';
+    }
+    if (typeof window.getHorasSeleccionadas !== 'function') {
+      window.getHorasSeleccionadas = () => {
+        const v = Number(horasInput?.value || 0);
+        return Number.isFinite(v) ? v : 0;
+      };
+    }
+
+    function togglePanels(){
+      const v = sel.value;
+      if (v === 'CARGOS') {
+        if (panelCargos) panelCargos.style.display = '';
+        if (horasCard)   horasCard.style.display   = 'none';
+        const cat = document.getElementById('catId');
+        if (cat) cat.focus();
+      } else if (v === 'HCNM' || v === 'HCNS') {
+        if (panelCargos) panelCargos.style.display = 'none';
+        if (horasCard)   horasCard.style.display   = '';
+        if (horasInput)  horasInput.focus();
+      } else {
+        if (panelCargos) panelCargos.style.display = 'none';
+        if (horasCard)   horasCard.style.display   = 'none';
+      }
+      if (typeof window.update === 'function') { try { window.update(); } catch(_){} }
+    }
+
+    sel.addEventListener('change', togglePanels);
+
+    if (horasInput){
+      ['input','change','blur'].forEach(ev =>
+        horasInput.addEventListener(ev, () => {
+          const v = Number(horasInput.value);
+          if (!Number.isNaN(v) && horasInput.value !== '') {
+            horasInput.value = Math.min(99, Math.max(1, v));
+          }
+          if (typeof window.update === 'function') { try { window.update(); } catch(_){} }
+        })
+      );
+    }
+
+    togglePanels();
+  })();
+  </script>
   </body>
 
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

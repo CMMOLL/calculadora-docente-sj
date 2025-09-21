@@ -497,7 +497,9 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 .celda-complemento { display:inline-flex; align-items:center; gap:6px; margin-left:12px; white-space:nowrap; }
 
 #cargoHorasBlock select,
-#cargoHorasBlock input[type="number"] {
+#cargoHorasBlock input[type="number"],
+#cargoHorasBlock input[type="text"],
+#cargoHorasBlock #catId {
   padding: 6px 10px;
   border: 1px solid #d6d6e7;
   border-radius: 10px;
@@ -505,3 +507,50 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 
 #cargoHorasBlock .muted { display: block; margin: 8px 0 4px; }
 
+
+
+
+
+
+
+
+
+
+/* === Card grande Horas Cátedra (HCNM/HCNS) === */
+.horas-card{
+  background:#fff36b;
+  border:1px solid #e0d35c;
+  border-radius:16px;
+  padding:16px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+.horas-card .horas-title{
+  font-weight:700;
+  font-size:16px;
+  color:#5a5200;
+}
+#horasValor{
+  font-size:24px;
+  font-weight:700;
+  text-align:center;
+  width:10ch;
+  padding:10px 12px;
+  border:1px solid #d6d6e7;
+  border-radius:12px;
+  outline:none;
+}
+#horasValor:focus{
+  border-color:#d4a017;
+  box-shadow: 0 0 0 2px rgba(212,160,23,.2);
+}
+
+/* Aseguramos mismo padding que el resto dentro del bloque */
+#cargoHorasBlock select,
+#cargoHorasBlock input[type="number"],
+#cargoHorasBlock input[type="text"],
+#cargoHorasBlock #catId {
+  padding: 6px 10px;
+}
