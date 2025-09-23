@@ -9,18 +9,23 @@ window.__pingMults = async () => {
   return r.ok ? r.json() : null;
 };
 
-// estado global por si falla algo
+// --- Multiplicadores (versión limpia) ---
 window.MULTS = { default: 1, categorias: {} };
 
-// instalar loader al iniciar y exponer helper
 document.addEventListener('DOMContentLoaded', async () => {
-  const data = await __pingMults();              // ya probamos que responde 200
-  if (data) window.MULTS = data;                 // guarda el JSON leído
-  window.getMultiplicador = c => (               // helper global
-    window.MULTS?.categorias?.[String(c)] ?? window.MULTS?.default ?? 1
-  );
-  console.log('[MULTS listo]', window.MULTS);
+  try {
+    const v = window.__assetVersion ? `?v=${encodeURIComponent(window.__assetVersion)}` : `?t=${Date.now()}`;
+    const res = await fetch('data/codigos/multiplicadores.json' + v, { cache: 'no-store' });
+    if (res.ok) window.MULTS = await res.json();
+  } catch (e) {
+    // si falla, MULTS queda con default=1
+  }
 });
+
+// helper global
+window.getMultiplicador = (c) =>
+  (window.MULTS?.categorias?.[String(c)] ?? window.MULTS?.default ?? 1);
+
 
 
   const withV = (url) => window.__assetVersion ? `${url}?v=${window.__assetVersion}` : url;
