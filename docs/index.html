@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -73,10 +73,14 @@
               />
               <!-- (REMOVIDO) <div class="muted" style="margin-top:6px;">Ej.: 55, 28, 167…</div> -->
               <!-- Denominación del cargo (se muestra solo si hay ID válido) -->
-              <div id="cargoNombreWrap" class="muted" style="margin-top:6px; display:none;">
-                <span>Denominación:</span>
-                <span class="title" id="cargoNombre">—</span>
-              </div>
+           <div id="cargoNombreWrap" class="muted" style="margin-top:6px; display:none;">
+  <span>Denominación:</span>
+  <span class="title" id="cargoNombre">—</span>
+  <span id="multBadge" style="display:none; margin-left:8px; padding:2px 6px; border-radius:10px; border:1px solid #d6d6e7;">
+    x1
+  </span>
+</div>
+
             </div>
             <!-- NUEVO: Card grande para Horas Cátedra (HCNM/HCNS) -->
             <div id="horasCard" style="display:none; margin-top:12px;">
@@ -819,6 +823,13 @@
             const A32pts = Number(cargo.A32 || 0);
             const A44pts = Number(cargo.A44 || 0);
 
+            // multiplicador por categoría (si no existe -> 1)
+            const multCat = (typeof getMultiplicador === 'function')
+             ? getMultiplicador(String(categoriaId))
+             : 1;
+
+            // aplicar SOLO al básico (A01)
+            const A01ptsEf = A01pts * multCat;
             const mA01 = A01pts * indiceActual;
             const mA32 = A32pts * indiceActual;
             const mA44 = A44pts * indiceActual;

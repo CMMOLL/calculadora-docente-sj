@@ -1,6 +1,28 @@
 (function(){
   window.CODIGOS = window.CODIGOS || {};
 
+  // --- DIAGNÓSTICO mín. (no altera cálculos) ---
+console.log("[CODIGOS.JS] Cargado desde", location.pathname);
+window.__pingMults = async () => {
+  const r = await fetch('data/codigos/multiplicadores.json', { cache:'no-store' });
+  console.log('[PING MULTS] HTTP', r.status);
+  return r.ok ? r.json() : null;
+};
+
+// estado global por si falla algo
+window.MULTS = { default: 1, categorias: {} };
+
+// instalar loader al iniciar y exponer helper
+document.addEventListener('DOMContentLoaded', async () => {
+  const data = await __pingMults();              // ya probamos que responde 200
+  if (data) window.MULTS = data;                 // guarda el JSON leído
+  window.getMultiplicador = c => (               // helper global
+    window.MULTS?.categorias?.[String(c)] ?? window.MULTS?.default ?? 1
+  );
+  console.log('[MULTS listo]', window.MULTS);
+});
+
+
   const withV = (url) => window.__assetVersion ? `${url}?v=${window.__assetVersion}` : url;
 
   function pctE60(antigAnios){
@@ -59,3 +81,26 @@
     }
   };
 })();
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('catId');
+  const badge = document.getElementById('multBadge');
+
+  function updateBadge() {
+    if (!input || !badge || typeof getMultiplicador !== 'function') return;
+    const cat = String(input.value || '').trim();
+    if (!cat) { badge.style.display = 'none'; return; }
+    const m = getMultiplicador(cat);
+    badge.textContent = 'x' + m;
+    // si es 1 (default) lo escondemos
+    badge.style.display = (Number(m) !== 1) ? 'inline-block' : 'none';
+  }
+
+  // reaccionar cuando el usuario escribe / selecciona categoría
+  input?.addEventListener('input', updateBadge);
+  // y actualizar cuando todo terminó de cargar
+  window.addEventListener('load', updateBadge);
+});
+
+
