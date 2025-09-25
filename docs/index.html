@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -819,30 +819,38 @@
 
           if (cargo) {
             __setCargoNombre(cargo.denominacion || "");
-            const A01pts = Number(cargo.A01 || 0);
+
+            // 1) Obtener el período seleccionado (YYYY-MM) desde el <select id="indicePeriodo">
+            const ymActual = (document.getElementById('indicePeriodo')?.value || '').trim();
+
+            // 2) Asegurar PUNTOS y calcular A01 acumulado (actual y mes previo)
+            try { await window.PUNTOS?.ready?.(); } catch (_) {}
+            const a01Calc = (window.PUNTOS?.getA01For?.(categoriaId, ymActual)) || { actual:0, previo:0 };
+
+            // 3) Puntos A01 acumulados (con deltas y multiplicadores aplicados) + otros códigos tal cual el cargo
+            const A01pts = Number(a01Calc.actual || 0);
+            const A01ptsPrev = Number(a01Calc.previo || 0);
             const A32pts = Number(cargo.A32 || 0);
             const A44pts = Number(cargo.A44 || 0);
 
-            // multiplicador por categoría (si no existe -> 1)
-            const multCat = (typeof getMultiplicador === 'function')
-             ? getMultiplicador(String(categoriaId))
-             : 1;
+            // 4) Multiplicar por índices ya presentes en la UI
+            const mA01     = A01pts * indiceActual;  // sueldo básico del mes seleccionado
+            const mA01Prev = A01ptsPrev * indicePrevio; // sueldo básico del mes anterior (excedente)
 
-            // aplicar SOLO al básico (A01)
-            const A01ptsEf = A01pts * multCat;
-            const mA01 = A01pts * indiceActual;
+            sueldoBasico    = mA01;
+            sueldoBasicoExc = mA01Prev;
+
+            // 5) Prorrateo por días (base y excedente)
+            a01    = (mA01     / 30) * Number(diasBase || 0);
+            a01Exc = (mA01Prev / 30) * Number(diasExc  || 0);
+
+            // 6) Pintar en UI (IDs ya existentes)
+            const a01Cell    = document.getElementById('a01Importe'); if (a01Cell) a01Cell.textContent = fmtAR(a01);
+            const a01ExcCell = document.getElementById('a01Exc');     if (a01ExcCell) a01ExcCell.textContent = fmtAR(a01Exc);
+
+            // Mantener A32/A44 como estaban
             const mA32 = A32pts * indiceActual;
             const mA44 = A44pts * indiceActual;
-
-            sueldoBasico = mA01;
-            sueldoBasicoExc = A01pts * indicePrevio;
-
-            a01 = (mA01 / 30) * Number(diasBase || 0);
-            a01Exc = (sueldoBasicoExc / 30) * Number(diasExc || 0);
-
-            const a01Cell = document.getElementById('a01Importe'); if (a01Cell) a01Cell.textContent = fmtAR(a01);
-            const a01ExcCell = document.getElementById('a01Exc'); if (a01ExcCell) a01ExcCell.textContent = fmtAR(a01Exc);
-
             const show32 = A32pts > 0;
             const show44 = A44pts > 0;
 
@@ -1670,7 +1678,144 @@ input.addEventListener('change', ajustarAncho);
     }
   })();
   </script>
+  <!-- Módulo de PUNTOS (A01 acumulado por mes con incrementos y multiplicadores) -->
+  <script>
+  (function(){
+    // Rutas tolerantes (repo puede tener raíz o docs/data/codigos/)
+    const INC_PATHS = [
+      'docs/data/codigos/incrementos.json',
+      'data/codigos/incrementos.json',
+      'incrementos.json'
+    ];
+    const MUL_PATHS = [
+      'docs/data/codigos/multiplicadores.json',
+      'data/codigos/multiplicadores.json',
+      'multiplicadores.json'
+    ];
+
+    async function fetchFirst(paths){
+      for (const p of paths){
+        try {
+          const url = new URL(p, location.href);
+          if (window.__assetVersion) url.searchParams.set('v', window.__assetVersion);
+          const r = await fetch(url, { cache:'no-store' });
+          if (r.ok) return await r.json();
+        } catch (e) {}
+      }
+      throw new Error('No pude cargar: ' + paths.join(' | '));
+    }
+
+    function ymToNum(ym){ return Number(String(ym).replace('-', '')); }
+    function prevYM(ym){
+      let [y,m] = String(ym).split('-').map(Number);
+      m -= 1; if (m === 0){ y--; m = 12; }
+      return `${y}-${String(m).padStart(2,'0')}`;
+    }
+
+    let INC = null; // { base_month, changes:[{month, delta}] }
+    let MUL = null; // { default, categorias:{cat:mult} }
+
+    async function ensure(){
+      if (INC && MUL) return;
+      const [inc, mul] = await Promise.all([ fetchFirst(INC_PATHS), fetchFirst(MUL_PATHS) ]);
+      INC = inc; MUL = mul;
+    }
+
+    function multForCategoria(categoria){
+      const d = Number(MUL?.default ?? 1);
+      const m = Number(MUL?.categorias?.[String(categoria)] ?? d);
+      return Number.isFinite(m) ? m : 1;
+    }
+
+    // Calcula puntos A01 acumulados desde base_month hasta ymTarget (incl.), duplicando SOLO los deltas si la categoría lo requiere
+    function a01Acumulado(cargo, ymTarget){
+      if (!cargo) return 0;
+      const baseYM = String(INC?.base_month || '2024-08');
+      const tNum = ymToNum(ymTarget);
+      const bNum = ymToNum(baseYM);
+
+      let puntos = Number(cargo.A01 || 0);
+      const mult = multForCategoria(cargo.categoria);
+
+      for (const ch of (INC?.changes || [])){
+        const m = String(ch.month);
+        const n = ymToNum(m);
+        if (n > bNum && n <= tNum){
+          puntos += Number(ch.delta || 0) * mult; // ← se duplican solo los deltas si corresponde
+        }
+      }
+      return puntos;
+    }
+
+    window.PUNTOS = {
+      ready: async () => { await ensure(); return true; },
+      getA01For: (categoria, ymActual) => {
+        const cargo = window.CARGOS?.getByCategoria?.(Number(categoria));
+        if (!cargo || !INC || !MUL) return { actual:0, previo:0 };
+        const ymPrev = prevYM(ymActual);
+        return {
+          actual: a01Acumulado(cargo, ymActual),
+          previo: a01Acumulado(cargo, ymPrev)
+        };
+      },
+      prevYM
+    };
+  })();
+  </script>
+<!-- Activación del Store (vanilla ESM) -->
+<script type="module">
+  import * as Store from './js/store.js';
+
+  // Exponer Store si querés inspeccionar en consola
+  window.Store = Store;
+
+  // Suscribirse: cada cambio de estado dispara el cálculo
+  Store.subscribe(async (s) => {
+    try {
+      if (window.PUNTOS?.ready) await window.PUNTOS.ready();
+
+      // IDs de fechas con fallbacks: primero 'inicio'/'fin' (tus actuales), luego alias
+      const startEl = document.getElementById('inicio')
+                   || document.getElementById('fechaInicio')
+                   || document.getElementById('start')
+                   || document.getElementById('startDate');
+
+      const endEl   = document.getElementById('fin')
+                   || document.getElementById('fechaFin')
+                   || document.getElementById('end')
+                   || document.getElementById('endDate');
+
+      const bajaEl  = document.getElementById('baja');
+
+      const start = startEl?.value || '';
+      const end   = endEl?.value   || '';
+      const baja  = !!(bajaEl?.checked);
+
+      // Evitar primer render vacío: sólo llamar si hay fechas
+      if (start && end && typeof calculateLiq === 'function') {
+        await calculateLiq(start, end, baja);
+      }
+    } catch (e) {
+      console.debug('[Store->calculateLiq] error:', e);
+    }
+  });
+
+  // Inicialización y listeners (agregamos también 'inicio' y 'fin')
+  Store.syncFromDOM();
+
+  ['indicePeriodo', 'catId', 'cargoId', 'diasBase', 'diasExc', 'inicio', 'fin', 'fechaInicio', 'fechaFin']
+    .forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('change', () => Store.syncFromDOM());
+      el.addEventListener('input',  () => Store.syncFromDOM());
+    });
+
+  // 3) Por si otros botones/controles modifican días o categoría, podés llamar:
+  // window.forceSync = () => Store.syncFromDOM();
+</script>
   </body>
 
 </html>
+
 
