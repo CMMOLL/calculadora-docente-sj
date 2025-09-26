@@ -41,6 +41,15 @@
 <script src="js/codigos.js"></script>
 <script src="js/codigos/e66.js"></script>
 
+<script>
+  function prevYMLocal(ym){
+    const [y, m] = String(ym || "").split('-').map(Number);
+    if (!y || !m) return "";
+    const d = new Date(y, m - 1, 1);
+    d.setMonth(d.getMonth() - 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,'0')}`;
+  }
+</script>
 <body>
   <div class="card">
     <h1>Liquidación de Sueldos</h1>
@@ -89,7 +98,8 @@
                 <input
                   id="horasValor"
                   type="number"
-                  min="0"`r`n                  max="99"
+                  min="0"
+                  max="99"
                   step="1"
                   inputmode="numeric"
                   placeholder="por ej. 3"
@@ -788,6 +798,9 @@
       let sueldoBasicoExc = 0;
       const periodoSelect = document.getElementById('indicePeriodo');
       const ymSeleccionado = (periodoSelect?.value || '').trim();
+      const ymPrevSeleccionado = ymSeleccionado
+        ? (window.PUNTOS?.prevYM?.(ymSeleccionado) || prevYMLocal(ymSeleccionado))
+        : '';
 
       // ===== Integración Nomenclador / Horas (A01/A32/A44) =====
       {
@@ -806,16 +819,16 @@
 
         if (esHoras) {
           __setCargoNombre(null);
-          const horas = Math.max(0, Math.floor(Number(horasSeleccionadas || 0)));
+          const horasValidas = Math.max(0, Math.floor(Number(horasSeleccionadas || 0)));
           const nivel = (tipoSel === 'HCNS') ? 'HCNS' : 'HCNM';
           const hcModule = window.CODIGOS?.HC;
-          const importeBase = hcModule?.getImporteBase?.({ ym: ymSeleccionado, dias: diasBaseNum, horas, nivel }) || 0;
-          const importeBaseMensual = hcModule?.getImporteBase?.({ ym: ymSeleccionado, dias: 30, horas, nivel }) || 0;
+          const importeBase = hcModule?.getImporteBase?.({ ym: ymSeleccionado, dias: diasBaseNum, horas: horasValidas, nivel }) || 0;
+          const importeBaseMensual = hcModule?.getImporteBase?.({ ym: ymSeleccionado, dias: 30, horas: horasValidas, nivel }) || 0;
           const importeComplemento = diasExcNum > 0
-            ? (hcModule?.getImporteComplemento?.({ ym: ymSeleccionado, dias: diasExcNum, horas, nivel }) || 0)
+            ? (hcModule?.getImporteComplemento?.({ ym: ymSeleccionado, ymPrev: ymPrevSeleccionado, dias: diasExcNum, horas: horasValidas, nivel }) || 0)
             : 0;
           const importeComplementoMensual = diasExcNum > 0
-            ? (hcModule?.getImporteComplemento?.({ ym: ymSeleccionado, dias: 30, horas, nivel }) || 0)
+            ? (hcModule?.getImporteComplemento?.({ ym: ymSeleccionado, ymPrev: ymPrevSeleccionado, dias: 30, horas: horasValidas, nivel }) || 0)
             : 0;
 
           a01 = importeBase;
@@ -1718,7 +1731,3 @@ input.addEventListener('change', ajustarAncho);
   </body>
 
 </html>
-
-
-
-

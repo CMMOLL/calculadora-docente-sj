@@ -85,35 +85,28 @@ window.getMultiplicador = (c) =>
       return calcE60Prorrateado(indiceAnterior, dias, antigAnios);
     }
   };
+  /* === Helpers Horas Catedra === */
   function getPuntos116Acumulados(ym) {
-    if (window.PUNTOS && typeof window.PUNTOS.get116 === 'function') {
-      const v = Number(window.PUNTOS.get116(ym));
+    const getA01For = window.PUNTOS?.getA01For;
+    if (typeof getA01For === 'function') {
+      const data = getA01For(116, ym) || {};
+      const v = Number(data.actual);
       if (Number.isFinite(v) && v > 0) return v;
     }
-    if (window.CODIGOS?.E66) {
-      const g = window.CODIGOS.E66;
-      if (typeof g.getPuntos116 === 'function') {
-        const v = Number(g.getPuntos116(ym));
-        if (Number.isFinite(v) && v > 0) return v;
-      }
-      if (typeof g.getPuntosCategoria === 'function') {
-        const v = Number(g.getPuntosCategoria(116, ym));
-        if (Number.isFinite(v) && v > 0) return v;
-      }
-    }
-    return 492;
+    const base = Number(window.CARGOS?.getByCategoria?.(116)?.A01);
+    if (Number.isFinite(base) && base > 0) return base;
+    return 0;
   }
 
   function valorHoraMensual(ym, nivel) {
     const divisor = (nivel === 'HCNS') ? 12 : 15;
-    if (!ym || !divisor) return 0;
-    const getIdx = (window.CARGOS?.getIndice?.bind(window.CARGOS)) || (() => 0);
-    const indice = Number(getIdx(ym));
-    if (!Number.isFinite(indice) || indice <= 0) return 0;
+    if (!ym || divisor <= 0) return 0;
+    const indice = Number(window.CARGOS?.getIndice?.(ym) || 0);
+    if (!(indice > 0)) return 0;
     const puntos = getPuntos116Acumulados(ym);
-    if (!Number.isFinite(puntos) || puntos <= 0) return 0;
-    const a01_116 = puntos * indice;
-    return a01_116 / divisor;
+    if (!(puntos > 0)) return 0;
+    const a01Pesos = puntos * indice;
+    return a01Pesos / divisor;
   }
 
   function ymPrevOf(ym) {
@@ -122,9 +115,8 @@ window.getMultiplicador = (c) =>
     if (!Y || !M) return '';
     const d = new Date(Y, M - 1, 1);
     d.setMonth(d.getMonth() - 1);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,'0')}`;
   }
-
   window.CODIGOS.HC = {
     getImporteBase({ ym, dias = 30, horas = 0, nivel = 'HCNM' }) {
       if (!ym) return 0;
