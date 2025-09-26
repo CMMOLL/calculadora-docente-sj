@@ -89,8 +89,7 @@
                 <input
                   id="horasValor"
                   type="number"
-                  min="1"
-                  max="99"
+                  min="0"`r`n                  max="99"
                   step="1"
                   inputmode="numeric"
                   placeholder="por ej. 3"
@@ -741,7 +740,7 @@
       return { total: diasTotal, detalle: detalle.join(' · ') };
     }
 
-            async function calculateLiq(start, end, baja) {
+                async function calculateLiq(start, end, baja) {
       if (!start || !end) {
         liqDato.diasLiq.textContent = '0';
         liqBlock.style.display = 'none';
@@ -753,25 +752,23 @@
       const esHoras = (tipoSel === 'HCNM' || tipoSel === 'HCNS');
       const horasSeleccionadas = esHoras ? Number((typeof getHorasSeleccionadas === 'function' ? getHorasSeleccionadas() : 0) || 0) : 0;
       const categoriaId = esHoras ? 0 : Number((typeof getCategoriaId === 'function' ? getCategoriaId() : 0) || 0);
-      const __cargoNombreWrap = document.getElementById("cargoNombreWrap");
-      const __cargoNombre = document.getElementById("cargoNombre");
-      function __setCargoNombre(txt){
+      const __cargoNombreWrap = document.getElementById('cargoNombreWrap');
+      const __cargoNombre = document.getElementById('cargoNombre');
+      function __setCargoNombre(txt) {
         if (!__cargoNombreWrap || !__cargoNombre) return;
-        if (txt && String(txt).trim()){
+        if (txt && String(txt).trim()) {
           __cargoNombre.textContent = txt;
           __cargoNombreWrap.style.display = 'block';
         } else {
-          __cargoNombre.textContent = '—';
+          __cargoNombre.textContent = '-';
           __cargoNombreWrap.style.display = 'none';
         }
-
       }
       const indiceActual = parseFloat(inputIndiceMes.value) || 0;
       const indicePrevio = parseFloat(inputIndiceMesPrev.value) || 0;
       const antiguedadAnios = parseFloat(inputAntiguedad.value) || 0;
       const radioPorcentaje = parseFloat(selectRadio.value) || 0;
       const antiguedadPts = getAntiguedad(antiguedadAnios);
-      // Recalcular por 30/360 respetando BAJA
       const rowsCalc = breakdown30_360(start, end, baja);
       let totalDays = 0; rowsCalc.forEach(r => totalDays += r.days);
       let diasBase = Math.min(30, totalDays);
@@ -789,11 +786,13 @@
       let a04Exc = 0;
       let sueldoBasico = 0;
       let sueldoBasicoExc = 0;
+      const periodoSelect = document.getElementById('indicePeriodo');
+      const ymSeleccionado = (periodoSelect?.value || '').trim();
 
-      // ===== Integración Nomenclador CARGOS (A01/A32/A44) =====
+      // ===== Integración Nomenclador / Horas (A01/A32/A44) =====
       {
         if (typeof window.__ensureA32A44Rows === 'function') window.__ensureA32A44Rows();
-        (function resetA3244(){
+        (function resetA3244() {
           const r32 = document.getElementById('rowA32'), r44 = document.getElementById('rowA44');
           const c32 = document.getElementById('a32Importe'), c44 = document.getElementById('a44Importe');
           if (r32) r32.style.display = 'none';
@@ -802,13 +801,30 @@
           if (c44) c44.textContent = '0,00';
         })();
 
+        const diasBaseNum = Number(diasBase || 0);
+        const diasExcNum = Number(diasExc || 0);
+
         if (esHoras) {
           __setCargoNombre(null);
-          const horasFactor = horasSeleccionadas * 15;
-          sueldoBasico = horasFactor * indiceActual;
-          sueldoBasicoExc = horasFactor * indicePrevio;
-          a01 = (sueldoBasico / 30) * Number(diasBase || 0);
-          a01Exc = (sueldoBasicoExc / 30) * Number(diasExc || 0);
+          const horas = Math.max(0, Math.floor(Number(horasSeleccionadas || 0)));
+          const nivel = (tipoSel === 'HCNS') ? 'HCNS' : 'HCNM';
+          const hcModule = window.CODIGOS?.HC;
+          const importeBase = hcModule?.getImporteBase?.({ ym: ymSeleccionado, dias: diasBaseNum, horas, nivel }) || 0;
+          const importeBaseMensual = hcModule?.getImporteBase?.({ ym: ymSeleccionado, dias: 30, horas, nivel }) || 0;
+          const importeComplemento = diasExcNum > 0
+            ? (hcModule?.getImporteComplemento?.({ ym: ymSeleccionado, dias: diasExcNum, horas, nivel }) || 0)
+            : 0;
+          const importeComplementoMensual = diasExcNum > 0
+            ? (hcModule?.getImporteComplemento?.({ ym: ymSeleccionado, dias: 30, horas, nivel }) || 0)
+            : 0;
+
+          a01 = importeBase;
+          a01Exc = importeComplemento;
+          sueldoBasico = importeBaseMensual;
+          sueldoBasicoExc = importeComplementoMensual;
+
+          const a01Cell = document.getElementById('a01Importe'); if (a01Cell) a01Cell.textContent = fmtAR(a01);
+          const a01ExcCell = document.getElementById('a01Exc'); if (a01ExcCell) a01ExcCell.textContent = fmtAR(a01Exc);
         } else {
           try {
             await (window.CARGOS?.ready?.());
@@ -818,56 +834,45 @@
           const cargo = window.CARGOS?.getByCategoria?.(categoriaId);
 
           if (cargo) {
-            __setCargoNombre(cargo.denominacion || "");
+            __setCargoNombre(cargo.denominacion || '');
 
-            // 1) Obtener el período seleccionado (YYYY-MM) desde el <select id="indicePeriodo">
-            const ymActual = (document.getElementById('indicePeriodo')?.value || '').trim();
-
-            // 2) Asegurar PUNTOS y calcular A01 acumulado (actual y mes previo)
             try { await window.PUNTOS?.ready?.(); } catch (_) {}
-            const a01Calc = (window.PUNTOS?.getA01For?.(categoriaId, ymActual)) || { actual:0, previo:0 };
+            const a01Calc = window.PUNTOS?.getA01For?.(categoriaId, ymSeleccionado) || { actual: 0, previo: 0 };
 
-            // 3) Puntos A01 acumulados (con deltas y multiplicadores aplicados) + otros códigos tal cual el cargo
             const A01pts = Number(a01Calc.actual || 0);
             const A01ptsPrev = Number(a01Calc.previo || 0);
             const A32pts = Number(cargo.A32 || 0);
             const A44pts = Number(cargo.A44 || 0);
 
-            // 4) Multiplicar por índices ya presentes en la UI
-            const mA01     = A01pts * indiceActual;  // sueldo básico del mes seleccionado
-            const mA01Prev = A01ptsPrev * indicePrevio; // sueldo básico del mes anterior (excedente)
-
-            sueldoBasico    = mA01;
-            sueldoBasicoExc = mA01Prev;
-
-            // 5) Prorrateo por días (base y excedente)
-            a01    = (mA01     / 30) * Number(diasBase || 0);
-            a01Exc = (mA01Prev / 30) * Number(diasExc  || 0);
-
-            // 6) Pintar en UI (IDs ya existentes)
-            const a01Cell    = document.getElementById('a01Importe'); if (a01Cell) a01Cell.textContent = fmtAR(a01);
-            const a01ExcCell = document.getElementById('a01Exc');     if (a01ExcCell) a01ExcCell.textContent = fmtAR(a01Exc);
-
-            // Mantener A32/A44 como estaban
+            const mA01 = A01pts * indiceActual;
+            const mA01Prev = A01ptsPrev * indicePrevio;
             const mA32 = A32pts * indiceActual;
             const mA44 = A44pts * indiceActual;
+
+            sueldoBasico = mA01;
+            sueldoBasicoExc = mA01Prev;
+
+            a01 = (mA01 / 30) * diasBaseNum;
+            a01Exc = (mA01Prev / 30) * diasExcNum;
+
+            const a01Cell = document.getElementById('a01Importe'); if (a01Cell) a01Cell.textContent = fmtAR(a01);
+            const a01ExcCell = document.getElementById('a01Exc'); if (a01ExcCell) a01ExcCell.textContent = fmtAR(a01Exc);
+
             const show32 = A32pts > 0;
             const show44 = A44pts > 0;
 
             if (show32) {
-              const a32Base = (mA32 / 30) * Number(diasBase || 0);
+              const a32Base = (mA32 / 30) * diasBaseNum;
               const row32 = document.getElementById('rowA32'); if (row32) row32.style.display = 'table-row';
               const a32Cell = document.getElementById('a32Importe'); if (a32Cell) a32Cell.textContent = fmtAR(a32Base);
               totalParcial += Number(a32Base || 0);
             }
             if (show44) {
-              const a44Base = (mA44 / 30) * Number(diasBase || 0);
+              const a44Base = (mA44 / 30) * diasBaseNum;
               const row44 = document.getElementById('rowA44'); if (row44) row44.style.display = 'table-row';
               const a44Cell = document.getElementById('a44Importe'); if (a44Cell) a44Cell.textContent = fmtAR(a44Base);
               totalParcial += Number(a44Base || 0);
             }
-
-            // Nota: A32/A44 NO se pintan en Complemento (excedente), por pedido explícito.
           } else {
             __setCargoNombre(null);
             const a01Cell = document.getElementById('a01Importe'); if (a01Cell) a01Cell.textContent = '0,00';
@@ -905,7 +910,6 @@
 
       /* === E66 (30d escalado por índice) + F66 (excedente mes anterior) === */
       function updateComplementoRow(code, visible, valor) {
-        // Soporta F66, F60, F56 y el “E29 en complemento” (E29C)
         const rowId = (code === 'E29C') ? 'rowE29_comp' : ('row' + code);
         const cellId =
           code === 'F66'  ? 'f66Importe'     :
@@ -921,7 +925,7 @@
                                     .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       }
 
-      (async function calcE66(){
+      (async function calcE66() {
         const chk = document.getElementById('optE66');
         const rowE = document.getElementById('rowE66');
         const outE = document.getElementById('e66Importe');
@@ -956,7 +960,6 @@
           });
 
           if (outE) outE.textContent = (base || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          // Solo Complemento para F66:
           updateComplementoRow('F66', usar && (Number(diasExc || 0) > 0), exc);
 
           if (typeof totalParcial === 'number') {
@@ -1002,7 +1005,6 @@
         if (outBase) outBase.textContent = (e60Base || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
         if (rowE60) rowE60.style.display = (chk.checked && esCargo) ? 'table-row' : 'none';
-        // Solo Complemento para F60:
         updateComplementoRow('F60', usarE60 && (Number(diasExc) > 0), e60Exc);
 
         if (usarE60) {
@@ -1010,30 +1012,25 @@
         }
       })();
 
-      // === Complemento: F56 (si A56 tildado) y E29 (mismo código; solo CARGOS) ===
-      (function complementoExtras(){
+      (function complementoExtras() {
         const diasExcNum = Number(diasExc || 0);
 
-        // A56 -> F56 en complemento (si hay excedente)
         const a56Checked = document.getElementById('optA56')?.checked === true;
         updateComplementoRow('F56', a56Checked && diasExcNum > 0, 0);
 
-        // E29 en complemento: SOLO si es CARGOS (no HCNM/HCNS), hay excedente y E29 aparece en 30 días
-        const tipoSel = (typeof getTipoCargo === 'function') ? (getTipoCargo() || '') : '';
-        const esHoras = (tipoSel === 'HCNM' || tipoSel === 'HCNS');
-        const esCargo = !esHoras;
+        const tipoSelLocal = (typeof getTipoCargo === 'function') ? (getTipoCargo() || '') : '';
+        const esHorasLocal = (tipoSelLocal === 'HCNM' || tipoSelLocal === 'HCNS');
+        const esCargo = !esHorasLocal;
 
         const rowE29Base = document.getElementById('rowE29');
         const e29BaseVisible = !!rowE29Base && rowE29Base.style.display !== 'none';
 
-        // Regla pedida: E29 en complemento sólo para CARGOS, cuando el E29 base está presente y hay excedente
         const showE29Comp = esCargo && (diasExcNum > 0) && e29BaseVisible;
         updateComplementoRow('E29C', showE29Comp, 0);
-
-        // NOTA: Importes = 0,00 por ahora; luego definimos la fórmula.
       })();
       liqDato.totalParcial.textContent = fmtAR(totalParcial);
     }
+
     async function update() {
       const start = parseDate(inputInicio.value);
       const end = parseDate(inputFin.value);
@@ -1288,56 +1285,6 @@ input.addEventListener('change', ajustarAncho);
   </script>
 
   <script>
-  /* === Nuevo controlador del menú Cargos/Horas === */
-  (function(){
-    const sel = document.getElementById('tipoSeleccion');
-    const pCargos = document.getElementById('panelCargos');
-    const pHCNM  = document.getElementById('panelHCNM');
-    const pHCNS  = document.getElementById('panelHCNS');
-    const catId  = document.getElementById('catId');
-    const horasM = document.getElementById('horasHCNM');
-    const horasS = document.getElementById('horasHCNS');
-
-    function show(panel){
-      if (pCargos) pCargos.style.display = (panel === 'CARGOS') ? 'block' : 'none';
-      if (pHCNM)  pHCNM.style.display   = (panel === 'HCNM')   ? 'block' : 'none';
-      if (pHCNS)  pHCNS.style.display   = (panel === 'HCNS')   ? 'block' : 'none';
-    }
-
-    sel?.addEventListener('change', () => {
-      show(sel.value || '');
-      if (typeof update === 'function') { try { update(); } catch {} }
-    });
-
-    [catId, horasM, horasS].forEach(el => {
-      if (!el) return;
-      el.addEventListener('input', () => { if (typeof update === 'function') { try { update(); } catch {} } });
-    });
-
-    // === Helpers globales que usa el resto de la app ===
-    window.getTipoCargo = function(){
-      // Devuelve 'CARGOS' | 'HCNM' | 'HCNS' | '' según selección
-      return sel?.value || '';
-    };
-    window.getHorasSeleccionadas = function(){
-      // Según tipo, devuelve número de horas o 0
-      const t = window.getTipoCargo();
-      if (t === 'HCNM') return Number(horasM?.value || 0);
-      if (t === 'HCNS') return Number(horasS?.value || 0);
-      return 0;
-    };
-    window.getCategoriaId = function(){
-      // Solo para CARGOS; devuelve la categoría ingresada (ID del cargo)
-      const t = window.getTipoCargo();
-      if (t === 'CARGOS') return Number(catId?.value || 0);
-      return 0;
-    };
-
-    // Estado inicial
-    show(sel?.value || '');
-  })();
-  </script>
-  <script>
   // === Autocomplete y denominación instantánea para #catId ===
   (function(){
     const input = document.getElementById('catId');
@@ -1514,61 +1461,6 @@ input.addEventListener('change', ajustarAncho);
   })();
   </script>
   <script>
-  (function(){
-    const sel          = document.getElementById('tipoSeleccion');
-    const panelCargos  = document.getElementById('panelCargos');
-    const horasCard    = document.getElementById('horasCard');
-    const horasInput   = document.getElementById('horasValor');
-
-    if (!sel) return;
-
-    // Exponer helpers si no existen (calculateLiq los usa)
-    if (typeof window.getTipoCargo !== 'function') {
-      window.getTipoCargo = () => sel?.value || '';
-    }
-    if (typeof window.getHorasSeleccionadas !== 'function') {
-      window.getHorasSeleccionadas = () => {
-        const v = Number(horasInput?.value || 0);
-        return Number.isFinite(v) ? v : 0;
-      };
-    }
-
-    function togglePanels(){
-      const v = sel.value;
-      if (v === 'CARGOS') {
-        if (panelCargos) panelCargos.style.display = '';
-        if (horasCard)   horasCard.style.display   = 'none';
-        const cat = document.getElementById('catId');
-        if (cat) cat.focus();
-      } else if (v === 'HCNM' || v === 'HCNS') {
-        if (panelCargos) panelCargos.style.display = 'none';
-        if (horasCard)   horasCard.style.display   = '';
-        if (horasInput)  horasInput.focus();
-      } else {
-        if (panelCargos) panelCargos.style.display = 'none';
-        if (horasCard)   horasCard.style.display   = 'none';
-      }
-      if (typeof window.update === 'function') { try { window.update(); } catch(_){} }
-    }
-
-    sel.addEventListener('change', togglePanels);
-
-    if (horasInput){
-      ['input','change','blur'].forEach(ev =>
-        horasInput.addEventListener(ev, () => {
-          const v = Number(horasInput.value);
-          if (!Number.isNaN(v) && horasInput.value !== '') {
-            horasInput.value = Math.min(99, Math.max(1, v));
-          }
-          if (typeof window.update === 'function') { try { window.update(); } catch(_){} }
-        })
-      );
-    }
-
-    togglePanels();
-  })();
-  </script>
-  <script>
   // === Autocompletar Fecha Fin con último día del mes actual ===
   (function(){
     const inicio = document.getElementById('inicio');
@@ -1681,7 +1573,6 @@ input.addEventListener('change', ajustarAncho);
   <!-- Módulo de PUNTOS (A01 acumulado por mes con incrementos y multiplicadores) -->
   <script>
   (function(){
-    // Rutas tolerantes (repo puede tener raíz o docs/data/codigos/)
     const INC_PATHS = [
       'docs/data/codigos/incrementos.json',
       'data/codigos/incrementos.json',
@@ -1712,8 +1603,8 @@ input.addEventListener('change', ajustarAncho);
       return `${y}-${String(m).padStart(2,'0')}`;
     }
 
-    let INC = null; // { base_month, changes:[{month, delta}] }
-    let MUL = null; // { default, categorias:{cat:mult} }
+    let INC = null;
+    let MUL = null;
 
     async function ensure(){
       if (INC && MUL) return;
@@ -1727,7 +1618,6 @@ input.addEventListener('change', ajustarAncho);
       return Number.isFinite(m) ? m : 1;
     }
 
-    // Calcula puntos A01 acumulados desde base_month hasta ymTarget (incl.), duplicando SOLO los deltas si la categoría lo requiere
     function a01Acumulado(cargo, ymTarget){
       if (!cargo) return 0;
       const baseYM = String(INC?.base_month || '2024-08');
@@ -1741,7 +1631,7 @@ input.addEventListener('change', ajustarAncho);
         const m = String(ch.month);
         const n = ymToNum(m);
         if (n > bNum && n <= tNum){
-          puntos += Number(ch.delta || 0) * mult; // ← se duplican solo los deltas si corresponde
+          puntos += Number(ch.delta || 0) * mult;
         }
       }
       return puntos;
@@ -1766,32 +1656,25 @@ input.addEventListener('change', ajustarAncho);
 <script type="module">
   import * as Store from './js/store.js';
 
-  // Exponer Store si querés inspeccionar en consola
   window.Store = Store;
 
-  // Suscribirse: cada cambio de estado dispara el cálculo
-  Store.subscribe(async (s) => {
+  Store.subscribe(async () => {
     try {
       if (window.PUNTOS?.ready) await window.PUNTOS.ready();
-
-      // IDs de fechas con fallbacks: primero 'inicio'/'fin' (tus actuales), luego alias
       const startEl = document.getElementById('inicio')
                    || document.getElementById('fechaInicio')
                    || document.getElementById('start')
                    || document.getElementById('startDate');
-
       const endEl   = document.getElementById('fin')
                    || document.getElementById('fechaFin')
                    || document.getElementById('end')
                    || document.getElementById('endDate');
-
       const bajaEl  = document.getElementById('baja');
 
       const start = startEl?.value || '';
       const end   = endEl?.value   || '';
       const baja  = !!(bajaEl?.checked);
 
-      // Evitar primer render vacío: sólo llamar si hay fechas
       if (start && end && typeof calculateLiq === 'function') {
         await calculateLiq(start, end, baja);
       }
@@ -1800,7 +1683,6 @@ input.addEventListener('change', ajustarAncho);
     }
   });
 
-  // Inicialización y listeners (agregamos también 'inicio' y 'fin')
   Store.syncFromDOM();
 
   ['indicePeriodo', 'catId', 'cargoId', 'diasBase', 'diasExc', 'inicio', 'fin', 'fechaInicio', 'fechaFin']
@@ -1810,12 +1692,33 @@ input.addEventListener('change', ajustarAncho);
       el.addEventListener('change', () => Store.syncFromDOM());
       el.addEventListener('input',  () => Store.syncFromDOM());
     });
-
-  // 3) Por si otros botones/controles modifican días o categoría, podés llamar:
-  // window.forceSync = () => Store.syncFromDOM();
 </script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const horasInp = document.getElementById('horasValor');
+    if (!horasInp) return;
+
+    horasInp.addEventListener('input', () => {
+      if (typeof update === 'function') {
+        try { update(); } catch (e) {}
+      }
+    });
+
+    horasInp.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        if (typeof update === 'function') {
+          try { update(); } catch (e) {}
+        }
+        horasInp.blur();
+      }
+    });
+  });
+  </script>
   </body>
 
 </html>
+
+
 
 

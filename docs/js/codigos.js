@@ -85,9 +85,119 @@ window.getMultiplicador = (c) =>
       return calcE60Prorrateado(indiceAnterior, dias, antigAnios);
     }
   };
+  function getPuntos116Acumulados(ym) {
+    if (window.PUNTOS && typeof window.PUNTOS.get116 === 'function') {
+      const v = Number(window.PUNTOS.get116(ym));
+      if (Number.isFinite(v) && v > 0) return v;
+    }
+    if (window.CODIGOS?.E66) {
+      const g = window.CODIGOS.E66;
+      if (typeof g.getPuntos116 === 'function') {
+        const v = Number(g.getPuntos116(ym));
+        if (Number.isFinite(v) && v > 0) return v;
+      }
+      if (typeof g.getPuntosCategoria === 'function') {
+        const v = Number(g.getPuntosCategoria(116, ym));
+        if (Number.isFinite(v) && v > 0) return v;
+      }
+    }
+    return 492;
+  }
+
+  function valorHoraMensual(ym, nivel) {
+    const divisor = (nivel === 'HCNS') ? 12 : 15;
+    if (!ym || !divisor) return 0;
+    const getIdx = (window.CARGOS?.getIndice?.bind(window.CARGOS)) || (() => 0);
+    const indice = Number(getIdx(ym));
+    if (!Number.isFinite(indice) || indice <= 0) return 0;
+    const puntos = getPuntos116Acumulados(ym);
+    if (!Number.isFinite(puntos) || puntos <= 0) return 0;
+    const a01_116 = puntos * indice;
+    return a01_116 / divisor;
+  }
+
+  function ymPrevOf(ym) {
+    if (window.PUNTOS?.prevYM) return window.PUNTOS.prevYM(ym);
+    const [Y, M] = String(ym || '').split('-').map(Number);
+    if (!Y || !M) return '';
+    const d = new Date(Y, M - 1, 1);
+    d.setMonth(d.getMonth() - 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  window.CODIGOS.HC = {
+    getImporteBase({ ym, dias = 30, horas = 0, nivel = 'HCNM' }) {
+      if (!ym) return 0;
+      const vh = valorHoraMensual(ym, nivel);
+      if (!vh) return 0;
+      const importe = vh * Number(horas || 0) * (Number(dias || 0) / 30);
+      return Math.round(importe * 100) / 100;
+    },
+    getImporteComplemento({ ym, ymPrev, dias = 0, horas = 0, nivel = 'HCNM' }) {
+      if (!ym) return 0;
+      const key = ymPrev || ymPrevOf(ym);
+      if (!key) return 0;
+      const vhPrev = valorHoraMensual(key, nivel);
+      if (!vhPrev) return 0;
+      const importe = vhPrev * Number(horas || 0) * (Number(dias || 0) / 30);
+      return Math.round(importe * 100) / 100;
+    }
+  };
 })();
 
 
+// === Getters necesarios por calculateLiq (HCNM/HCNS) ===
+window.getTipoCargo = function () {
+  const el = document.getElementById('tipoSeleccion');
+  return (el?.value || '').trim();
+};
+
+window.getCategoriaId = function () {
+  const el = document.getElementById('catId');
+  const n = Number(el?.value || 0);
+  return Number.isFinite(n) ? n : 0;
+};
+
+window.getHorasSeleccionadas = function () {
+  const el = document.getElementById('horasValor');
+  const raw = (el?.value ?? '').trim();
+  if (raw === '') return 0;
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+};
+
+// === Toggle de paneles y recálculo para Horas Cátedra ===
+document.addEventListener('DOMContentLoaded', () => {
+  const selTipo = document.getElementById('tipoSeleccion');
+  const panelCarg = document.getElementById('panelCargos');
+  const horasCard = document.getElementById('horasCard');
+
+  function refreshPanels() {
+    const t = window.getTipoCargo();
+    if (t === 'CARGOS') {
+      if (panelCarg) panelCarg.style.display = 'block';
+      if (horasCard) horasCard.style.display = 'none';
+    } else if (t === 'HCNM' || t === 'HCNS') {
+      if (panelCarg) panelCarg.style.display = 'none';
+      if (horasCard) horasCard.style.display = 'block';
+    } else {
+      if (panelCarg) panelCarg.style.display = 'none';
+      if (horasCard) horasCard.style.display = 'none';
+    }
+
+    ['rowHCNM','rowHCNS','rowHCNM_comp','rowHCNS_comp'].forEach((id) => {
+      const tr = document.getElementById(id);
+      if (tr) tr.style.display = 'none';
+    });
+
+    if (typeof update === 'function') {
+      try { update(); } catch (e) {}
+    }
+  }
+
+  selTipo?.addEventListener('change', refreshPanels);
+  refreshPanels();
+});
 document.addEventListener('DOMContentLoaded', () => {
   const input = document.getElementById('catId');
   const badge = document.getElementById('multBadge');
@@ -107,5 +217,3 @@ document.addEventListener('DOMContentLoaded', () => {
   // y actualizar cuando todo terminó de cargar
   window.addEventListener('load', updateBadge);
 });
-
-
