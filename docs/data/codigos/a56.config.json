@@ -1,8 +1,6 @@
 {
-  "baselineMonth": "2024-08",
+  "baselineMonth": "2024-01",
   "cargoBase": 53388.38,
-  "maxHoras": {
-    "HCNM": 18,
-    "HCNS": 15
-  }
+  "mode": "index_ratio",
+  "maxHoras": { "HCNM": 18, "HCNS": 15 }
 }

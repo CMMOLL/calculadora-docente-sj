@@ -210,67 +210,183 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('load', updateBadge);
 });
 
-/* ===== A56 / F56 por índice (sin E66/PUNTOS) ===== */
+/* ===== A56/F56 Estado Docente (excepciones 2024 + cascada 2025) ===== */
 (function(){
   window.CODIGOS = window.CODIGOS || {};
-  const A56 = {};
-  let CFG = null;
 
-  async function ensure(){
-    if (!CFG) {
-      try {
-        const r = await fetch('data/codigos/a56.config.json', { cache: 'no-store' });
-        CFG = await r.json();
-      } catch (e) {
-        CFG = { baselineMonth: '2024-08', cargoBase: 53388.38, maxHoras: { HCNM: 18, HCNS: 15 } };
-      }
+  // === A56: Estado Docente =====================================================
+  // Fuente unica de verdad: indices.json ya cargado en memoria.
+  // Se asume un objeto global INDICES o un getter getIndice(ym).
+  // Si tu proyecto expone otra variable, ajusta la funcion getIdx.
+
+  const DEFAULT_CFG = {
+    baselineMonth: '2024-01',
+    cargoBase: 53388.38,
+    mode: 'index_ratio',
+    maxHoras: { HCNM: 18, HCNS: 15 }
+  };
+
+  const A56 = {};
+  let CFG = { ...DEFAULT_CFG };
+  let cfgLoaded = false;
+  let indicesCheckDone = false;
+
+  async function ready(){
+    if (cfgLoaded) return true;
+    try {
+      const resp = await fetch('data/codigos/a56.config.json', { cache:'no-store' });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      CFG = {
+        ...DEFAULT_CFG,
+        ...data,
+        maxHoras: { ...DEFAULT_CFG.maxHoras, ...(data?.maxHoras || {}) }
+      };
+    } catch(err) {
+      CFG = { ...DEFAULT_CFG };
+      console.warn('[A56] Config por defecto aplicada:', err);
     }
+    cfgLoaded = true;
     return true;
   }
 
-  function getIndice(ym){
-    return Number(window.CARGOS?.getIndice?.(ym) || 0);
+  const YM = (y, m) => `${y}-${String(m).padStart(2, '0')}`;
+
+  function getIdx(ym){
+    const valFromCargos = Number(window.CARGOS?.getIndice?.(ym));
+    if (Number.isFinite(valFromCargos) && valFromCargos > 0) return valFromCargos;
+    const map = (window.INDICES && (window.INDICES.indices || window.INDICES)) || window.indices || {};
+    const fallback = Number(map?.[ym]);
+    if (Number.isFinite(fallback) && fallback > 0) return fallback;
+    throw new Error(`[A56] Indice no encontrado para ${ym}`);
   }
 
-  function ratio(ym){
-    const i0 = getIndice(CFG.baselineMonth);
-    const it = getIndice(ym);
-    if (!(i0 > 0 && it > 0)) return 0;
-    return it / i0;
+  function validarIndicesEsperados(){
+    try {
+      const mar = getIdx(YM(2024, 3));
+      const abr = getIdx(YM(2024, 4));
+      const pct = (abr / mar) - 1;
+      if (Math.abs(pct - 0.08333) > 0.001) {
+        console.warn(`[A56] Advertencia: Mar->Abr no es +8.333%. Valor detectado: ${(pct * 100).toFixed(3)}%`);
+      }
+    } catch(err) {
+      console.warn('[A56] No se pudo validar Mar->Abr:', err.message || err);
+    }
+    try {
+      const nov = getIdx(YM(2024, 11));
+      const dic = getIdx(YM(2024, 12));
+      const pct = (dic / nov) - 1;
+      if (Math.abs(pct - 0.024) > 0.0008) {
+        console.warn(`[A56] Advertencia: Nov->Dic no es +2.4%. Valor detectado: ${(pct * 100).toFixed(3)}%`);
+      }
+    } catch(err) {
+      console.warn('[A56] No se pudo validar Nov->Dic:', err.message || err);
+    }
   }
 
-  function baseHora(nivel){
-    const cargo = Number(CFG.cargoBase || 0);
-    if (!(cargo > 0)) return 0;
-    return (nivel === 'HCNS') ? (cargo / 15) : (cargo / 18);
+  function getBaselineMonth(){
+    return String(CFG?.baselineMonth || DEFAULT_CFG.baselineMonth);
+  }
+
+  function getCargoBase(){
+    return Number(CFG?.cargoBase ?? DEFAULT_CFG.cargoBase);
+  }
+
+  function general2024(ym){
+    const base = getCargoBase();
+    if (!(base > 0)) return 0;
+    const idxMes = getIdx(ym);
+    const idxBase = getIdx(getBaselineMonth());
+    if (!(idxBase > 0)) return 0;
+    return base * (idxMes / idxBase);
+  }
+
+  const A56_OCT_FIJO = 106275.46;
+
+  function valorOct2024(){
+    return A56_OCT_FIJO;
+  }
+
+  function valorNov2024(){
+    const idxOct = getIdx(YM(2024, 10));
+    const idxNov = getIdx(YM(2024, 11));
+    if (!(idxOct > 0) || !(idxNov > 0)) return 0;
+    const factor = (idxNov / idxOct) + 0.01;
+    return valorOct2024() * factor;
+  }
+
+  function valorDic2024(){
+    return valorNov2024() * 1.024;
+  }
+
+  function desde2025(ym){
+    const idxDic = getIdx(YM(2024, 12));
+    const idxObj = getIdx(ym);
+    if (!(idxDic > 0) || !(idxObj > 0)) return 0;
+    return valorDic2024() * (idxObj / idxDic);
   }
 
   function clampHoras(nivel, horas){
-    const max = (nivel === 'HCNS') ? (CFG.maxHoras?.HCNS || 15) : (CFG.maxHoras?.HCNM || 18);
+    const max = (nivel === 'HCNS') ? (CFG.maxHoras?.HCNS || DEFAULT_CFG.maxHoras.HCNS) : (CFG.maxHoras?.HCNM || DEFAULT_CFG.maxHoras.HCNM);
     const h = Math.max(0, Math.floor(Number(horas || 0)));
     return Math.min(h, max);
   }
 
-  function prorratear(mensual, dias){
+  function prorrateo(mensual, dias){
     return (Number(mensual || 0) / 30) * Number(dias || 0);
   }
 
+  // === API ===
+  A56.ready = ready;
+
   A56.mensualCargo = function(ym){
-    const r = ratio(ym);
-    if (!r) return 0;
-    return Number(CFG.cargoBase || 0) * r;
+    if (!ym) return 0;
+    const mode = String(CFG?.mode || DEFAULT_CFG.mode);
+    if (mode !== 'index_ratio') return 0;
+    if (!indicesCheckDone) {
+      try { validarIndicesEsperados(); } catch(err) { console.warn('[A56] Validacion de indices:', err); }
+      indicesCheckDone = true;
+    }
+    try {
+      const parts = String(ym).split('-');
+      const y = Number(parts[0]);
+      const m = Number(parts[1]);
+      if (!Number.isFinite(y) || !Number.isFinite(m)) return 0;
+      if (y === 2024) {
+        if (m <= 9) return general2024(ym);
+        if (m === 10) return valorOct2024();
+        if (m === 11) return valorNov2024();
+        if (m === 12) return valorDic2024();
+      }
+      if (y >= 2025) return desde2025(ym);
+      return general2024(ym);
+    } catch(err) {
+      console.warn('[A56] mensualCargo error para', ym, err);
+      return 0;
+    }
   };
 
   A56.mensualHora = function(ym, nivel, horas){
-    const r = ratio(ym);
-    if (!r) return 0;
-    const hBase = baseHora(nivel);
+    const mCargo = A56.mensualCargo(ym);
+    const divisor = (nivel === 'HCNS') ? 15 : 18;
     const h = clampHoras(nivel, horas);
-    return hBase * h * r;
+    return (mCargo / divisor) * h;
   };
 
-  A56.prorrateo = prorratear;
-  A56.ready = ensure;
+  A56.prorrateo = function(mensual, dias){
+    const valor = prorrateo(mensual, dias);
+    return Math.round(valor * 100) / 100;
+  };
+
+  A56.hcnm = function(valorCargo){ return valorCargo / 18; };
+  A56.hcns = function(valorCargo){ return valorCargo / 15; };
 
   window.CODIGOS.A56 = A56;
 })();
+
+
+
+
+
+
+
