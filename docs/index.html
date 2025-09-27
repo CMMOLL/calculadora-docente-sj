@@ -50,6 +50,50 @@
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,'0')}`;
   }
 </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const selMes   = document.getElementById('indicePeriodo');
+    const selTipo  = document.getElementById('tipoSeleccion');
+    const horasInp = document.getElementById('horasValor');
+
+    function save(){
+      const data = {
+        ym: selMes?.value || '',
+        tipo: selTipo?.value || '',
+        horas: horasInp?.value || ''
+      };
+      try { localStorage.setItem('liq_prefs', JSON.stringify(data)); } catch (e) {}
+    }
+
+    function load(){
+      try {
+        const raw = localStorage.getItem('liq_prefs');
+        if (!raw) return;
+        const d = JSON.parse(raw) || {};
+        if (selMes && d.ym) selMes.value = d.ym;
+        if (selTipo && d.tipo) selTipo.value = d.tipo;
+        if (horasInp) horasInp.value = d.horas ?? '';
+      } catch (e) {}
+    }
+
+    const triggerUpdate = () => {
+      if (typeof update === 'function') {
+        try { update(); } catch (e) {}
+      }
+    };
+
+    load();
+
+    selMes?.addEventListener('change', () => { save(); triggerUpdate(); });
+    selTipo?.addEventListener('change', () => { save(); triggerUpdate(); });
+    horasInp?.addEventListener('input', () => { save(); triggerUpdate(); });
+
+    if (selTipo) selTipo.dispatchEvent(new Event('change'));
+    if (selMes) selMes.dispatchEvent(new Event('change'));
+    triggerUpdate();
+  });
+</script>
 <body>
   <div class="card">
     <h1>Liquidación de Sueldos</h1>
@@ -1711,12 +1755,6 @@ input.addEventListener('change', ajustarAncho);
     const horasInp = document.getElementById('horasValor');
     if (!horasInp) return;
 
-    horasInp.addEventListener('input', () => {
-      if (typeof update === 'function') {
-        try { update(); } catch (e) {}
-      }
-    });
-
     horasInp.addEventListener('keydown', (ev) => {
       if (ev.key === 'Enter') {
         ev.preventDefault();
@@ -1724,6 +1762,17 @@ input.addEventListener('change', ajustarAncho);
           try { update(); } catch (e) {}
         }
         horasInp.blur();
+      } else if (ev.key === 'Escape') {
+        horasInp.value = '';
+        try {
+          const raw = localStorage.getItem('liq_prefs') || '{}';
+          const d = JSON.parse(raw) || {};
+          d.horas = '';
+          localStorage.setItem('liq_prefs', JSON.stringify(d));
+        } catch (e) {}
+        if (typeof update === 'function') {
+          try { update(); } catch (e) {}
+        }
       }
     });
   });
