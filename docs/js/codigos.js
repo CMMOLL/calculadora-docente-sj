@@ -209,3 +209,68 @@ document.addEventListener('DOMContentLoaded', () => {
   // y actualizar cuando todo terminó de cargar
   window.addEventListener('load', updateBadge);
 });
+
+/* ===== A56 / F56 por índice (sin E66/PUNTOS) ===== */
+(function(){
+  window.CODIGOS = window.CODIGOS || {};
+  const A56 = {};
+  let CFG = null;
+
+  async function ensure(){
+    if (!CFG) {
+      try {
+        const r = await fetch('data/codigos/a56.config.json', { cache: 'no-store' });
+        CFG = await r.json();
+      } catch (e) {
+        CFG = { baselineMonth: '2024-08', cargoBase: 53388.38, maxHoras: { HCNM: 18, HCNS: 15 } };
+      }
+    }
+    return true;
+  }
+
+  function getIndice(ym){
+    return Number(window.CARGOS?.getIndice?.(ym) || 0);
+  }
+
+  function ratio(ym){
+    const i0 = getIndice(CFG.baselineMonth);
+    const it = getIndice(ym);
+    if (!(i0 > 0 && it > 0)) return 0;
+    return it / i0;
+  }
+
+  function baseHora(nivel){
+    const cargo = Number(CFG.cargoBase || 0);
+    if (!(cargo > 0)) return 0;
+    return (nivel === 'HCNS') ? (cargo / 15) : (cargo / 18);
+  }
+
+  function clampHoras(nivel, horas){
+    const max = (nivel === 'HCNS') ? (CFG.maxHoras?.HCNS || 15) : (CFG.maxHoras?.HCNM || 18);
+    const h = Math.max(0, Math.floor(Number(horas || 0)));
+    return Math.min(h, max);
+  }
+
+  function prorratear(mensual, dias){
+    return (Number(mensual || 0) / 30) * Number(dias || 0);
+  }
+
+  A56.mensualCargo = function(ym){
+    const r = ratio(ym);
+    if (!r) return 0;
+    return Number(CFG.cargoBase || 0) * r;
+  };
+
+  A56.mensualHora = function(ym, nivel, horas){
+    const r = ratio(ym);
+    if (!r) return 0;
+    const hBase = baseHora(nivel);
+    const h = clampHoras(nivel, horas);
+    return hBase * h * r;
+  };
+
+  A56.prorrateo = prorratear;
+  A56.ready = ensure;
+
+  window.CODIGOS.A56 = A56;
+})();

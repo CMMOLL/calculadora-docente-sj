@@ -965,6 +965,47 @@
       let e66Base = 0, e66Exc = 0;
       let e60Base = 0, e60Exc = 0;
 
+      (async function calcA56(){
+        const chk = document.getElementById('optA56');
+        const rowA56 = document.getElementById('rowA56');
+        const outA56 = document.getElementById('a56Importe');
+        if (!outA56) return;
+
+        const usar = chk?.checked === true;
+        if (rowA56) rowA56.style.display = usar ? 'table-row' : 'none';
+
+        let base = 0;
+        let exc = 0;
+
+        try { await window.CODIGOS?.A56?.ready?.(); } catch (e) {}
+
+        if (usar && window.CODIGOS?.A56) {
+          const tipo = (tipoSel || '').toUpperCase();
+          const diasBaseNum = Number(diasBase || 0);
+          const diasExcNum = Number(diasExc || 0);
+
+          if (tipo === 'CARGOS') {
+            const mAct = window.CODIGOS.A56.mensualCargo(ymSeleccionado);
+            const mPrev = window.CODIGOS.A56.mensualCargo(ymPrevSeleccionado);
+            base = window.CODIGOS.A56.prorrateo(mAct, diasBaseNum);
+            exc  = window.CODIGOS.A56.prorrateo(mPrev, diasExcNum);
+          } else if (tipo === 'HCNM' || tipo === 'HCNS') {
+            const horas = Number(window.getHorasSeleccionadas?.() ?? horasSeleccionadas ?? 0);
+            const mAct = window.CODIGOS.A56.mensualHora(ymSeleccionado, tipo, horas);
+            const mPrev = window.CODIGOS.A56.mensualHora(ymPrevSeleccionado, tipo, horas);
+            base = window.CODIGOS.A56.prorrateo(mAct, diasBaseNum);
+            exc  = window.CODIGOS.A56.prorrateo(mPrev, diasExcNum);
+          }
+        }
+
+        outA56.textContent = Number(base || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        updateComplementoRow?.('F56', usar && Number(diasExc || 0) > 0, exc);
+
+        if (usar && typeof totalParcial === 'number') {
+          totalParcial += Number(base || 0);
+          liqDato.totalParcial.textContent = fmtAR(totalParcial);
+        }
+      })();
       /* === E66 (30d escalado por índice) + F66 (excedente mes anterior) === */
       function updateComplementoRow(code, visible, valor) {
         const rowId = (code === 'E29C') ? 'rowE29_comp' : ('row' + code);
