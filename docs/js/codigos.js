@@ -134,7 +134,179 @@ window.getMultiplicador = (c) =>
       const importe = vhPrev * Number(horas || 0) * (Number(dias || 0) / 30);
       return Math.round(importe * 100) / 100;
     }
+  };  // === E29: Adicional calculado desde A01 cat. 116 ===
+  function obtenerA01_116(ym) {
+    if (!ym) return 0;
+
+    // 1) Obtener el índice del mes (CARGOS.getIndice ya existe en el proyecto)
+    const indice = Number(window.CARGOS?.getIndice?.(ym) || 0);
+    if (!(indice > 0)) return 0;
+
+    // 2) Obtener PUNTOS acumulados de la cat. 116 (no pesos)
+    let puntos = 0;
+
+    // Usa el helper existente (devuelve puntos, p.ej. 492)
+    if (typeof getPuntos116Acumulados === 'function') {
+      const val = Number(getPuntos116Acumulados(ym));
+      if (Number.isFinite(val) && val > 0) puntos = val;
+    }
+
+    // Fallback al nomenclador si no hay helper
+    if (!(puntos > 0)) {
+      const base = Number(window.CARGOS?.getByCategoria?.(116)?.A01);
+      if (Number.isFinite(base) && base > 0) puntos = base;
+    }
+
+    // 3) Formar SIEMPRE el A01 en pesos como puntos × índice
+    if (!(puntos > 0)) return 0;
+    return puntos * indice;
+  }
+  function calcularE29_30dias(ym) {
+    const a01 = obtenerA01_116(ym);
+    return (!a01 || Number.isNaN(a01)) ? 0 : a01 * 0.025;
+  }
+
+  function calcularE29_complemento(ymPrev, diasExc) {
+    const d = Number(diasExc || 0);
+    if (d <= 0) return 0;
+    const a01Prev = obtenerA01_116(ymPrev);
+    if (!a01Prev || Number.isNaN(a01Prev)) return 0;
+    return (a01Prev * 0.025 / 30) * d;
+  }
+
+  window.CODIGOS.E29 = {
+    id: "E29",
+    getImporteBase: ({ ym, dias = 30 }) => {
+      const diasCalc = Number(dias || 0);
+      if (!ym || !(diasCalc > 0)) return 0;
+      return calcularE29_30dias(ym) * (diasCalc / 30);
+    },
+    getImporteComplemento: ({ ymPrev, diasExc = 0 }) => {
+      const diasCalc = Number(diasExc || 0);
+      if (!ymPrev || !(diasCalc > 0)) return 0;
+      return calcularE29_complemento(ymPrev, diasCalc);
+    }
   };
+
+  let prevE29Base = 0;
+  let e29Timers = [];
+  let e29Attached = false;
+
+  function formatARS(value) {
+    const val = Math.round(Number(value || 0) * 100) / 100;
+    return val.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function parseARS(str) {
+    if (typeof str !== 'string') str = String(str ?? '');
+    const normalized = str.replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '');
+    const num = Number(normalized);
+    return Number.isFinite(num) ? num : 0;
+  }
+
+  function diasBaseDesdeEtiqueta() {
+    const label = document.getElementById('diasLiq');
+    if (!label) return 0;
+    const match = label.textContent?.match(/(\d+)/);
+    return match ? Number(match[1]) : 0;
+  }
+
+  function actualizarE29() {
+    const mod = window.CODIGOS?.E29;
+    if (!mod) return;
+
+    const ymEl = document.getElementById('indicePeriodo') || document.getElementById('indiceMes');
+    const ym = (ymEl?.value || '').trim();
+    const diasBase = diasBaseDesdeEtiqueta();
+    const diasExcEl = document.getElementById('diasExc');
+    const diasExc = Number((diasExcEl?.dataset?.value ?? diasExcEl?.textContent ?? '0').toString().replace(/[^\d.-]/g, '')) || 0;
+
+    const tipoSel = typeof window.getTipoCargo === 'function' ? (window.getTipoCargo() || '') : '';
+    const esCargo = tipoSel !== 'HCNM' && tipoSel !== 'HCNS';
+    const suplenteChecked = document.getElementById('suplente')?.checked === true;
+
+    const baseRow = document.getElementById('rowE29');
+    const baseCell = document.getElementById('e29Importe');
+    const compRow = document.getElementById('rowE29_comp');
+    const compCell = document.getElementById('e29CompImporte');
+    const compBox = document.getElementById('complementoBox');
+
+    const diasParaBase = (diasBase && diasBase > 0) ? Math.min(30, diasBase) : 0;
+    const puedeMostrarBase = ym && diasParaBase > 0 && esCargo && suplenteChecked;
+
+    let baseImporte = 0;
+    if (puedeMostrarBase) {
+      baseImporte = Number(mod.getImporteBase({ ym, dias: diasParaBase }) || 0);
+    }
+    const baseImporteRounded = Math.round(baseImporte * 100) / 100;
+
+    if (baseCell) baseCell.textContent = formatARS(baseImporteRounded);
+
+    const mostrarBase = puedeMostrarBase && baseImporteRounded > 0;
+    if (baseRow) baseRow.style.display = mostrarBase ? 'table-row' : 'none';
+
+    const totalEl = document.getElementById('totalParcial');
+    if (totalEl) {
+      const baseSinE29 = parseARS(totalEl.textContent) - prevE29Base;
+      const nuevoTotal = baseSinE29 + (mostrarBase ? baseImporteRounded : 0);
+      totalEl.textContent = formatARS(nuevoTotal);
+      prevE29Base = mostrarBase ? baseImporteRounded : 0;
+    } else {
+      prevE29Base = mostrarBase ? baseImporteRounded : 0;
+    }
+
+    const ymPrev = ym ? (window.PUNTOS?.prevYM?.(ym) || ymPrevOf(ym)) : '';
+    let compImporte = 0;
+    if (mostrarBase && ymPrev && diasExc > 0) {
+      compImporte = Number(mod.getImporteComplemento({ ymPrev, diasExc }) || 0);
+    }
+    const compRounded = Math.round(compImporte * 100) / 100;
+
+    if (compCell) compCell.textContent = formatARS(compRounded);
+
+    const mostrarComp = mostrarBase && compRounded > 0;
+    if (compRow) compRow.style.display = mostrarComp ? 'table-row' : 'none';
+    if (compBox && mostrarComp && compBox.style.display === 'none') {
+      compBox.style.display = '';
+    }
+  }
+
+  function scheduleE29Updates() {
+    e29Timers.forEach((id) => clearTimeout(id));
+    e29Timers = [];
+    actualizarE29();
+    e29Timers.push(setTimeout(actualizarE29, 60));
+    e29Timers.push(setTimeout(actualizarE29, 160));
+  }
+
+  function attachE29Integration() {
+    if (e29Attached) return;
+    const calc = window.calculateLiq;
+    if (typeof calc !== 'function') {
+      setTimeout(attachE29Integration, 50);
+      return;
+    }
+    if (calc.__withE29) {
+      e29Attached = true;
+      scheduleE29Updates();
+      return;
+    }
+    const wrapped = async function (...args) {
+      const result = await calc.apply(this, args);
+      scheduleE29Updates();
+      return result;
+    };
+    wrapped.__withE29 = true;
+    window.calculateLiq = wrapped;
+    e29Attached = true;
+    scheduleE29Updates();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachE29Integration);
+  } else {
+    attachE29Integration();
+  }
 })();
 
 
@@ -383,6 +555,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.CODIGOS.A56 = A56;
 })();
+
 
 
 
