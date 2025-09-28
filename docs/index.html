@@ -107,7 +107,7 @@
             <!-- Lista desplegable principal -->
             <!-- (REMOVIDO) <label class="muted">Lista desplegable</label> -->
             <select id="tipoSeleccion">
-              <option value="">— Seleccionar —</option>
+              <option value="" selected disabled>— Seleccionar —</option>
               <option value="CARGOS">Cargos</option>
               <option value="HCNM">Horas Cátedra Nivel Medio</option>
               <option value="HCNS">Horas Cátedra Nivel Superior</option>
@@ -1221,6 +1221,72 @@
         if (el) el.addEventListener('input', updateToolbarVisibility);
         if (el) el.addEventListener('change', updateToolbarVisibility);
       });
+    })();
+  </script>
+  <script>
+    (function () {
+      function ensureSelectPlaceholder(selectEl, text = '— Seleccionar —') {
+        if (!selectEl) return;
+        let ph = selectEl.querySelector('option[value=""]');
+        if (!ph) {
+          ph = document.createElement('option');
+          ph.value = '';
+          ph.textContent = text;
+          ph.disabled = true;
+          selectEl.insertBefore(ph, selectEl.firstChild);
+        } else {
+          ph.textContent = text;
+          ph.disabled = true;
+          if (selectEl.firstElementChild !== ph) {
+            selectEl.insertBefore(ph, selectEl.firstChild);
+          }
+        }
+        ph.selected = true;
+        selectEl.value = '';
+      }
+
+      function preventPlaceholderSelection(selectEl) {
+        if (!selectEl) return;
+        selectEl.addEventListener('change', () => {
+          if (selectEl.value === '') {
+            selectEl.blur();
+          }
+        });
+      }
+
+      window.ensureSelectPlaceholder = ensureSelectPlaceholder;
+      window.preventPlaceholderSelection = preventPlaceholderSelection;
+
+      function setupCargoSelect() {
+        const sel =
+          document.querySelector('#tipoSeleccion') ||
+          document.querySelector('#cargoSelect') ||
+          document.querySelector('#selectCargo') ||
+          document.querySelector('#cargosSelect') ||
+          document.querySelector('[data-role="cargo-select"]');
+
+        if (!sel) return;
+
+        ensureSelectPlaceholder(sel);
+        preventPlaceholderSelection(sel);
+        sel.value = '';
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+
+        const mo = new MutationObserver(() => {
+          ensureSelectPlaceholder(sel);
+          if (!sel.value) {
+            sel.value = '';
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        });
+        mo.observe(sel, { childList: true });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupCargoSelect);
+      } else {
+        setupCargoSelect();
+      }
     })();
   </script>
   <script>
