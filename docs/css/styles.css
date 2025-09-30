@@ -559,3 +559,30 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 #fechasRow .date-field label { margin-bottom: 4px; display: block; }
 #bajaGroup { margin-left: 4px; }
 #bajaGroup input { margin: 0; }
+
+/* Resaltado de códigos de Complemento (Fxx) */
+.f-highlight {
+  color: #17803a !important;   /* verde legible */
+  font-weight: 600;            /* un poco más de énfasis */
+}
+
+.f-highlight {
+  color: #0f5132 !important;       /* verde oscuro */
+  font-weight: 700;
+  background-color: #d1e7dd;       /* verde claro */
+  padding: 2px 6px;
+  border-radius: 6px;              /* esquinas redondeadas */
+}
+
+.f-highlight {
+  color: #198754 !important;
+  font-weight: 700;
+  border-left: 4px solid #198754;
+  padding-left: 6px;
+}
+.f-highlight {
+  color: #28a745 !important;
+  font-weight: 700;
+  text-shadow: 0 0 3px #a3e4b5;  /* resplandor verde */
+}
+

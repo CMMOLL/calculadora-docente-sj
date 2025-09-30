@@ -134,7 +134,8 @@ window.getMultiplicador = (c) =>
       const importe = vhPrev * Number(horas || 0) * (Number(dias || 0) / 30);
       return Math.round(importe * 100) / 100;
     }
-  };  // === E29: Adicional calculado desde A01 cat. 116 ===
+  };
+  // === E29: Adicional calculado desde A01 cat. 116 ===
   function obtenerA01_116(ym) {
     if (!ym) return 0;
 
@@ -307,6 +308,74 @@ window.getMultiplicador = (c) =>
   } else {
     attachE29Integration();
   }
+
+  // === Resaltado de Códigos F (complemento) ===
+(function attachFHighlight() {
+  if (window.__F_HIGHLIGHT_ATTACHED__) return;
+  window.__F_HIGHLIGHT_ATTACHED__ = true;
+
+  function highlightFCodes(root = document) {
+    // Recorre todas las filas de ambas tablas (30 días y Complemento).
+    const rows = root.querySelectorAll('table tbody tr');
+    rows.forEach(tr => {
+      const tdCodigo  = tr.querySelector('td:nth-child(1)');
+      const tdImporte = tr.querySelector('td:nth-child(2)');
+      if (!tdCodigo || !tdImporte) return;
+
+      const code = (tdCodigo.textContent || '').trim();
+      if (/^F/.test(code)) {
+        tdCodigo.classList.add('f-highlight');
+        tdImporte.classList.add('f-highlight');
+      } else {
+        tdCodigo.classList.remove('f-highlight');
+        tdImporte.classList.remove('f-highlight');
+      }
+    });
+  }
+
+  // 1) Al cargar el DOM
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => highlightFCodes());
+  } else {
+    highlightFCodes();
+  }
+
+  // 2) Engancharse al recálculo principal sin romper el wrap del E29
+  function hookCalculate() {
+    const calc = window.calculateLiq;
+    if (typeof calc === 'function' && !calc.__withFHighlight) {
+      const wrapped = function (...args) {
+        const res = calc.apply(this, args);
+        // correr después del render de tablas
+        Promise.resolve().then(() => highlightFCodes());
+        return res;
+      };
+      wrapped.__withFHighlight = true;
+      // preservar cualquier marca previa (p. ej. __withE29)
+      Object.keys(calc).forEach(k => { if (!(k in wrapped)) wrapped[k] = calc[k]; });
+      window.calculateLiq = wrapped;
+    }
+  }
+
+  // Hook inmediato o reintento si todavía no existe calculateLiq
+  if (typeof window.calculateLiq === 'function') {
+    hookCalculate();
+    Promise.resolve().then(() => highlightFCodes());
+  } else {
+    let tries = 0;
+    const id = setInterval(() => {
+      if (typeof window.calculateLiq === 'function') {
+        clearInterval(id);
+        hookCalculate();
+        highlightFCodes();
+      } else if (++tries > 50) {
+        clearInterval(id);
+      }
+    }, 100);
+  }
+})();
+
+
 })();
 
 
