@@ -348,26 +348,29 @@ function normalizeImporteTd(td) {
   });
 }
 
-  
   function highlightFCodes(root = document) {
-    // Recorre todas las filas de ambas tablas (30 días y Complemento).
-    const rows = root.querySelectorAll('table tbody tr');
-    rows.forEach(tr => {
-     const tdCodigo  = tr.querySelector('td:first-child');
-     const tdImporte = tr.querySelector('td:last-child');
-      if (!tdCodigo || !tdImporte) return;
+  const rows = root.querySelectorAll('table tbody tr');
+  rows.forEach(tr => {
+    const tdCodigo  = tr.querySelector('td:first-child');
+    const tdSigno   = tr.querySelector('td:nth-child(2)');  // $ (si existe)
+    const tdImporte = tr.querySelector('td:last-child');
+    if (!tdCodigo || !tdImporte) return;
 
-      const code = (tdCodigo.textContent || '').trim();
-      if (/^F/.test(code)) {
-        tdCodigo.classList.add('f-highlight');
-        tdImporte.classList.add('f-highlight');
-      } else {
-        tdCodigo.classList.remove('f-highlight');
-        tdImporte.classList.remove('f-highlight');
-      }
-      normalizeImporteTd(tdImporte);  // ← formateo del número del importe (es-AR)
+    const code = (tdCodigo.textContent || '').trim();
+    const isF  = /^F/.test(code);
+
+    // Aplica/quita el highlight al código, al signo $ (si existe) y al importe
+    [tdCodigo, tdSigno, tdImporte].forEach(td => {
+      if (!td) return;
+      td.classList.toggle('f-highlight', isF);
     });
-  }
+
+    // Mantener el formato del número
+    normalizeImporteTd(tdImporte);
+  });
+}
+
+  
 
   // 1) Al cargar el DOM
   if (document.readyState === 'loading') {

@@ -604,6 +604,11 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
   text-shadow: 0 0 3px #a3e4b5; /* opcional */
 }
 
+/* Evitar doble barra cuando el $ también está resaltado */
+.tabla-codigos td:nth-child(2).f-highlight { border-left: 0 !important; }
+.tabla-codigos td:last-child.f-highlight  { border-left: 4px solid #198754; }
+
+
 /* (Opcional) Impresión: que el verde salga bien en PDF/impresora */
 @media print {
   .f-highlight {
