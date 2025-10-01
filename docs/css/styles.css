@@ -608,7 +608,6 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 .tabla-codigos td:nth-child(2).f-highlight { border-left: 0 !important; }
 .tabla-codigos td:last-child.f-highlight  { border-left: 4px solid #198754; }
 
-
 /* (Opcional) Impresión: que el verde salga bien en PDF/impresora */
 @media print {
   .f-highlight {
