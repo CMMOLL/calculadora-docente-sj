@@ -617,5 +617,8 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
   }
 }
 
+#complementoBox .muted[title] { cursor: help; }
+
+
 
 
