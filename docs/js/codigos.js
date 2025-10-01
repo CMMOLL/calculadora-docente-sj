@@ -664,6 +664,37 @@ document.addEventListener('DOMContentLoaded', () => {
   window.CODIGOS.A56 = A56;
 })();
 
+// === Licencias: calcula fecha de finalización (inclusive) ===
+document.addEventListener('DOMContentLoaded', () => {
+  const ini  = document.getElementById('licInicio');
+  const dias = document.getElementById('licDias');
+  const fin  = document.getElementById('licFin');
+
+  const fmt = (d) =>
+    `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+
+  function recompute() {
+    if (!ini || !dias || !fin) return;
+    const start = ini.value ? new Date(ini.value) : null;
+    const n = Number.parseInt(dias.value, 10);
+
+    if (!start || !Number.isFinite(n) || n <= 0) {
+      fin.value = '';
+      return;
+    }
+
+    // Regla inclusiva: fin = inicio + (días - 1)
+    const end = new Date(start);
+    end.setDate(end.getDate() + (n - 1));
+    fin.value = fmt(end);
+  }
+
+  ini?.addEventListener('change', recompute);
+  dias?.addEventListener('input', recompute);
+  recompute();
+});
+
+
 
 
 

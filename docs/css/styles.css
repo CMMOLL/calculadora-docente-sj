@@ -619,6 +619,100 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 
 #complementoBox .muted[title] { cursor: help; }
 
+/* Licencias: título arriba del input */
+#licenciasCard .row label {
+  display: flex;
+  flex-direction: column;  /* texto del label arriba, input abajo */
+  gap: 4px;                /* separación chica entre título y campo */
+  align-items: flex-start; /* alinear a la izquierda */
+}
+
+/* (opcional) darle un ancho coherente al campo de días */
+#licenciasCard #licDias { width: 8ch; }
+
+/* Días de Licencia: mismo formato que Antigüedad */
+#licDias{
+  /* sobreescribe el width inline si existiera */
+  width: auto !important;
+
+  min-width: 5ch;
+  max-width: 8ch;
+  padding: 6px 2.2em 6px 8px;  /* deja espacio para las flechas */
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid #d6d6e7;
+  border-radius: 10px;
+  box-sizing: content-box;
+  cursor: pointer;
+}
+#licDias:hover,
+#licDias:focus{
+  outline: none;
+  border-color: #d4a017 !important;
+  box-shadow: 0 0 0 2px rgba(212,160,23,0.2);
+}
+#licDias::-webkit-outer-spin-button,
+#licDias::-webkit-inner-spin-button{
+  margin: 0;  /* empujón sutil del spinner */
+}
+
+/* Spinner de #licDias pegado a la derecha */
+#licDias{
+  padding-right: 8px;        /* quitamos el colchón grande */
+  box-sizing: border-box;    /* el padding no empuja el spinner hacia adentro */
+}
+
+/* Licencias: resaltar la fecha de finalización */
+#licFin{
+  font-weight: 800;
+  text-align: center !important;
+  color: #5a5200;            /* texto verde-oliva legible */
+  background: #fff8d8;       /* amarillo suave */
+  border: 1px solid #e2c766; /* borde acorde al highlight */
+  border-radius: 10px;
+  padding: 6px 8px;
+}
+@media print{
+  #licFin{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* === Licencias: unificar altura de los 3 campos === */
+:root { --lic-field-h: 34px; }   /* si querés un poquito más alto, probá 38px o 40px */
+
+#licenciasCard input[type="date"],
+#licenciasCard input[type="number"],
+#licenciasCard input[type="text"]{
+  height: var(--lic-field-h);
+  line-height: var(--lic-field-h);
+  box-sizing: border-box;
+}
+
+/* preservamos estilos especiales ya definidos */
+#licDias{
+  padding-right: 6px;            /* spinner a la derecha */
+}
+#licFin{
+  font-weight: 800;
+  text-align: center !important;
+  color: #5a5200;
+  background: #fff8d8;
+  border: 1px solid #e2c766;
+  border-radius: 10px;
+  padding: 6px 8px;
+  height: var(--lic-field-h);     /* igual altura que los demás */
+  line-height: var(--lic-field-h);
+  /* 👉 evita truncamiento */
+  min-width: 14ch;                 /* mismo ancho que el date */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Licencias: que los <input type="date"> no queden cortos */
+#licenciasCard input[type="date"]{
+  min-width: 18ch;          /* dale más aire al dd/mm/aaaa + icono */
+  /* si aún lo ves justo, subí a 20ch */
+}
+
+
 
 
 

@@ -154,6 +154,25 @@
           </div>
         </div>
         <div class="stack">
+
+          <!-- === Cálculo de Días de Licencias – Cartas Médicas === -->
+<div id="licenciasCard" class="result" style="margin-top:10px;">
+  <div class="title">Cálculo de Días de Licencias – Cartas Médicas</div>
+  <div class="row" style="gap:12px; align-items:flex-end; flex-wrap:wrap;">
+    <label class="muted">Fecha de inicio
+      <input id="licInicio" type="date" />
+    </label>
+
+    <label class="muted">Días de licencia
+      <input id="licDias" type="number" min="0" step="1" style="width:8ch;" />
+    </label>
+
+    <label class="muted">Fecha de finalización
+      <input id="licFin" type="text" class="num-display" readonly />
+    </label>
+  </div>
+</div>
+
           <div id="fechasRow" class="row" style="align-items:flex-end; gap:16px; flex-wrap:wrap;">
             <div class="date-field">
               <label for="inicio">Fecha Inicio</label>
