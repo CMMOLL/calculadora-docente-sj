@@ -314,12 +314,47 @@ window.getMultiplicador = (c) =>
   if (window.__F_HIGHLIGHT_ATTACHED__) return;
   window.__F_HIGHLIGHT_ATTACHED__ = true;
 
+// === helper: formatea un TD de importe a "$ 0.000,00" (es-AR) sin romper nodos ===
+function normalizeImporteTd(td) {
+  if (!td) return;
+
+  // busco un nodo “número real” si existe; si no, uso el TD cuando es plano
+  const numberNode =
+    td.querySelector('[id$="Importe"], [id$="CompImporte"]') ||
+    td.querySelector('[data-importe]') ||
+    td.querySelector('.importe-value') ||
+    (td.children.length === 0 ? td : null);
+
+  if (!numberNode) return;
+
+  const raw = (numberNode.textContent || '').trim();
+  // si la celda está vacía o no hay dígitos, NO toco (evita $ 0,00 falsos)
+  if (!/\d/.test(raw)) return;
+
+  const norm = raw
+    .replace(/\./g, '')       // saca miles
+    .replace(',', '.')        // coma -> punto
+    .replace(/[^\d.-]/g, ''); // deja números, signo y punto
+
+  if (norm === '' || norm === '-' || norm === '.') return;
+
+  const num = Number(norm);
+  if (!Number.isFinite(num)) return;
+
+  const val = Math.round(num * 100) / 100;
+  numberNode.textContent = '$ ' + val.toLocaleString('es-AR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+  
   function highlightFCodes(root = document) {
     // Recorre todas las filas de ambas tablas (30 días y Complemento).
     const rows = root.querySelectorAll('table tbody tr');
     rows.forEach(tr => {
-      const tdCodigo  = tr.querySelector('td:nth-child(1)');
-      const tdImporte = tr.querySelector('td:nth-child(2)');
+     const tdCodigo  = tr.querySelector('td:first-child');
+     const tdImporte = tr.querySelector('td:last-child');
       if (!tdCodigo || !tdImporte) return;
 
       const code = (tdCodigo.textContent || '').trim();
@@ -330,6 +365,7 @@ window.getMultiplicador = (c) =>
         tdCodigo.classList.remove('f-highlight');
         tdImporte.classList.remove('f-highlight');
       }
+      normalizeImporteTd(tdImporte);  // ← formateo del número del importe (es-AR)
     });
   }
 

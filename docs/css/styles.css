@@ -560,29 +560,58 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 #bajaGroup { margin-left: 4px; }
 #bajaGroup input { margin: 0; }
 
-/* Resaltado de códigos de Complemento (Fxx) */
-.f-highlight {
-  color: #17803a !important;   /* verde legible */
-  font-weight: 600;            /* un poco más de énfasis */
+/* Resaltado Complemento (Fxx): aplica al <td> y a todo su contenido */
+.f-highlight,
+.f-highlight * {
+  color: #0f5132 !important;   /* verde oscuro en texto y números */
+  font-weight: 700;            /* énfasis parejo */
 }
 
+/* Badge/fondo + borde lateral para destacar la fila F */
 .f-highlight {
-  color: #0f5132 !important;       /* verde oscuro */
-  font-weight: 700;
-  background-color: #d1e7dd;       /* verde claro */
-  padding: 2px 6px;
-  border-radius: 6px;              /* esquinas redondeadas */
-}
-
-.f-highlight {
-  color: #198754 !important;
-  font-weight: 700;
+  background-color: #d1e7dd;   /* verde suave */
   border-left: 4px solid #198754;
-  padding-left: 6px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  /* si querés mantener el glow, dejalo; si no, quitá la línea de abajo */
+  text-shadow: 0 0 3px #a3e4b5;
 }
-.f-highlight {
-  color: #28a745 !important;
+
+/* Importe: última columna de las tablas de códigos
+   - Alineación a la derecha
+   - Dígitos tabulares para que no “bailen” los miles/decimales
+   - Evita salto de línea del número */
+.tabla-codigos th:last-child,
+.tabla-codigos td:last-child {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Complemento F: aplica color/énfasis al contenido interno del TD también */
+.f-highlight,
+.f-highlight * {
+  color: #0f5132 !important;
   font-weight: 700;
-  text-shadow: 0 0 3px #a3e4b5;  /* resplandor verde */
 }
+
+/* Badge + borde lateral (dejamos tu estilo actual) */
+.f-highlight {
+  background-color: #d1e7dd;
+  border-left: 4px solid #198754;
+  padding: 2px 6px;
+  border-radius: 6px;
+  text-shadow: 0 0 3px #a3e4b5; /* opcional */
+}
+
+/* (Opcional) Impresión: que el verde salga bien en PDF/impresora */
+@media print {
+  .f-highlight {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    text-shadow: none;
+  }
+}
+
+
 
