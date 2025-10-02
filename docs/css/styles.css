@@ -13,14 +13,15 @@ body {
   background:#8bb7cb;
   margin:0;
   padding:24px;
+  overflow-x: hidden;
   color:var(--ink);
 }
 
 /* Container */
-.card { 
-  max-width: 1500px; 
-  width: min(95vw, 1500px);
-  margin: 0 auto;
+.card {
+  width: 100%;
+  max-width: none;   /* elimina el límite de 1500px */
+  margin: 0;         /* elimina el centrado */
 }
 h1 { 
   margin: 0 0 8px 0;
@@ -200,17 +201,16 @@ select { padding:6px 10px; border:1px solid #d6d6e7; border-radius:10px; backgro
 /* Contenedor principal de 3 columnas (versión v34) */
 .grid-2 {
   display: grid;
-  grid-template-columns: 1100px 1fr 360px;
-  column-gap: 48px;/* espacio entre columnas*/
+  grid-template-columns: minmax(280px, 3fr) 6fr minmax(300px, 3fr);
+  column-gap: 32px;
 }
 
 /* ===== Layout 3 columnas ===== */
 .grid {
   display: grid;
-  /* izq: 340px  | centro: crece entre 560–760 | der: 360px  */
-  grid-template-columns: 340px 760px 360px;
-  column-gap: 48px; /* espacio entre columnas*/
-  align-items: start; /* que todo arranque arriba */
+  grid-template-columns: minmax(260px, 3fr) minmax(520px, 6fr) minmax(280px, 3fr);
+  column-gap: 32px;
+  align-items: start;
 }
 
 /* Mapeo de columnas (usando tus clases/ids actuales) */
@@ -711,6 +711,8 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
   min-width: 18ch;          /* dale más aire al dd/mm/aaaa + icono */
   /* si aún lo ves justo, subí a 20ch */
 }
+
+
 
 
 
