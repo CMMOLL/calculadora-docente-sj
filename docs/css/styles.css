@@ -59,6 +59,14 @@ label { display:block;
   top:12px;
   align-self:start;
 }
+
+/* Cards en columna izquierda (cargos + licencias) */
+.sidebar .result {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 16px; /* espacio parejo entre bloques */
+}
+
 .stack{ 
   grid-column:2; 
   grid-row:1; 
@@ -711,6 +719,11 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
   min-width: 18ch;          /* dale más aire al dd/mm/aaaa + icono */
   /* si aún lo ves justo, subí a 20ch */
 }
+
+
+
+
+
 
 
 
