@@ -52,10 +52,32 @@
 </script>
 
 <script>
+  function openInicioPicker() {
+    const inicio = document.getElementById('inicio');
+    if (!inicio) return;
+    if (typeof inicio.showPicker === 'function') {
+      try {
+        inicio.showPicker();
+        return;
+      } catch (e) {}
+    }
+    inicio.focus();
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
-    const selMes   = document.getElementById('indicePeriodo');
-    const selTipo  = document.getElementById('tipoSeleccion');
-    const horasInp = document.getElementById('horasValor');
+    const selMes     = document.getElementById('indicePeriodo');
+    const selTipo    = document.getElementById('tipoSeleccion');
+    const horasInp   = document.getElementById('horasValor');
+    const catInput   = document.getElementById('catId');
+    const inicioInput = document.getElementById('inicio');
+    const bajaGroup  = document.getElementById('bajaGroup');
+
+    if (bajaGroup) bajaGroup.style.display = 'none';
+
+    const syncBajaVisibility = () => {
+      if (!bajaGroup) return;
+      bajaGroup.style.display = (inicioInput && inicioInput.value) ? '' : 'none';
+    };
 
     function save(){
       const data = {
@@ -73,7 +95,10 @@
         const d = JSON.parse(raw) || {};
         if (selMes && d.ym) selMes.value = d.ym;
         if (selTipo && d.tipo) selTipo.value = d.tipo;
-        if (horasInp) horasInp.value = d.horas ?? '';
+        if (horasInp) {
+          const hv = (d.horas ?? '').trim();
+          horasInp.value = (hv !== '' && hv !== '0') ? hv : '';
+        }
       } catch (e) {}
     }
 
@@ -85,9 +110,35 @@
 
     load();
 
+    syncBajaVisibility();
+
     selMes?.addEventListener('change', () => { save(); triggerUpdate(); });
-    selTipo?.addEventListener('change', () => { save(); triggerUpdate(); });
+    selTipo?.addEventListener('change', () => {
+      const value = selTipo.value;
+      if (value === 'HCNM' || value === 'HCNS') {
+        if (horasInp) {
+          if (horasInp.value === '0') horasInp.value = '';
+          horasInp.focus();
+          horasInp.select?.();
+        }
+      } else if (value === 'CARGOS') {
+        catInput?.focus();
+        catInput?.select?.();
+      }
+      save();
+      triggerUpdate();
+    });
     horasInp?.addEventListener('input', () => { save(); triggerUpdate(); });
+    inicioInput?.addEventListener('input', syncBajaVisibility);
+    inicioInput?.addEventListener('change', syncBajaVisibility);
+    catInput?.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        openInicioPicker();
+      } else if (ev.key === 'Tab' && !ev.shiftKey) {
+        openInicioPicker();
+      }
+    });
 
     if (selTipo) selTipo.dispatchEvent(new Event('change'));
     if (selMes) selMes.dispatchEvent(new Event('change'));
@@ -1885,7 +1936,9 @@ input.addEventListener('change', ajustarAncho);
         if (typeof update === 'function') {
           try { update(); } catch (e) {}
         }
-        horasInp.blur();
+        openInicioPicker();
+      } else if (ev.key === 'Tab' && !ev.shiftKey) {
+        openInicioPicker();
       } else if (ev.key === 'Escape') {
         horasInp.value = '';
         try {
