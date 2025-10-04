@@ -643,6 +643,15 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
   margin: 0;
 }
 
+.page-subtitle{
+  font-size: 19px;              /* un poco más pequeño que el h1 */
+  margin: -4px 0 14px 0;
+  font-weight: 800;              /* bien marcado pero sin “engordar” de más */
+  color: var(--muted-fg, #556);
+  cursor: default;               /* por si algún estilo global pone mano */
+  text-decoration: none;         /* explícito, por si hay herencias */
+}
+
 
 
 

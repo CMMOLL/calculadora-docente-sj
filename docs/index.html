@@ -4,50 +4,57 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Liquidación de Sueldos</title>
-  <link rel="icon" href="images/favicon-32x32.png" type="image/png" />
+  <meta name="description" content="Calculadora de liquidación para docentes de San Juan (Argentina) - Versión Pro" />
+  <title>Liquidación Escolar-Pro</title>
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="icon" sizes="32x32" href="images/favicon-32x32.png">
+  <link rel="icon" sizes="16x16" href="images/favicon-16x16.png">
+  <!-- (Opcional) Apple / PWA -->
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+  <meta name="theme-color" content="#0B0F14" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#FFFFFF"  media="(prefers-color-scheme: light)">
   <link id="app-css" rel="stylesheet" href="css/styles.css">
 </head>
 
 <script>
-(async () => {
-  const cssPath = "css/styles.css";
-  let version = "";
+  (async () => {
+    const cssPath = "css/styles.css";
+    let version = "";
 
-  try {
-    // Pedimos SOLO cabeceras para obtener ETag / Last-Modified
-    const res = await fetch(cssPath, { method: "HEAD", cache: "no-store" });
-    version =
-      (res.headers.get("etag") || res.headers.get("last-modified") || "").replace(/"/g,"");
-  } catch (e) {
-    // Fallback: timestamp (por si algo raro impide leer cabeceras)
-    version = String(Date.now());
-  }
+    try {
+      // Pedimos SOLO cabeceras para obtener ETag / Last-Modified
+      const res = await fetch(cssPath, { method: "HEAD", cache: "no-store" });
+      version =
+        (res.headers.get("etag") || res.headers.get("last-modified") || "").replace(/"/g, "");
+    } catch (e) {
+      // Fallback: timestamp (por si algo raro impide leer cabeceras)
+      version = String(Date.now());
+    }
 
-  // Guardamos la versión para reutilizar en otros assets (JSON, imágenes, etc.)
-  window.__assetVersion = version || String(Date.now());
+    // Guardamos la versión para reutilizar en otros assets (JSON, imágenes, etc.)
+    window.__assetVersion = version || String(Date.now());
 
-  // Actualizamos el href del <link> para forzar recarga si cambió el contenido
-  const link = document.getElementById("app-css");
-  if (link) {
-    const url = new URL(link.getAttribute("href"), location.href);
-    url.searchParams.set("v", window.__assetVersion);
-    // Sólo reasignamos si cambió para evitar recargas innecesarias
-    if (link.href !== url.href) link.href = url.pathname + "?" + url.searchParams.toString();
-  }
-})();
+    // Actualizamos el href del <link> para forzar recarga si cambió el contenido
+    const link = document.getElementById("app-css");
+    if (link) {
+      const url = new URL(link.getAttribute("href"), location.href);
+      url.searchParams.set("v", window.__assetVersion);
+      // Sólo reasignamos si cambió para evitar recargas innecesarias
+      if (link.href !== url.href) link.href = url.pathname + "?" + url.searchParams.toString();
+    }
+  })();
 </script>
 
 <script src="js/codigos.js"></script>
 <script src="js/codigos/e66.js"></script>
 
 <script>
-  function prevYMLocal(ym){
+  function prevYMLocal(ym) {
     const [y, m] = String(ym || "").split('-').map(Number);
     if (!y || !m) return "";
     const d = new Date(y, m - 1, 1);
     d.setMonth(d.getMonth() - 1);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,'0')}`;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
   }
 </script>
 
@@ -59,18 +66,18 @@
       try {
         inicio.showPicker();
         return;
-      } catch (e) {}
+      } catch (e) { }
     }
     inicio.focus();
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    const selMes     = document.getElementById('indicePeriodo');
-    const selTipo    = document.getElementById('tipoSeleccion');
-    const horasInp   = document.getElementById('horasValor');
-    const catInput   = document.getElementById('catId');
+    const selMes = document.getElementById('indicePeriodo');
+    const selTipo = document.getElementById('tipoSeleccion');
+    const horasInp = document.getElementById('horasValor');
+    const catInput = document.getElementById('catId');
     const inicioInput = document.getElementById('inicio');
-    const bajaGroup  = document.getElementById('bajaGroup');
+    const bajaGroup = document.getElementById('bajaGroup');
 
     if (bajaGroup) bajaGroup.style.display = 'none';
 
@@ -79,16 +86,16 @@
       bajaGroup.style.display = (inicioInput && inicioInput.value) ? '' : 'none';
     };
 
-    function save(){
+    function save() {
       const data = {
         ym: selMes?.value || '',
         tipo: selTipo?.value || '',
         horas: horasInp?.value || ''
       };
-      try { localStorage.setItem('liq_prefs', JSON.stringify(data)); } catch (e) {}
+      try { localStorage.setItem('liq_prefs', JSON.stringify(data)); } catch (e) { }
     }
 
-    function load(){
+    function load() {
       try {
         const raw = localStorage.getItem('liq_prefs');
         if (!raw) return;
@@ -99,12 +106,12 @@
           const hv = (d.horas ?? '').trim();
           horasInp.value = (hv !== '' && hv !== '0') ? hv : '';
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     const triggerUpdate = () => {
       if (typeof update === 'function') {
-        try { update(); } catch (e) {}
+        try { update(); } catch (e) { }
       }
     };
 
@@ -145,9 +152,11 @@
     triggerUpdate();
   });
 </script>
+
 <body>
   <div class="card">
-    <h1>Liquidación de Sueldos</h1>
+    <h1>LIQUIDACIÓN ESCOLAR | PRO </h1>
+    <div id="tituloPeriodo" class="page-subtitle" aria-live="polite">Liquidación — </div>
     <div class="grid-2">
       <div class="leftCol">
         <div class="sidebar">
@@ -167,59 +176,46 @@
             <!-- Panel CARGOS: ingresar categoría/ID -->
             <div id="panelCargos" style="display:none; margin-top:10px;">
               <label class="muted">Cargos</label>
-              <input
-                id="catId"
-                type="text"
-                placeholder="Categoría o nombre"
-                autocomplete="off"
-                spellcheck="false"
-                style="width:22ch;"
-              />
+              <input id="catId" type="text" placeholder="Categoría o nombre" autocomplete="off" spellcheck="false"
+                style="width:22ch;" />
               <!-- (REMOVIDO) <div class="muted" style="margin-top:6px;">Ej.: 55, 28, 167…</div> -->
               <!-- Denominación del cargo (se muestra solo si hay ID válido) -->
-           <div id="cargoNombreWrap" class="muted" style="margin-top:6px; display:none;">
-  <span>Denominación:</span>
-  <span class="title" id="cargoNombre">—</span>
-  <span id="multBadge" style="display:none; margin-left:8px; padding:2px 6px; border-radius:10px; border:1px solid #d6d6e7;">
-    x1
-  </span>
-</div>
+              <div id="cargoNombreWrap" class="muted" style="margin-top:6px; display:none;">
+                <span>Denominación:</span>
+                <span class="title" id="cargoNombre">—</span>
+                <span id="multBadge"
+                  style="display:none; margin-left:8px; padding:2px 6px; border-radius:10px; border:1px solid #d6d6e7;">
+                  x1
+                </span>
+              </div>
 
             </div>
             <!-- NUEVO: Card grande para Horas Cátedra (HCNM/HCNS) -->
             <div id="horasCard" style="display:none; margin-top:12px;">
               <div class="horas-card">
                 <label for="horasValor" class="horas-title">Horas Cátedra</label>
-                <input
-                  id="horasValor"
-                  type="number"
-                  min="0"
-                  max="99"
-                  step="1"
-                  inputmode="numeric"
-                  placeholder="por ej. 3"
-                  aria-label="Cantidad de horas cátedra"
-                />
+                <input id="horasValor" type="number" min="0" max="99" step="1" inputmode="numeric"
+                  placeholder="por ej. 3" aria-label="Cantidad de horas cátedra" />
               </div>
             </div>
           </div>
           <!-- === Cálculo de Días de Licencias – Cartas Médicas === -->
-<div id="licenciasCard" class="result" style="margin-top:10px;">
-  <div class="title">Cálculo de Días de Licencias – Cartas Médicas</div>
-  <div class="row" style="gap:12px; align-items:flex-end; flex-wrap:wrap;">
-    <label class="muted">Fecha de inicio
-      <input id="licInicio" type="date" />
-    </label>
+          <div id="licenciasCard" class="result" style="margin-top:10px;">
+            <div class="title">Cálculo de Días de Licencias – Cartas Médicas</div>
+            <div class="row" style="gap:12px; align-items:flex-end; flex-wrap:wrap;">
+              <label class="muted">Fecha de inicio
+                <input id="licInicio" type="date" />
+              </label>
 
-    <label class="muted">Días de licencia
-      <input id="licDias" type="number" min="0" step="1" />
-    </label>
+              <label class="muted">Días de licencia
+                <input id="licDias" type="number" min="0" step="1" />
+              </label>
 
-    <label class="muted">Fecha de finalización
-      <input id="licFin" type="text" class="num-display" readonly />
-    </label>
-  </div>
-</div>
+              <label class="muted">Fecha de finalización
+                <input id="licFin" type="text" class="num-display" readonly />
+              </label>
+            </div>
+          </div>
 
         </div>
         <div class="stack">
@@ -245,24 +241,26 @@
         <div class="result" id="liqBlock">
           <div class="title">Liquidación</div>
 
-<div class="row" id="indicesRow" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-  <label class="muted" style="position:relative; display:inline-flex; align-items:center; gap:8px;">
-    Índice del mes
-    <input id="indiceMes" step="0.0001" class="num-display" type="number" value="787.1022" readonly />
-    <select id="indicePeriodo" aria-label="Mes y año del índice"></select>
-  </label>
+          <div class="row" id="indicesRow"
+            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label class="muted" style="position:relative; display:inline-flex; align-items:center; gap:8px;">
+              Índice del mes
+              <input id="indiceMes" step="0.0001" class="num-display" type="number" value="787.1022" readonly />
+              <select id="indicePeriodo" aria-label="Mes y año del índice"></select>
+            </label>
 
-  <div id="indicePrevToolbar" style="display:none;">
-    <label class="muted">
-      Índice mes anterior
-      <input id="indiceMesPrev_clone" name="indiceMesPrev_clone" step="0.0001" class="num-display" type="number" value="772.4261" readonly />
-    </label>
-  </div>
-</div>
+            <div id="indicePrevToolbar" style="display:none;">
+              <label class="muted">
+                Índice mes anterior
+                <input id="indiceMesPrev_clone" name="indiceMesPrev_clone" step="0.0001" class="num-display"
+                  type="number" value="772.4261" readonly />
+              </label>
+            </div>
+          </div>
 
 
 
-<!-- Código viejo (eliminar si funciona el cambio)
+          <!-- Código viejo (eliminar si funciona el cambio)
           <div id="indicesRow"
             style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;"><label
               class="muted">Índice del mes
@@ -381,7 +379,7 @@
               </table>
             </div>
             <div id="complementoBox" style="display:none;; position:relative;">
-            <div class="muted" style="margin:6px 0 4px 0;" title="F = Complemento (días excedentes)">Complemento</div>
+              <div class="muted" style="margin:6px 0 4px 0;" title="F = Complemento (días excedentes)">Complemento</div>
               <div class="pill" style="margin:0 0 6px 0;">Días excedentes: <b id="diasExc">0</b></div>
               <table class="tabla-codigos">
                 <thead>
@@ -504,227 +502,227 @@
     </aside>
   </div>
   </div>
- <!-- === Loader Nomenclador + Índices === -->
-<script>
-(function(){
-  const NOMEN_URLS  = [
-    'data/cargos/nomenclador_agosto_2024.json',
-    'docs/data/cargos/nomenclador_agosto_2024.json'
-  ];
-  const INDICES_URLS = [
-    'data/indices.json',
-    'docs/data/indices.json'
-  ];
+  <!-- === Loader Nomenclador + Índices === -->
+  <script>
+    (function () {
+      const NOMEN_URLS = [
+        'data/cargos/nomenclador_agosto_2024.json',
+        'docs/data/cargos/nomenclador_agosto_2024.json'
+      ];
+      const INDICES_URLS = [
+        'data/indices.json',
+        'docs/data/indices.json'
+      ];
 
-  async function fetchFirst(urls){
-    for (const u of urls){
-      try { const r = await fetch(u, {cache:'no-store'}); if (r.ok) return await r.json(); } catch(e){}
-    }
-    throw new Error('No se pudo cargar: ' + urls.join(' | '));
-  }
+      async function fetchFirst(urls) {
+        for (const u of urls) {
+          try { const r = await fetch(u, { cache: 'no-store' }); if (r.ok) return await r.json(); } catch (e) { }
+        }
+        throw new Error('No se pudo cargar: ' + urls.join(' | '));
+      }
 
-  let _cargos = null;      // array de cargos
-  let _indices = null;     // { 'YYYY-MM': number }
-  let _baseline = '2024-08';
+      let _cargos = null;      // array de cargos
+      let _indices = null;     // { 'YYYY-MM': number }
+      let _baseline = '2024-08';
 
-  async function ensure(){
-    if (_cargos && _indices) return;
-    const [nomen, idx] = await Promise.all([
-      fetchFirst(NOMEN_URLS),
-      fetchFirst(INDICES_URLS)
-    ]);
-    _cargos = (nomen.cargos || []).map(c => ({...c, A32: c.A32 ?? 0, A44: c.A44 ?? 0}));
-    _baseline = nomen.baselineMonth || _baseline;
-    _indices = idx.indices || idx; // soporta ambos formatos
-  }
+      async function ensure() {
+        if (_cargos && _indices) return;
+        const [nomen, idx] = await Promise.all([
+          fetchFirst(NOMEN_URLS),
+          fetchFirst(INDICES_URLS)
+        ]);
+        _cargos = (nomen.cargos || []).map(c => ({ ...c, A32: c.A32 ?? 0, A44: c.A44 ?? 0 }));
+        _baseline = nomen.baselineMonth || _baseline;
+        _indices = idx.indices || idx; // soporta ambos formatos
+      }
 
-  function getByCategoria(cat){
-    if (!_cargos) return null;
-    return _cargos.find(c => Number(c.categoria) === Number(cat)) || null;
-  }
-  function search(text){
-    if (!_cargos || !Array.isArray(_cargos)) return [];
-    const q = String(text || "").trim().toLowerCase();
-    if (!q) return [];
-    const isNum = /^\d+$/.test(q);
-    let results = [];
-    if (isNum) {
-      results = _cargos.filter(c => String(c.categoria || "").startsWith(q));
-    } else {
-      results = _cargos.filter(c => String(c.denominacion || "").toLowerCase().includes(q));
-    }
-    results.sort((a, b) => {
-      const qa = String(a.categoria), qb = String(b.categoria);
-      const dnA = String(a.denominacion || "").toLowerCase();
-      const dnB = String(b.denominacion || "").toLowerCase();
-      const exactA = (isNum && qa === q) || (!isNum && dnA === q);
-      const exactB = (isNum && qb === q) || (!isNum && dnB === q);
-      if (exactA && !exactB) return -1;
-      if (!exactA && exactB) return 1;
-      const startsA = isNum ? qa.startsWith(q) : dnA.startsWith(q);
-      const startsB = isNum ? qb.startsWith(q) : dnB.startsWith(q);
-      if (startsA && !startsB) return -1;
-      if (!startsA && startsB) return 1;
-      if (dnA < dnB) return -1;
-      if (dnA > dnB) return 1;
-      return Number(a.categoria) - Number(b.categoria);
-    });
-    return results.slice(0, 10);
-  }
-  function getIndice(ym){ return Number(_indices?.[ym] || 0); }
-
-  // Para el futuro (si hubiera doble incremento por categoría)
-  function aplicarDoubleIncrement(montoBase, indiceBaseline, indiceActual, enabled){
-    const base = Number(montoBase || 0);
-    const ib = Number(indiceBaseline || 1), ia = Number(indiceActual || ib);
-    if (!enabled || ib <= 0) return base;
-    const variacion = (ia/ib) - 1;
-    return base * (1 + variacion * 2);
-  }
-
-  window.CARGOS = {
-    ready: async () => { await ensure(); return true; },
-    getByCategoria,
-    getIndice,
-    getBaselineMonth: () => _baseline,
-    aplicarDoubleIncrement,
-    search
-  };
-
-  // precarga para no demorar la primera consulta
-  window.CARGOS.ready().then(() => { if (typeof update === 'function') { try { const maybe = update(); if (maybe && typeof maybe.catch === 'function') { maybe.catch(err => console.warn('update error:', err)); } } catch(e){} } });
-})();
-</script>
-<script>
-
-
-/* Selector Mes-Año con <select> nativo, 6 visibles sin reflow + excepción de mes actual faltante */
-(function () {
-  const MES_ABR = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  const INDICES_URL = 'data/indices.json';
-
-  const selPeriodo  = document.getElementById('indicePeriodo'); // <select>
-  const indiceInput = document.getElementById('indiceMes');     // visible (readonly)
-  const prevCalc    = document.getElementById('indiceMesPrev'); // oculto (cálculo)
-
-  if (!selPeriodo || !indiceInput || !prevCalc) return;
-
-  const now   = new Date();
-  const curYM = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-
-  const toFixed4 = n => {
-    const x = Number(n);
-    return Number.isFinite(x) ? x.toFixed(4) : '';
-  };
-  const labelDeClave = ym => {
-    const [y, m] = ym.split('-').map(Number);
-    return `${MES_ABR[m-1]}-${y}`;
-  };
-  const prevYM = k => {
-    let [y, m] = k.split('-').map(Number);
-    m -= 1; if (m === 0) { y -= 1; m = 12; }
-    return `${y}-${String(m).padStart(2,'0')}`;
-  };
-
-  let mapa = {};
-  let claves = [];
-  let latest = null;
-
-  function aplicarPeriodo(k) {
-    if (!k || !mapa[k]) return Promise.resolve(false);
-    const v = Number(mapa[k]);
-    indiceInput.value = toFixed4(v);
-    // Excepción: si el mes calendario no existe y estamos en el último disponible,
-    // "Índice mes anterior" = mismo valor
-    const hasCurrent = mapa[curYM] != null;
-    let prevValue;
-    if (!hasCurrent && k === latest) {
-      prevValue = v;
-    } else {
-      const kp = prevYM(k);
-      prevValue = Number(mapa[kp]);
-    }
-    prevCalc.value = toFixed4(prevValue);
-    const prevClone = document.getElementById('indiceMesPrev_clone');
-    if (prevClone) prevClone.value = toFixed4(prevValue);
-
-    const runRecalc = () => {
-      indiceInput.dispatchEvent(new Event('input', { bubbles:true }));
-      prevCalc.dispatchEvent(new Event('input', { bubbles:true }));
-      if (typeof update === 'function') { try { update(); } catch {} }
-    };
-
-    const ensure = window.CODIGOS?.E66?.ensureLoaded(k);
-    if (ensure && typeof ensure.then === 'function') {
-      return ensure.then(() => { runRecalc(); return true; });
-    }
-    runRecalc();
-    return Promise.resolve(true);
-  }
-
-  async function init() {
-    try {
-      const v = window.__assetVersion ? `?v=${window.__assetVersion}` : '';
-      const res = await fetch(INDICES_URL + v, { cache: 'no-store' });
-      const json = await res.json();
-      mapa = json.indices || json;
-    } catch (e) {
-      console.warn('No se pudo cargar data/indices.json', e);
-      selPeriodo.innerHTML = ''; indiceInput.value = ''; prevCalc.value = '';
-      return;
-    }
-
-    // Construir opciones (todas, orden desc)
-    claves = Object.keys(mapa)
-      .filter(k => /^\d{4}-\d{2}$/.test(k))
-      .sort()
-      .reverse();
-
-    selPeriodo.innerHTML = '';
-    for (const k of claves) {
-      const opt = document.createElement('option');
-      opt.value = k;
-      opt.textContent = labelDeClave(k);
-      selPeriodo.appendChild(opt);
-    }
-
-    adjustSelectWidth(selPeriodo);
-
-    latest = claves[0] || null;
-
-    // Selección inicial: último disponible
-    if (latest) {
-      selPeriodo.value = latest;
-      adjustSelectWidth(selPeriodo);
-      const resInit = aplicarPeriodo(selPeriodo.value);
-      if (resInit && typeof resInit.then === 'function') {
-        resInit.catch(() => {});
-      } else {
-        window.CODIGOS?.E66?.ensureLoaded(selPeriodo.value).then(() => {
-          if (typeof update === 'function') { try { update(); } catch {} }
+      function getByCategoria(cat) {
+        if (!_cargos) return null;
+        return _cargos.find(c => Number(c.categoria) === Number(cat)) || null;
+      }
+      function search(text) {
+        if (!_cargos || !Array.isArray(_cargos)) return [];
+        const q = String(text || "").trim().toLowerCase();
+        if (!q) return [];
+        const isNum = /^\d+$/.test(q);
+        let results = [];
+        if (isNum) {
+          results = _cargos.filter(c => String(c.categoria || "").startsWith(q));
+        } else {
+          results = _cargos.filter(c => String(c.denominacion || "").toLowerCase().includes(q));
+        }
+        results.sort((a, b) => {
+          const qa = String(a.categoria), qb = String(b.categoria);
+          const dnA = String(a.denominacion || "").toLowerCase();
+          const dnB = String(b.denominacion || "").toLowerCase();
+          const exactA = (isNum && qa === q) || (!isNum && dnA === q);
+          const exactB = (isNum && qb === q) || (!isNum && dnB === q);
+          if (exactA && !exactB) return -1;
+          if (!exactA && exactB) return 1;
+          const startsA = isNum ? qa.startsWith(q) : dnA.startsWith(q);
+          const startsB = isNum ? qb.startsWith(q) : dnB.startsWith(q);
+          if (startsA && !startsB) return -1;
+          if (!startsA && startsB) return 1;
+          if (dnA < dnB) return -1;
+          if (dnA > dnB) return 1;
+          return Number(a.categoria) - Number(b.categoria);
         });
+        return results.slice(0, 10);
+      }
+      function getIndice(ym) { return Number(_indices?.[ym] || 0); }
+
+      // Para el futuro (si hubiera doble incremento por categoría)
+      function aplicarDoubleIncrement(montoBase, indiceBaseline, indiceActual, enabled) {
+        const base = Number(montoBase || 0);
+        const ib = Number(indiceBaseline || 1), ia = Number(indiceActual || ib);
+        if (!enabled || ib <= 0) return base;
+        const variacion = (ia / ib) - 1;
+        return base * (1 + variacion * 2);
       }
 
-    }
-    // Cambio de período
-    selPeriodo.addEventListener('change', () => {
-      adjustSelectWidth(selPeriodo);
-      const clave = selPeriodo.value;
-      const res = aplicarPeriodo(clave);
-      if (res && typeof res.then === 'function') {
-        res.catch(() => {});
-        return;
+      window.CARGOS = {
+        ready: async () => { await ensure(); return true; },
+        getByCategoria,
+        getIndice,
+        getBaselineMonth: () => _baseline,
+        aplicarDoubleIncrement,
+        search
+      };
+
+      // precarga para no demorar la primera consulta
+      window.CARGOS.ready().then(() => { if (typeof update === 'function') { try { const maybe = update(); if (maybe && typeof maybe.catch === 'function') { maybe.catch(err => console.warn('update error:', err)); } } catch (e) { } } });
+    })();
+  </script>
+  <script>
+
+
+    /* Selector Mes-Año con <select> nativo, 6 visibles sin reflow + excepción de mes actual faltante */
+    (function () {
+      const MES_ABR = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+      const INDICES_URL = 'data/indices.json';
+
+      const selPeriodo = document.getElementById('indicePeriodo'); // <select>
+      const indiceInput = document.getElementById('indiceMes');     // visible (readonly)
+      const prevCalc = document.getElementById('indiceMesPrev'); // oculto (cálculo)
+
+      if (!selPeriodo || !indiceInput || !prevCalc) return;
+
+      const now = new Date();
+      const curYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+      const toFixed4 = n => {
+        const x = Number(n);
+        return Number.isFinite(x) ? x.toFixed(4) : '';
+      };
+      const labelDeClave = ym => {
+        const [y, m] = ym.split('-').map(Number);
+        return `${MES_ABR[m - 1]}-${y}`;
+      };
+      const prevYM = k => {
+        let [y, m] = k.split('-').map(Number);
+        m -= 1; if (m === 0) { y -= 1; m = 12; }
+        return `${y}-${String(m).padStart(2, '0')}`;
+      };
+
+      let mapa = {};
+      let claves = [];
+      let latest = null;
+
+      function aplicarPeriodo(k) {
+        if (!k || !mapa[k]) return Promise.resolve(false);
+        const v = Number(mapa[k]);
+        indiceInput.value = toFixed4(v);
+        // Excepción: si el mes calendario no existe y estamos en el último disponible,
+        // "Índice mes anterior" = mismo valor
+        const hasCurrent = mapa[curYM] != null;
+        let prevValue;
+        if (!hasCurrent && k === latest) {
+          prevValue = v;
+        } else {
+          const kp = prevYM(k);
+          prevValue = Number(mapa[kp]);
+        }
+        prevCalc.value = toFixed4(prevValue);
+        const prevClone = document.getElementById('indiceMesPrev_clone');
+        if (prevClone) prevClone.value = toFixed4(prevValue);
+
+        const runRecalc = () => {
+          indiceInput.dispatchEvent(new Event('input', { bubbles: true }));
+          prevCalc.dispatchEvent(new Event('input', { bubbles: true }));
+          if (typeof update === 'function') { try { update(); } catch { } }
+        };
+
+        const ensure = window.CODIGOS?.E66?.ensureLoaded(k);
+        if (ensure && typeof ensure.then === 'function') {
+          return ensure.then(() => { runRecalc(); return true; });
+        }
+        runRecalc();
+        return Promise.resolve(true);
       }
-      window.CODIGOS?.E66?.ensureLoaded(clave).then(() => {
-        if (typeof update === 'function') { try { update(); } catch {} }
-      });
-    });
 
-  }
+      async function init() {
+        try {
+          const v = window.__assetVersion ? `?v=${window.__assetVersion}` : '';
+          const res = await fetch(INDICES_URL + v, { cache: 'no-store' });
+          const json = await res.json();
+          mapa = json.indices || json;
+        } catch (e) {
+          console.warn('No se pudo cargar data/indices.json', e);
+          selPeriodo.innerHTML = ''; indiceInput.value = ''; prevCalc.value = '';
+          return;
+        }
 
-  if (document.readyState !== 'loading') init();
-  else document.addEventListener('DOMContentLoaded', init);
-})();
+        // Construir opciones (todas, orden desc)
+        claves = Object.keys(mapa)
+          .filter(k => /^\d{4}-\d{2}$/.test(k))
+          .sort()
+          .reverse();
+
+        selPeriodo.innerHTML = '';
+        for (const k of claves) {
+          const opt = document.createElement('option');
+          opt.value = k;
+          opt.textContent = labelDeClave(k);
+          selPeriodo.appendChild(opt);
+        }
+
+        adjustSelectWidth(selPeriodo);
+
+        latest = claves[0] || null;
+
+        // Selección inicial: último disponible
+        if (latest) {
+          selPeriodo.value = latest;
+          adjustSelectWidth(selPeriodo);
+          const resInit = aplicarPeriodo(selPeriodo.value);
+          if (resInit && typeof resInit.then === 'function') {
+            resInit.catch(() => { });
+          } else {
+            window.CODIGOS?.E66?.ensureLoaded(selPeriodo.value).then(() => {
+              if (typeof update === 'function') { try { update(); } catch { } }
+            });
+          }
+
+        }
+        // Cambio de período
+        selPeriodo.addEventListener('change', () => {
+          adjustSelectWidth(selPeriodo);
+          const clave = selPeriodo.value;
+          const res = aplicarPeriodo(clave);
+          if (res && typeof res.then === 'function') {
+            res.catch(() => { });
+            return;
+          }
+          window.CODIGOS?.E66?.ensureLoaded(clave).then(() => {
+            if (typeof update === 'function') { try { update(); } catch { } }
+          });
+        });
+
+      }
+
+      if (document.readyState !== 'loading') init();
+      else document.addEventListener('DOMContentLoaded', init);
+    })();
 
 
 
@@ -779,7 +777,7 @@
       if (!el) return; var anios = parseInt(document.getElementById('antiguedadAnios').value || '0');
       var p = getAntiguedad(anios); el.textContent = p.toFixed(0) + '%';
     }
-        function isHoras() {
+    function isHoras() {
       const t = (typeof getTipoCargo === 'function') ? getTipoCargo() : '';
       return t === 'HCNM' || t === 'HCNS';
     }
@@ -874,7 +872,7 @@
       return { total: diasTotal, detalle: detalle.join(' · ') };
     }
 
-                async function calculateLiq(start, end, baja) {
+    async function calculateLiq(start, end, baja) {
       if (!start || !end) {
         liqDato.diasLiq.textContent = '0';
         liqBlock.style.display = 'none';
@@ -973,7 +971,7 @@
           if (cargo) {
             __setCargoNombre(cargo.denominacion || '');
 
-            try { await window.PUNTOS?.ready?.(); } catch (_) {}
+            try { await window.PUNTOS?.ready?.(); } catch (_) { }
             const a01Calc = window.PUNTOS?.getA01For?.(categoriaId, ymSeleccionado) || { actual: 0, previo: 0 };
 
             const A01pts = Number(a01Calc.actual || 0);
@@ -1045,7 +1043,7 @@
       let e66Base = 0, e66Exc = 0;
       let e60Base = 0, e60Exc = 0;
 
-      (async function calcA56(){
+      (async function calcA56() {
         const usar = document.getElementById('optA56')?.checked === true;
         const $rowBase = document.getElementById('rowA56');
         const $outBase = document.getElementById('a56Importe');
@@ -1054,33 +1052,33 @@
         if ($rowBase) $rowBase.style.display = usar ? 'table-row' : 'none';
 
         let base = 0, exc = 0;
-        try { await window.CODIGOS?.A56?.ready?.(); } catch(e){}
+        try { await window.CODIGOS?.A56?.ready?.(); } catch (e) { }
 
         if (usar) {
-          const tipo  = (window.getTipoCargo?.() || '').toUpperCase();  // 'CARGOS'|'HCNM'|'HCNS'
+          const tipo = (window.getTipoCargo?.() || '').toUpperCase();  // 'CARGOS'|'HCNM'|'HCNS'
           const horas = Number(window.getHorasSeleccionadas?.() || 0);
           if (tipo === 'CARGOS') {
-            const mAct  = window.CODIGOS.A56.mensualCargo(ymSeleccionado);
+            const mAct = window.CODIGOS.A56.mensualCargo(ymSeleccionado);
             const mPrev = window.CODIGOS.A56.mensualCargo(ymPrevSeleccionado);
-            base = window.CODIGOS.A56.prorrateo(mAct,  diasBase);
-            exc  = window.CODIGOS.A56.prorrateo(mPrev, diasExc);
+            base = window.CODIGOS.A56.prorrateo(mAct, diasBase);
+            exc = window.CODIGOS.A56.prorrateo(mPrev, diasExc);
           } else if (tipo === 'HCNM' || tipo === 'HCNS') {
-            const mAct  = window.CODIGOS.A56.mensualHora(ymSeleccionado,  tipo, horas);
+            const mAct = window.CODIGOS.A56.mensualHora(ymSeleccionado, tipo, horas);
             const mPrev = window.CODIGOS.A56.mensualHora(ymPrevSeleccionado, tipo, horas);
-            base = window.CODIGOS.A56.prorrateo(mAct,  diasBase);
-            exc  = window.CODIGOS.A56.prorrateo(mPrev, diasExc);
+            base = window.CODIGOS.A56.prorrateo(mAct, diasBase);
+            exc = window.CODIGOS.A56.prorrateo(mPrev, diasExc);
           }
         }
 
         // pintar base
-        $outBase.textContent = Number(base||0).toLocaleString('es-AR', { minimumFractionDigits:2, maximumFractionDigits:2 });
+        $outBase.textContent = Number(base || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
         // pintar F56 en complemento (solo si hay excedente y A56 activo)
-        updateComplementoRow?.('F56', usar && Number(diasExc||0) > 0, exc);
+        updateComplementoRow?.('F56', usar && Number(diasExc || 0) > 0, exc);
 
         // sumar A56 base al total parcial
         if (usar && typeof totalParcial === 'number') {
-          totalParcial += Number(base||0);
+          totalParcial += Number(base || 0);
           liqDato.totalParcial.textContent = fmtAR(totalParcial);
         }
       })();
@@ -1088,17 +1086,17 @@
       function updateComplementoRow(code, visible, valor) {
         const rowId = (code === 'E29C') ? 'rowE29_comp' : ('row' + code);
         const cellId =
-          code === 'F66'  ? 'f66Importe'     :
-          code === 'F60'  ? 'f60Importe'     :
-          code === 'F56'  ? 'f56Importe'     :
-          code === 'E29C' ? 'e29CompImporte' : null;
+          code === 'F66' ? 'f66Importe' :
+            code === 'F60' ? 'f60Importe' :
+              code === 'F56' ? 'f56Importe' :
+                code === 'E29C' ? 'e29CompImporte' : null;
 
-        const row  = document.getElementById(rowId);
+        const row = document.getElementById(rowId);
         const cell = cellId ? document.getElementById(cellId) : null;
 
-        if (row)  row.style.display = visible ? 'table-row' : 'none';
-        if (cell) cell.textContent  = (visible ? Number(valor || 0) : 0)
-                                    .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        if (row) row.style.display = visible ? 'table-row' : 'none';
+        if (cell) cell.textContent = (visible ? Number(valor || 0) : 0)
+          .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       }
 
       (async function calcE66() {
@@ -1108,8 +1106,8 @@
 
         const usar = chk?.checked === true;
         const ymSel = document.getElementById('indicePeriodo')?.value
-                   || document.getElementById('indiceMes')?.value
-                   || '';
+          || document.getElementById('indiceMes')?.value
+          || '';
 
         let tipo = tipoSel || 'CARGOS';
         let horas = esHoras ? (horasSeleccionadas > 0 ? horasSeleccionadas : 1) : 1;
@@ -1157,7 +1155,7 @@
 
         const esCargo = !esHoras;
         const diasBaseCalc = Number(diasBase) || 0;
-        const diasExcCalc  = Number(diasExc) || 0;
+        const diasExcCalc = Number(diasExc) || 0;
 
         const usarE60 = chk.checked && esCargo && window.CODIGOS?.E60;
 
@@ -1441,102 +1439,102 @@
       }
     })();
   </script>
-<script>
-(function(){
-  function ensureRowIn(tbody, rowId, code, title, cellId, afterCellId){
-    if (document.getElementById(rowId)) return;
-    const tr = document.createElement('tr'); tr.id = rowId;
-    const td1 = document.createElement('td'); td1.title = title; td1.innerHTML = '<b>'+code+'</b>';
-    const td2 = document.createElement('td'); td2.textContent = '$';
-    const td3 = document.createElement('td'); td3.id = cellId; td3.textContent = '0,00';
-    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
-    if (afterCellId) {
-      const afterEl = document.getElementById(afterCellId);
-      if (afterEl) afterEl.parentElement.insertAdjacentElement('afterend', tr);
-      else tbody.appendChild(tr);
-    } else {
-      tbody.appendChild(tr);
-    }
-  }
-
-  // Crea A32/A44 en Base y elimina restos en Complemento si existieran
-  window.__ensureA32A44Rows = function(){
-    const tbodyBase = document.getElementById('liqBaseBody') || document.querySelector('#liqBaseBody');
-    if (tbodyBase){
-      const afterId = 'a04Importe'; // insertar tras A04
-      ensureRowIn(tbodyBase, 'rowA32', 'A32', 'Responsabilidad jerárquica', 'a32Importe', afterId);
-      ensureRowIn(tbodyBase, 'rowA44', 'A44', 'Código especial', 'a44Importe', 'a32Importe');
-    }
-    // borrar cualquier fila A32/A44 en Complemento
-    const a32E = document.getElementById('a32Exc'); if (a32E) a32E.closest('tr')?.remove();
-    const a44E = document.getElementById('a44Exc'); if (a44E) a44E.closest('tr')?.remove();
-  };
-})();
-</script>
   <script>
-  document.getElementById('optE66')?.addEventListener('change', () => {
-    const on = document.getElementById('optE66').checked;
-    // E66 (columna base)
-    document.getElementById('rowE66')?.style.setProperty('display', on ? '' : 'none');
-    // F66 (columna complemento) se recalcula y decide su visibilidad en calcE66()
-    document.getElementById('rowF66')?.style.setProperty('display', 'none');
-    // Recalcular todo
-    if (typeof update === 'function') update();
-  });
-</script>
+    (function () {
+      function ensureRowIn(tbody, rowId, code, title, cellId, afterCellId) {
+        if (document.getElementById(rowId)) return;
+        const tr = document.createElement('tr'); tr.id = rowId;
+        const td1 = document.createElement('td'); td1.title = title; td1.innerHTML = '<b>' + code + '</b>';
+        const td2 = document.createElement('td'); td2.textContent = '$';
+        const td3 = document.createElement('td'); td3.id = cellId; td3.textContent = '0,00';
+        tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+        if (afterCellId) {
+          const afterEl = document.getElementById(afterCellId);
+          if (afterEl) afterEl.parentElement.insertAdjacentElement('afterend', tr);
+          else tbody.appendChild(tr);
+        } else {
+          tbody.appendChild(tr);
+        }
+      }
+
+      // Crea A32/A44 en Base y elimina restos en Complemento si existieran
+      window.__ensureA32A44Rows = function () {
+        const tbodyBase = document.getElementById('liqBaseBody') || document.querySelector('#liqBaseBody');
+        if (tbodyBase) {
+          const afterId = 'a04Importe'; // insertar tras A04
+          ensureRowIn(tbodyBase, 'rowA32', 'A32', 'Responsabilidad jerárquica', 'a32Importe', afterId);
+          ensureRowIn(tbodyBase, 'rowA44', 'A44', 'Código especial', 'a44Importe', 'a32Importe');
+        }
+        // borrar cualquier fila A32/A44 en Complemento
+        const a32E = document.getElementById('a32Exc'); if (a32E) a32E.closest('tr')?.remove();
+        const a44E = document.getElementById('a44Exc'); if (a44E) a44E.closest('tr')?.remove();
+      };
+    })();
+  </script>
   <script>
-  /* Antigüedad: solo input numérico; limpiar restos y mantener look unificado */
-  (function () {
-    // Limpiar posibles restos/fantasmas
-    document.querySelectorAll('#antiguedadSelect, #antiguedadPeriodo, #antiguedadOptions, .antiguedad-ghost')
-      .forEach(node => node.remove());
-
-    const input = document.getElementById('antiguedadAnios');
-    if (!input) return;
-    // Atributos mínimos del control (no tocar estructura HTML)
-    try {
-      input.setAttribute('type', 'number');
-      if (!input.hasAttribute('min'))  input.setAttribute('min', '0'); else input.min = '0';
-      if (!input.hasAttribute('max'))  input.setAttribute('max', '40'); else input.max = '40';
-      if (!input.hasAttribute('step')) input.setAttribute('step', '1'); else input.step = '1';
-    } catch (e) { /* noop */ }
-
-    // Asegurar tipeo libre con límites razonables (0..40). Ajustar si tu lógica cambia.
-    const clamp = n => Math.max(0, Math.min(40, Number(n) || 0));
-    input.addEventListener('input', () => {
-      const n = clamp(input.value);
-      if (String(n) !== String(input.value)) input.value = String(n);
-      input.dispatchEvent(new Event('input', { bubbles:true }));
-      if (typeof update === 'function') { try { update(); } catch {} }
+    document.getElementById('optE66')?.addEventListener('change', () => {
+      const on = document.getElementById('optE66').checked;
+      // E66 (columna base)
+      document.getElementById('rowE66')?.style.setProperty('display', on ? '' : 'none');
+      // F66 (columna complemento) se recalcula y decide su visibilidad en calcE66()
+      document.getElementById('rowF66')?.style.setProperty('display', 'none');
+      // Recalcular todo
+      if (typeof update === 'function') update();
     });
-  })();
-  const input = document.getElementById('antiguedadAnios');
+  </script>
+  <script>
+    /* Antigüedad: solo input numérico; limpiar restos y mantener look unificado */
+    (function () {
+      // Limpiar posibles restos/fantasmas
+      document.querySelectorAll('#antiguedadSelect, #antiguedadPeriodo, #antiguedadOptions, .antiguedad-ghost')
+        .forEach(node => node.remove());
 
-const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
-const digitCount = v => String(Math.trunc(Math.abs(Number(v)) || 0)).length;
+      const input = document.getElementById('antiguedadAnios');
+      if (!input) return;
+      // Atributos mínimos del control (no tocar estructura HTML)
+      try {
+        input.setAttribute('type', 'number');
+        if (!input.hasAttribute('min')) input.setAttribute('min', '0'); else input.min = '0';
+        if (!input.hasAttribute('max')) input.setAttribute('max', '40'); else input.max = '40';
+        if (!input.hasAttribute('step')) input.setAttribute('step', '1'); else input.step = '1';
+      } catch (e) { /* noop */ }
 
-function ajustarAncho() {
-  const needed = clamp(digitCount(input.value) + 1, 4, 10);
-  input.style.width = `${needed}ch`;
-}
+      // Asegurar tipeo libre con límites razonables (0..40). Ajustar si tu lógica cambia.
+      const clamp = n => Math.max(0, Math.min(40, Number(n) || 0));
+      input.addEventListener('input', () => {
+        const n = clamp(input.value);
+        if (String(n) !== String(input.value)) input.value = String(n);
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        if (typeof update === 'function') { try { update(); } catch { } }
+      });
+    })();
+    const input = document.getElementById('antiguedadAnios');
 
-ajustarAncho();
-input.addEventListener('input', ajustarAncho);
-input.addEventListener('change', ajustarAncho);
+    const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
+    const digitCount = v => String(Math.trunc(Math.abs(Number(v)) || 0)).length;
+
+    function ajustarAncho() {
+      const needed = clamp(digitCount(input.value) + 1, 4, 10);
+      input.style.width = `${needed}ch`;
+    }
+
+    ajustarAncho();
+    input.addEventListener('input', ajustarAncho);
+    input.addEventListener('change', ajustarAncho);
 
   </script>
 
   <script>
-  // === Autocomplete y denominación instantánea para #catId ===
-  (function(){
-    const input = document.getElementById('catId');
-    const wrap  = document.getElementById('cargoNombreWrap');
-    const nameEl= document.getElementById('cargoNombre');
-    if (!input || !wrap || !nameEl) return;
+    // === Autocomplete y denominación instantánea para #catId ===
+    (function () {
+      const input = document.getElementById('catId');
+      const wrap = document.getElementById('cargoNombreWrap');
+      const nameEl = document.getElementById('cargoNombre');
+      if (!input || !wrap || !nameEl) return;
 
-    // Estilos mínimos del dropdown (inyectados sin tocar CSS global)
-    const style = document.createElement('style');
-    style.textContent = `
+      // Estilos mínimos del dropdown (inyectados sin tocar CSS global)
+      const style = document.createElement('style');
+      style.textContent = `
       .cat-suggest {
         position: absolute; z-index: 9999; background: #fff; border:1px solid #d6d6e7;
         border-radius:10px; box-shadow: 0 6px 20px rgba(0,0,0,.12); width: 100%; max-height: 260px;
@@ -1548,423 +1546,447 @@ input.addEventListener('change', ajustarAncho);
       .cat-suggest-empty { padding:8px 10px; color:#666; }
       .cat-suggest-wrap { position: relative; display: inline-block; width: 22ch; }
     `;
-    document.head.appendChild(style);
+      document.head.appendChild(style);
 
-    // Envolver input para posicionar el dropdown
-    const wrapper = document.createElement('div');
-    wrapper.className = 'cat-suggest-wrap';
-    input.parentNode.insertBefore(wrapper, input);
-    wrapper.appendChild(input);
+      // Envolver input para posicionar el dropdown
+      const wrapper = document.createElement('div');
+      wrapper.className = 'cat-suggest-wrap';
+      input.parentNode.insertBefore(wrapper, input);
+      wrapper.appendChild(input);
 
-    // Dropdown
-    const dd = document.createElement('div');
-    dd.className = 'cat-suggest';
-    dd.style.display = 'none';
-    wrapper.appendChild(dd);
+      // Dropdown
+      const dd = document.createElement('div');
+      dd.className = 'cat-suggest';
+      dd.style.display = 'none';
+      wrapper.appendChild(dd);
 
-    let idx = -1;
-    let items = [];
-    let debounceT = null;
+      let idx = -1;
+      let items = [];
+      let debounceT = null;
 
-    function showName(txt){
-      if (txt && String(txt).trim()){
-        nameEl.textContent = txt;
-        wrap.style.display = 'block';
-      } else {
-        nameEl.textContent = '-';
-        wrap.style.display = 'none';
-      }
-    }
-
-    async function ensureData(){ try { await window.CARGOS?.ready?.(); } catch(_){} }
-
-    function renderList(list){
-      dd.innerHTML = '';
-      items = list || [];
-      idx = -1;
-      if (!items.length){
-        const empty = document.createElement('div');
-        empty.className = 'cat-suggest-empty';
-        empty.textContent = 'Sin coincidencias...';
-        dd.appendChild(empty);
-        dd.style.display = 'block';
-        return;
-      }
-      items.forEach((c, i) => {
-        const el = document.createElement('div');
-        el.className = 'cat-suggest-item';
-        el.setAttribute('role','option');
-        el.setAttribute('data-index', String(i));
-        el.innerHTML = `<b>${c.categoria}</b> <span>${c.denominacion}</span>`;
-        el.addEventListener('mousedown', (ev) => {
-          ev.preventDefault();
-          choose(i);
-        });
-        dd.appendChild(el);
-      });
-      dd.style.display = 'block';
-    }
-
-    function highlight(newIdx){
-      const nodes = dd.querySelectorAll('.cat-suggest-item');
-      nodes.forEach(n => n.setAttribute('aria-selected','false'));
-      idx = newIdx;
-      if (idx >=0 && idx < nodes.length){
-        nodes[idx].setAttribute('aria-selected','true');
-        const n = nodes[idx];
-        const nTop = n.offsetTop, nBottom = nTop + n.offsetHeight;
-        if (dd.scrollTop > nTop) dd.scrollTop = nTop;
-        else if (dd.scrollTop + dd.clientHeight < nBottom) dd.scrollTop = nBottom - dd.clientHeight;
-      }
-    }
-
-    function closeDD(){ dd.style.display = 'none'; dd.innerHTML = ''; items = []; idx = -1; }
-
-    function choose(i){
-      if (i < 0 || i >= items.length) return;
-      const c = items[i];
-      input.value = String(c.categoria);
-      showName(c.denominacion || '');
-      closeDD();
-      if (typeof window.update === 'function') { try { window.update(); } catch(_){} }
-    }
-
-    async function runSearch(){
-      await ensureData();
-      const q = String(input.value || '').trim();
-      if (!q){
-        showName(null);
-        closeDD();
-        return;
-      }
-      const isNum = /^\d+$/.test(q);
-      if (isNum){
-        const cargo = window.CARGOS?.getByCategoria?.(q);
-        showName(cargo?.denominacion || null);
-        if (cargo && String(cargo.categoria) === q){
-          closeDD();
+      function showName(txt) {
+        if (txt && String(txt).trim()) {
+          nameEl.textContent = txt;
+          wrap.style.display = 'block';
         } else {
-          const list = window.CARGOS?.search?.(q) || [];
-          if (list.length && String(list[0].categoria) === q){
+          nameEl.textContent = '-';
+          wrap.style.display = 'none';
+        }
+      }
+
+      async function ensureData() { try { await window.CARGOS?.ready?.(); } catch (_) { } }
+
+      function renderList(list) {
+        dd.innerHTML = '';
+        items = list || [];
+        idx = -1;
+        if (!items.length) {
+          const empty = document.createElement('div');
+          empty.className = 'cat-suggest-empty';
+          empty.textContent = 'Sin coincidencias...';
+          dd.appendChild(empty);
+          dd.style.display = 'block';
+          return;
+        }
+        items.forEach((c, i) => {
+          const el = document.createElement('div');
+          el.className = 'cat-suggest-item';
+          el.setAttribute('role', 'option');
+          el.setAttribute('data-index', String(i));
+          el.innerHTML = `<b>${c.categoria}</b> <span>${c.denominacion}</span>`;
+          el.addEventListener('mousedown', (ev) => {
+            ev.preventDefault();
+            choose(i);
+          });
+          dd.appendChild(el);
+        });
+        dd.style.display = 'block';
+      }
+
+      function highlight(newIdx) {
+        const nodes = dd.querySelectorAll('.cat-suggest-item');
+        nodes.forEach(n => n.setAttribute('aria-selected', 'false'));
+        idx = newIdx;
+        if (idx >= 0 && idx < nodes.length) {
+          nodes[idx].setAttribute('aria-selected', 'true');
+          const n = nodes[idx];
+          const nTop = n.offsetTop, nBottom = nTop + n.offsetHeight;
+          if (dd.scrollTop > nTop) dd.scrollTop = nTop;
+          else if (dd.scrollTop + dd.clientHeight < nBottom) dd.scrollTop = nBottom - dd.clientHeight;
+        }
+      }
+
+      function closeDD() { dd.style.display = 'none'; dd.innerHTML = ''; items = []; idx = -1; }
+
+      function choose(i) {
+        if (i < 0 || i >= items.length) return;
+        const c = items[i];
+        input.value = String(c.categoria);
+        showName(c.denominacion || '');
+        closeDD();
+        if (typeof window.update === 'function') { try { window.update(); } catch (_) { } }
+      }
+
+      async function runSearch() {
+        await ensureData();
+        const q = String(input.value || '').trim();
+        if (!q) {
+          showName(null);
+          closeDD();
+          return;
+        }
+        const isNum = /^\d+$/.test(q);
+        if (isNum) {
+          const cargo = window.CARGOS?.getByCategoria?.(q);
+          showName(cargo?.denominacion || null);
+          if (cargo && String(cargo.categoria) === q) {
             closeDD();
           } else {
-            renderList(list);
-          }
-        }
-        return;
-      }
-      const list = window.CARGOS?.search?.(q) || [];
-      renderList(list);
-      if (list.length === 1 && String(list[0].denominacion || '').toLowerCase() === q.toLowerCase()){
-        showName(list[0].denominacion);
-      } else {
-        showName(null);
-      }
-    }
-
-    function scheduleSearch(){
-      if (debounceT) clearTimeout(debounceT);
-      debounceT = setTimeout(runSearch, 120);
-    }
-
-    input.addEventListener('input', scheduleSearch);
-    input.addEventListener('focus', scheduleSearch);
-
-    input.addEventListener('keydown', (ev) => {
-      const open = dd.style.display !== 'none';
-      if (ev.key === 'ArrowDown' && open){
-        ev.preventDefault();
-        highlight(Math.min(idx + 1, items.length - 1));
-      } else if (ev.key === 'ArrowUp' && open){
-        ev.preventDefault();
-        highlight(Math.max(idx - 1, 0));
-      } else if (ev.key === 'Enter'){
-        if (open && idx >= 0){
-          ev.preventDefault();
-          choose(idx);
-        } else {
-          runSearch().then(() => {
-            if (!items.length){
-              const c = window.CARGOS?.getByCategoria?.(input.value);
-              if (c) showName(c.denominacion);
+            const list = window.CARGOS?.search?.(q) || [];
+            if (list.length && String(list[0].categoria) === q) {
+              closeDD();
+            } else {
+              renderList(list);
             }
-          });
-        }
-      } else if (ev.key === 'Escape' && open){
-        ev.preventDefault();
-        closeDD();
-      }
-    });
-
-    document.addEventListener('click', (ev) => {
-      if (!wrapper.contains(ev.target)) closeDD();
-    });
-
-  })();
-  </script>
-  <script>
-  // === Autocompletar Fecha Fin con último día del mes actual ===
-  (function(){
-    const inicio = document.getElementById('inicio');
-    const fin    = document.getElementById('fin');
-    if (!inicio || !fin) return;
-
-    // Devuelve YYYY-MM-DD del último día del mes actual (según zona local)
-    function lastDayOfCurrentMonthISO(){
-      const now   = new Date();
-      const y     = now.getFullYear();
-      const m     = now.getMonth();
-      const last  = new Date(y, m + 1, 0);
-      const pad   = n => String(n).padStart(2, '0');
-      return `${y}-${pad(m + 1)}-${pad(last.getDate())}`;
-    }
-
-    function setAutoFin(){
-      fin.value = lastDayOfCurrentMonthISO();
-      fin.dataset.autofill = "1";
-      if (typeof window.update === 'function') { try { window.update(); } catch(_){} }
-    }
-
-    ['input','change'].forEach(ev => {
-      fin.addEventListener(ev, () => { delete fin.dataset.autofill; });
-    });
-
-    ['change','blur'].forEach(ev => {
-      inicio.addEventListener(ev, () => {
-        if (!inicio.value){
-          fin.value = "";
-          delete fin.dataset.autofill;
-          if (typeof window.update === 'function') { try { window.update(); } catch(_){} }
+          }
           return;
         }
-        if (!fin.value || fin.dataset.autofill === "1"){
-          setAutoFin();
+        const list = window.CARGOS?.search?.(q) || [];
+        renderList(list);
+        if (list.length === 1 && String(list[0].denominacion || '').toLowerCase() === q.toLowerCase()) {
+          showName(list[0].denominacion);
+        } else {
+          showName(null);
+        }
+      }
+
+      function scheduleSearch() {
+        if (debounceT) clearTimeout(debounceT);
+        debounceT = setTimeout(runSearch, 120);
+      }
+
+      input.addEventListener('input', scheduleSearch);
+      input.addEventListener('focus', scheduleSearch);
+
+      input.addEventListener('keydown', (ev) => {
+        const open = dd.style.display !== 'none';
+        if (ev.key === 'ArrowDown' && open) {
+          ev.preventDefault();
+          highlight(Math.min(idx + 1, items.length - 1));
+        } else if (ev.key === 'ArrowUp' && open) {
+          ev.preventDefault();
+          highlight(Math.max(idx - 1, 0));
+        } else if (ev.key === 'Enter') {
+          if (open && idx >= 0) {
+            ev.preventDefault();
+            choose(idx);
+          } else {
+            runSearch().then(() => {
+              if (!items.length) {
+                const c = window.CARGOS?.getByCategoria?.(input.value);
+                if (c) showName(c.denominacion);
+              }
+            });
+          }
+        } else if (ev.key === 'Escape' && open) {
+          ev.preventDefault();
+          closeDD();
         }
       });
-    });
 
-    if (inicio.value && (!fin.value || fin.dataset.autofill === "1")){
-      setAutoFin();
-    }
-  })();
-  </script>\n  <script>
-  // === Autocompletar Fecha Fin con último día del mes actual ===
-  (function(){
-    const inicio = document.getElementById('inicio');
-    const fin    = document.getElementById('fin');
-    if (!inicio || !fin) return;
-
-    // Devuelve YYYY-MM-DD del último día del mes actual (según zona local)
-    function lastDayOfCurrentMonthISO(){
-      const now   = new Date();
-      const y     = now.getFullYear();
-      const m     = now.getMonth();
-      const last  = new Date(y, m + 1, 0);
-      const pad   = n => String(n).padStart(2, '0');
-      return `${y}-${pad(m + 1)}-${pad(last.getDate())}`;
-    }
-
-    function setAutoFin(){
-      fin.value = lastDayOfCurrentMonthISO();
-      fin.dataset.autofill = "1";
-      if (typeof window.update === 'function') { try { window.update(); } catch(_){} }
-    }
-
-    ['input','change'].forEach(ev => {
-      fin.addEventListener(ev, () => { delete fin.dataset.autofill; });
-    });
-
-    ['change','blur'].forEach(ev => {
-      inicio.addEventListener(ev, () => {
-        if (!inicio.value){
-          fin.value = "";
-          delete fin.dataset.autofill;
-          if (typeof window.update === 'function') { try { window.update(); } catch(_){} }
-          return;
-        }
-        if (!fin.value || fin.dataset.autofill === "1"){
-          setAutoFin();
-        }
+      document.addEventListener('click', (ev) => {
+        if (!wrapper.contains(ev.target)) closeDD();
       });
-    });
 
-    if (inicio.value && (!fin.value || fin.dataset.autofill === "1")){
-      setAutoFin();
-    }
-  })();
+    })();
   </script>
   <script>
-  // Safety net: remover text-nodes que sean exactamente "\n"
-  (function(){
-    function cleanNodeTree(root){
-      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
-      const toRemove = [];
-      while (walker.nextNode()){
-        const n = walker.currentNode;
-        if (n.nodeValue && n.nodeValue.trim() === "\\n") toRemove.push(n);
+    // === Autocompletar Fecha Fin con último día del mes actual ===
+    (function () {
+      const inicio = document.getElementById('inicio');
+      const fin = document.getElementById('fin');
+      if (!inicio || !fin) return;
+
+      // Devuelve YYYY-MM-DD del último día del mes actual (según zona local)
+      function lastDayOfCurrentMonthISO() {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = now.getMonth();
+        const last = new Date(y, m + 1, 0);
+        const pad = n => String(n).padStart(2, '0');
+        return `${y}-${pad(m + 1)}-${pad(last.getDate())}`;
       }
-      toRemove.forEach(n => n.parentNode && n.parentNode.removeChild(n));
-    }
-    if (document.readyState === 'loading'){
-      document.addEventListener('DOMContentLoaded', () => cleanNodeTree(document.body));
-    } else {
-      cleanNodeTree(document.body);
-    }
-  })();
+
+      function setAutoFin() {
+        fin.value = lastDayOfCurrentMonthISO();
+        fin.dataset.autofill = "1";
+        if (typeof window.update === 'function') { try { window.update(); } catch (_) { } }
+      }
+
+      ['input', 'change'].forEach(ev => {
+        fin.addEventListener(ev, () => { delete fin.dataset.autofill; });
+      });
+
+      ['change', 'blur'].forEach(ev => {
+        inicio.addEventListener(ev, () => {
+          if (!inicio.value) {
+            fin.value = "";
+            delete fin.dataset.autofill;
+            if (typeof window.update === 'function') { try { window.update(); } catch (_) { } }
+            return;
+          }
+          if (!fin.value || fin.dataset.autofill === "1") {
+            setAutoFin();
+          }
+        });
+      });
+
+      if (inicio.value && (!fin.value || fin.dataset.autofill === "1")) {
+        setAutoFin();
+      }
+    })();
+  </script>\n
+  <script>
+    // === Autocompletar Fecha Fin con último día del mes actual ===
+    (function () {
+      const inicio = document.getElementById('inicio');
+      const fin = document.getElementById('fin');
+      if (!inicio || !fin) return;
+
+      // Devuelve YYYY-MM-DD del último día del mes actual (según zona local)
+      function lastDayOfCurrentMonthISO() {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = now.getMonth();
+        const last = new Date(y, m + 1, 0);
+        const pad = n => String(n).padStart(2, '0');
+        return `${y}-${pad(m + 1)}-${pad(last.getDate())}`;
+      }
+
+      function setAutoFin() {
+        fin.value = lastDayOfCurrentMonthISO();
+        fin.dataset.autofill = "1";
+        if (typeof window.update === 'function') { try { window.update(); } catch (_) { } }
+      }
+
+      ['input', 'change'].forEach(ev => {
+        fin.addEventListener(ev, () => { delete fin.dataset.autofill; });
+      });
+
+      ['change', 'blur'].forEach(ev => {
+        inicio.addEventListener(ev, () => {
+          if (!inicio.value) {
+            fin.value = "";
+            delete fin.dataset.autofill;
+            if (typeof window.update === 'function') { try { window.update(); } catch (_) { } }
+            return;
+          }
+          if (!fin.value || fin.dataset.autofill === "1") {
+            setAutoFin();
+          }
+        });
+      });
+
+      if (inicio.value && (!fin.value || fin.dataset.autofill === "1")) {
+        setAutoFin();
+      }
+    })();
+  </script>
+  <script>
+    // Safety net: remover text-nodes que sean exactamente "\n"
+    (function () {
+      function cleanNodeTree(root) {
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+        const toRemove = [];
+        while (walker.nextNode()) {
+          const n = walker.currentNode;
+          if (n.nodeValue && n.nodeValue.trim() === "\\n") toRemove.push(n);
+        }
+        toRemove.forEach(n => n.parentNode && n.parentNode.removeChild(n));
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => cleanNodeTree(document.body));
+      } else {
+        cleanNodeTree(document.body);
+      }
+    })();
   </script>
   <!-- Módulo de PUNTOS (A01 acumulado por mes con incrementos y multiplicadores) -->
   <script>
-  (function(){
-    const INC_PATHS = [
-      'docs/data/codigos/incrementos.json',
-      'data/codigos/incrementos.json',
-      'incrementos.json'
-    ];
-    const MUL_PATHS = [
-      'docs/data/codigos/multiplicadores.json',
-      'data/codigos/multiplicadores.json',
-      'multiplicadores.json'
-    ];
+    (function () {
+      const INC_PATHS = [
+        'docs/data/codigos/incrementos.json',
+        'data/codigos/incrementos.json',
+        'incrementos.json'
+      ];
+      const MUL_PATHS = [
+        'docs/data/codigos/multiplicadores.json',
+        'data/codigos/multiplicadores.json',
+        'multiplicadores.json'
+      ];
 
-    async function fetchFirst(paths){
-      for (const p of paths){
-        try {
-          const url = new URL(p, location.href);
-          if (window.__assetVersion) url.searchParams.set('v', window.__assetVersion);
-          const r = await fetch(url, { cache:'no-store' });
-          if (r.ok) return await r.json();
-        } catch (e) {}
-      }
-      throw new Error('No pude cargar: ' + paths.join(' | '));
-    }
-
-    function ymToNum(ym){ return Number(String(ym).replace('-', '')); }
-    function prevYM(ym){
-      let [y,m] = String(ym).split('-').map(Number);
-      m -= 1; if (m === 0){ y--; m = 12; }
-      return `${y}-${String(m).padStart(2,'0')}`;
-    }
-
-    let INC = null;
-    let MUL = null;
-
-    async function ensure(){
-      if (INC && MUL) return;
-      const [inc, mul] = await Promise.all([ fetchFirst(INC_PATHS), fetchFirst(MUL_PATHS) ]);
-      INC = inc; MUL = mul;
-    }
-
-    function multForCategoria(categoria){
-      const d = Number(MUL?.default ?? 1);
-      const m = Number(MUL?.categorias?.[String(categoria)] ?? d);
-      return Number.isFinite(m) ? m : 1;
-    }
-
-    function a01Acumulado(cargo, ymTarget){
-      if (!cargo) return 0;
-      const baseYM = String(INC?.base_month || '2024-08');
-      const tNum = ymToNum(ymTarget);
-      const bNum = ymToNum(baseYM);
-
-      let puntos = Number(cargo.A01 || 0);
-      const mult = multForCategoria(cargo.categoria);
-
-      for (const ch of (INC?.changes || [])){
-        const m = String(ch.month);
-        const n = ymToNum(m);
-        if (n > bNum && n <= tNum){
-          puntos += Number(ch.delta || 0) * mult;
+      async function fetchFirst(paths) {
+        for (const p of paths) {
+          try {
+            const url = new URL(p, location.href);
+            if (window.__assetVersion) url.searchParams.set('v', window.__assetVersion);
+            const r = await fetch(url, { cache: 'no-store' });
+            if (r.ok) return await r.json();
+          } catch (e) { }
         }
+        throw new Error('No pude cargar: ' + paths.join(' | '));
       }
-      return puntos;
-    }
 
-    window.PUNTOS = {
-      ready: async () => { await ensure(); return true; },
-      getA01For: (categoria, ymActual) => {
-        const cargo = window.CARGOS?.getByCategoria?.(Number(categoria));
-        if (!cargo || !INC || !MUL) return { actual:0, previo:0 };
-        const ymPrev = prevYM(ymActual);
-        return {
-          actual: a01Acumulado(cargo, ymActual),
-          previo: a01Acumulado(cargo, ymPrev)
-        };
-      },
-      prevYM
-    };
-  })();
+      function ymToNum(ym) { return Number(String(ym).replace('-', '')); }
+      function prevYM(ym) {
+        let [y, m] = String(ym).split('-').map(Number);
+        m -= 1; if (m === 0) { y--; m = 12; }
+        return `${y}-${String(m).padStart(2, '0')}`;
+      }
+
+      let INC = null;
+      let MUL = null;
+
+      async function ensure() {
+        if (INC && MUL) return;
+        const [inc, mul] = await Promise.all([fetchFirst(INC_PATHS), fetchFirst(MUL_PATHS)]);
+        INC = inc; MUL = mul;
+      }
+
+      function multForCategoria(categoria) {
+        const d = Number(MUL?.default ?? 1);
+        const m = Number(MUL?.categorias?.[String(categoria)] ?? d);
+        return Number.isFinite(m) ? m : 1;
+      }
+
+      function a01Acumulado(cargo, ymTarget) {
+        if (!cargo) return 0;
+        const baseYM = String(INC?.base_month || '2024-08');
+        const tNum = ymToNum(ymTarget);
+        const bNum = ymToNum(baseYM);
+
+        let puntos = Number(cargo.A01 || 0);
+        const mult = multForCategoria(cargo.categoria);
+
+        for (const ch of (INC?.changes || [])) {
+          const m = String(ch.month);
+          const n = ymToNum(m);
+          if (n > bNum && n <= tNum) {
+            puntos += Number(ch.delta || 0) * mult;
+          }
+        }
+        return puntos;
+      }
+
+      window.PUNTOS = {
+        ready: async () => { await ensure(); return true; },
+        getA01For: (categoria, ymActual) => {
+          const cargo = window.CARGOS?.getByCategoria?.(Number(categoria));
+          if (!cargo || !INC || !MUL) return { actual: 0, previo: 0 };
+          const ymPrev = prevYM(ymActual);
+          return {
+            actual: a01Acumulado(cargo, ymActual),
+            previo: a01Acumulado(cargo, ymPrev)
+          };
+        },
+        prevYM
+      };
+    })();
   </script>
-<!-- Activación del Store (vanilla ESM) -->
-<script type="module">
-  import * as Store from './js/store.js';
+  <!-- Activación del Store (vanilla ESM) -->
+  <script type="module">
+    import * as Store from './js/store.js';
 
-  window.Store = Store;
+    window.Store = Store;
 
-  Store.subscribe(async () => {
-    try {
-      if (window.PUNTOS?.ready) await window.PUNTOS.ready();
-      const startEl = document.getElementById('inicio')
-                   || document.getElementById('fechaInicio')
-                   || document.getElementById('start')
-                   || document.getElementById('startDate');
-      const endEl   = document.getElementById('fin')
-                   || document.getElementById('fechaFin')
-                   || document.getElementById('end')
-                   || document.getElementById('endDate');
-      const bajaEl  = document.getElementById('baja');
+    Store.subscribe(async () => {
+      try {
+        if (window.PUNTOS?.ready) await window.PUNTOS.ready();
+        const startEl = document.getElementById('inicio')
+          || document.getElementById('fechaInicio')
+          || document.getElementById('start')
+          || document.getElementById('startDate');
+        const endEl = document.getElementById('fin')
+          || document.getElementById('fechaFin')
+          || document.getElementById('end')
+          || document.getElementById('endDate');
+        const bajaEl = document.getElementById('baja');
 
-      const start = startEl?.value || '';
-      const end   = endEl?.value   || '';
-      const baja  = !!(bajaEl?.checked);
+        const start = startEl?.value || '';
+        const end = endEl?.value || '';
+        const baja = !!(bajaEl?.checked);
 
-      if (start && end && typeof calculateLiq === 'function') {
-        await calculateLiq(start, end, baja);
+        if (start && end && typeof calculateLiq === 'function') {
+          await calculateLiq(start, end, baja);
+        }
+      } catch (e) {
+        console.debug('[Store->calculateLiq] error:', e);
       }
-    } catch (e) {
-      console.debug('[Store->calculateLiq] error:', e);
-    }
-  });
-
-  Store.syncFromDOM();
-
-  ['indicePeriodo', 'catId', 'cargoId', 'diasBase', 'diasExc', 'inicio', 'fin', 'fechaInicio', 'fechaFin']
-    .forEach((id) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener('change', () => Store.syncFromDOM());
-      el.addEventListener('input',  () => Store.syncFromDOM());
     });
-</script>
+
+    Store.syncFromDOM();
+
+    ['indicePeriodo', 'catId', 'cargoId', 'diasBase', 'diasExc', 'inicio', 'fin', 'fechaInicio', 'fechaFin']
+      .forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('change', () => Store.syncFromDOM());
+        el.addEventListener('input', () => Store.syncFromDOM());
+      });
+  </script>
   <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const horasInp = document.getElementById('horasValor');
-    if (!horasInp) return;
+    document.addEventListener('DOMContentLoaded', () => {
+      const horasInp = document.getElementById('horasValor');
+      if (!horasInp) return;
 
-    horasInp.addEventListener('keydown', (ev) => {
-      if (ev.key === 'Enter') {
-        ev.preventDefault();
-        if (typeof update === 'function') {
-          try { update(); } catch (e) {}
+      horasInp.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter') {
+          ev.preventDefault();
+          if (typeof update === 'function') {
+            try { update(); } catch (e) { }
+          }
+          openInicioPicker();
+        } else if (ev.key === 'Tab' && !ev.shiftKey) {
+          openInicioPicker();
+        } else if (ev.key === 'Escape') {
+          horasInp.value = '';
+          try {
+            const raw = localStorage.getItem('liq_prefs') || '{}';
+            const d = JSON.parse(raw) || {};
+            d.horas = '';
+            localStorage.setItem('liq_prefs', JSON.stringify(d));
+          } catch (e) { }
+          if (typeof update === 'function') {
+            try { update(); } catch (e) { }
+          }
         }
-        openInicioPicker();
-      } else if (ev.key === 'Tab' && !ev.shiftKey) {
-        openInicioPicker();
-      } else if (ev.key === 'Escape') {
-        horasInp.value = '';
-        try {
-          const raw = localStorage.getItem('liq_prefs') || '{}';
-          const d = JSON.parse(raw) || {};
-          d.horas = '';
-          localStorage.setItem('liq_prefs', JSON.stringify(d));
-        } catch (e) {}
-        if (typeof update === 'function') {
-          try { update(); } catch (e) {}
-        }
-      }
+      });
     });
-  });
   </script>
-  </body>
+  </script>
+  <script>
+(() => {
+  const titulo = document.getElementById('tituloPeriodo');
+  const inicio = document.getElementById('inicio');
+  const fin    = document.getElementById('fin');
+  const MES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+               'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+  if (!titulo || !inicio || !fin) return;
+
+  function actualizar() {
+    // Tomamos la fecha fin si existe; si no, la de inicio; si no, hoy.
+    const v = fin.value || inicio.value;
+    const d = v ? new Date(v) : new Date();
+    titulo.textContent = `${MES[d.getMonth()]} ${d.getFullYear()}`;
+  }
+
+  actualizar();
+  inicio.addEventListener('change', actualizar);
+  fin.addEventListener('change', actualizar);
+})();
+</script>
+
+</body>
 
 </html>
-
