@@ -701,12 +701,14 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 /* Chip “Días excedentes: X” (derecha en la misma línea) */
 #complementoBox > .pill{
   position: absolute !important;
-  top: -28px !important;
+  top: -33px !important;
   right: 0 !important;
   margin: 0 !important;
   font-size: 14px !important;   /* ← este es el tamaño del label */
-  padding: 2px 10px !important; /* opcional: un poco más de “cuerpo” */
+  padding: 2px 8px !important; /* opcional: un poco más de “cuerpo” */
   font-weight: 800 !important; 
+  padding-bottom: 4px !important;
+  line-height: 1.25 !important;    /* mantiene altura pareja */
 }
 
 /* Antigüedad: más separación entre el texto del label y el input */
@@ -724,5 +726,3 @@ label.muted:has(#antiguedadAnios){
   flex-wrap: wrap;
   margin-top: 1px;   /* extra suave; subí a 4–6px si te gusta más */
 }
-
-
