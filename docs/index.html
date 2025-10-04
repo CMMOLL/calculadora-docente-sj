@@ -79,6 +79,31 @@
     const inicioInput = document.getElementById('inicio');
     const bajaGroup = document.getElementById('bajaGroup');
 
+    // === Mostrar/ocultar E60 según tipo de selección ===
+    function syncE60Visibility() {
+      const value = selTipo?.value || '';
+      const isHoras = (value === 'HCNM' || value === 'HCNS');
+
+      const e60Input = document.getElementById('optE60');
+      // El <label> que contiene a E60 (para ocultar todo el bloque de texto + checkbox)
+      const e60Label = e60Input ? e60Input.closest('label') : null;
+
+      if (e60Label) {
+        e60Label.style.display = isHoras ? 'none' : '';
+      }
+      if (isHoras && e60Input) {
+        // Forzamos desmarcado si está oculto
+        e60Input.checked = false;
+      }
+
+      // (Opcional) por coherencia visual, ocultar filas E60/F60 si estuvieran visibles
+      const rowE60 = document.getElementById('rowE60');
+      const rowF60 = document.getElementById('rowF60');
+      if (isHoras) {
+        if (rowE60) rowE60.style.display = 'none';
+        if (rowF60) rowF60.style.display = 'none';
+      }
+    }
     if (bajaGroup) bajaGroup.style.display = 'none';
 
     const syncBajaVisibility = () => {
@@ -118,6 +143,7 @@
     load();
 
     syncBajaVisibility();
+    syncE60Visibility(); // al cargar
 
     selMes?.addEventListener('change', () => { save(); triggerUpdate(); });
     selTipo?.addEventListener('change', () => {
@@ -135,6 +161,7 @@
       save();
       triggerUpdate();
     });
+    selTipo?.addEventListener('change', syncE60Visibility);
     horasInp?.addEventListener('input', () => { save(); triggerUpdate(); });
     inicioInput?.addEventListener('input', syncBajaVisibility);
     inicioInput?.addEventListener('change', syncBajaVisibility);
