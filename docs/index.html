@@ -212,7 +212,7 @@
     </label>
 
     <label class="muted">Días de licencia
-      <input id="licDias" type="number" min="0" step="1" style="width:8ch;" />
+      <input id="licDias" type="number" min="0" step="1" />
     </label>
 
     <label class="muted">Fecha de finalización
@@ -278,38 +278,44 @@
           <div class="row"
             style="display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin:8px 0 4px 0;"><label
               class="muted">Antigüedad (años)
-              <input id="antiguedadAnios" min="0" step="1" type="number"
-                value="0" /> <span class="pill" id="antiguedadPct" style="margin-left:8px;">0%</span>
-              <label class="muted">Radio
-                <select id="radioDocente" style="margin-left:6px;">
-                  <option value="0">Sin radio</option>
-                  <option value="40">Radio 1 (40%)</option>
-                  <option value="50">Radio 2 (50%)</option>
-                  <option value="60">Radio 3 (60%)</option>
-                  <option value="90">Radio 4 (90%)</option>
-                  <option value="110">Radio 5 (110%)</option>
-                  <option value="130">Radio 6 (130%)</option>
-                  <option value="150">Radio 7 (150%)</option>
-                </select>
-              </label>
-              <div id="optExtras" class="muted">
-                <span class="label">Extras:</span>
-
-                <label title="Estado Docente">A56
-                  <input id="optA56" type="checkbox">
+              <div class="antiguedad-row">
+                <input id="antiguedadAnios" min="0" step="1" type="number" value="0" />
+                <span id="antiguedadHint" class="muted">
+                  <b id="antiguedadPct" title="Antigüedad">0%</b>
+                </span>
+              </div>
+              <div id="rowRadioExtras" class="row" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                <label class="muted">Radio
+                  <select id="radioDocente" style="margin-left:6px;">
+                    <option value="0">Sin radio</option>
+                    <option value="40">Radio 1 (40%)</option>
+                    <option value="50">Radio 2 (50%)</option>
+                    <option value="60">Radio 3 (60%)</option>
+                    <option value="90">Radio 4 (90%)</option>
+                    <option value="110">Radio 5 (110%)</option>
+                    <option value="130">Radio 6 (130%)</option>
+                    <option value="150">Radio 7 (150%)</option>
+                  </select>
                 </label>
+                <div id="optExtras" class="muted">
+                  <span class="label">Extras:</span>
 
-                <label title="Suma Remun. y bonificable por antigüedad">E66
-                  <input id="optE66" type="checkbox">
-                </label>
+                  <label title="Estado Docente">A56
+                    <input id="optA56" type="checkbox">
+                  </label>
 
-                <label title="Suma Remun. y bonificable por antigüedad (solo cargos)">E60
-                  <input id="optE60" type="checkbox">
-                </label>
+                  <label title="Suma Remun. y bonificable por antigüedad">E66
+                    <input id="optE66" type="checkbox">
+                  </label>
 
-                <label title="Suplente">Suplente
-                  <input id="suplente" type="checkbox">
-                </label>
+                  <label title="Suma Remun. y bonificable por antigüedad (solo cargos)">E60
+                    <input id="optE60" type="checkbox">
+                  </label>
+
+                  <label title="Suplente">Suplente
+                    <input id="suplente" type="checkbox">
+                  </label>
+                </div>
               </div>
 
               <label class="muted" style="display:none;">Índice mes anterior
@@ -682,11 +688,14 @@
       selPeriodo.appendChild(opt);
     }
 
+    adjustSelectWidth(selPeriodo);
+
     latest = claves[0] || null;
 
     // Selección inicial: último disponible
     if (latest) {
       selPeriodo.value = latest;
+      adjustSelectWidth(selPeriodo);
       const resInit = aplicarPeriodo(selPeriodo.value);
       if (resInit && typeof resInit.then === 'function') {
         resInit.catch(() => {});
@@ -699,6 +708,7 @@
     }
     // Cambio de período
     selPeriodo.addEventListener('change', () => {
+      adjustSelectWidth(selPeriodo);
       const clave = selPeriodo.value;
       const res = aplicarPeriodo(clave);
       if (res && typeof res.then === 'function') {

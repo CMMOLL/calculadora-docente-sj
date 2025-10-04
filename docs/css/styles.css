@@ -147,12 +147,15 @@ select { padding:6px 10px; border:1px solid #d6d6e7; border-radius:10px; backgro
 .tabla-codigos{ width:100%; border-collapse:collapse; font-size:14px; table-layout:auto; }
 .tabla-codigos th,.tabla-codigos td{ border-bottom:1px solid var(--border); padding:6px 8px; }
 .tabla-codigos thead th{ background:#d6e4f0; color:#333; }
-.liq-columns{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; align-items:start; }
+.liq-columns{ display:grid; grid-template-columns: minmax(360px, 1fr) minmax(360px, 1fr); gap:16px; align-items:start; }
 .liq-columns > div{ align-self:start; }
+@media (max-width: 980px){
+  .liq-columns{ grid-template-columns: 1fr; }
+}
 
 /* Anchos consistentes en la 1ª columna de ambas tablas */
 #liqBlock .tabla-codigos th:first-child, #liqBlock .tabla-codigos td:first-child,
-#complementoBox .tabla-codigos th:first-child, #complementoBox .tabla-codigos td:first-child { width: 180px; }
+#complementoBox .tabla-codigos th:first-child, #complementoBox .tabla-codigos td:first-child { width: 220px; }
 
 /* Encabezados alineados en Complemento */
 #complementoBox{ position: relative; }
@@ -414,94 +417,6 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 /* (Opcional) Ancho mínimo razonable del select de índice */
 #indicePeriodo { min-width: 120px; }
 
-/* Fuente de verdad: Antigüedad (años) */
-#antiguedadAnios {
-  /* ancho cómodo para 2 dígitos + spinner, sin superponer */
-  min-width: 5ch;
-  max-width: 10ch;
-  padding: 6px 2.2em 6px 8px;   /* reserva a la derecha para las flechas */
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  border: 1px solid #d6d6e7;
-  border-radius: 10px;
-  display: inline-block;
-  box-sizing: content-box;
-  cursor: pointer;
-  transition: width .12s ease; 
-  box-sizing: 100%;
-  padding-right: 1px; /* espacio reservado para el spinner */
-}
-/* Antigüedad: look compacto y redondeado (2 dígitos) */
-
-/* El hover/focus dorado ya existe para inputs; lo reforzamos por si el tema lo pisa */
-#antiguedadAnios:hover,
-#antiguedadAnios:focus {
-  outline: none;
-  border-color: #d4a017 !important;
-  box-shadow: 0 0 0 2px rgba(212,160,23,0.2);
-  cursor: pointer;
-}
-/* Antigüedad: borde fino + ancho 2 dígitos sin que tape el spinner */
-
-/* El hover/focus dorado ya existe, lo reforzamos por si hay overrides */
-#antiguedadAnios:hover,
-#antiguedadAnios:focus {
-  outline: none;
-  border-color: #d4a017 !important;
-  box-shadow: 0 0 0 2px rgba(212,160,23,0.2);
-  cursor: pointer;
-}
-/* Antigüedad: que las flechitas no tapen los dígitos */
-
-/* Hover/focus dorado (mantener comportamiento) */
-#antiguedadAnios:hover,
-#antiguedadAnios:focus {
-  outline: none;
-  border-color: #d4a017 !important;
-  box-shadow: 0 0 0 2px rgba(212,160,23,0.2);
-  cursor: pointer;
-}
-/* — Antigüedad (años): dos dígitos visibles + spinner sin superposición — */
-
-/* Hover/focus dorado (igual al resto) */
-#antiguedadAnios:hover,
-#antiguedadAnios:focus {
-  outline: none;
-  border-color: #d4a017 !important;
-  box-shadow: 0 0 0 2px rgba(212,160,23,.2);
-  cursor: pointer;
-}
-
-/* WebKit: evitamos que el spinner “invada” el área de texto */
-#antiguedadAnios::-webkit-outer-spin-button,
-#antiguedadAnios::-webkit-inner-spin-button {
-  margin-left: .2em;   /* empujón leve a la derecha */
-}
-
-/* (Opcional) Windows/Chrome tiende a engordar el borde en focus:
-   normalizamos el grosor para que no se vea “negrita” */
-#antiguedadAnios:focus {
-  border-width: 1px;
-}
-/* Antigüedad: ancho compacto (2 dígitos), sin superposición del spinner */
-
-/* Hover/focus dorado (mantener comportamiento) */
-#antiguedadAnios:hover,
-#antiguedadAnios:focus {
-  outline: none;
-  border-color: #d4a017 !important;
-  box-shadow: 0 0 0 2px rgba(212,160,23,0.2);
-  cursor: pointer;
-}
-
-/* WebKit: empuje sutil del spinner (si el navegador lo respeta) */
-#antiguedadAnios::-webkit-inner-spin-button,
-#antiguedadAnios::-webkit-outer-spin-button {
-  margin-left: .15em; /* opcional; algunos motores lo ignoran y no afecta */
-}
-
-
-
 .celda-complemento { display:inline-flex; align-items:center; gap:6px; margin-left:12px; white-space:nowrap; }
 
 #cargoHorasBlock select,
@@ -636,39 +551,8 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 }
 
 /* (opcional) darle un ancho coherente al campo de días */
-#licenciasCard #licDias { width: 8ch; }
 
-/* Días de Licencia: mismo formato que Antigüedad */
-#licDias{
-  /* sobreescribe el width inline si existiera */
-  width: auto !important;
 
-  min-width: 5ch;
-  max-width: 8ch;
-  padding: 6px 2.2em 6px 8px;  /* deja espacio para las flechas */
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  border: 1px solid #d6d6e7;
-  border-radius: 10px;
-  box-sizing: content-box;
-  cursor: pointer;
-}
-#licDias:hover,
-#licDias:focus{
-  outline: none;
-  border-color: #d4a017 !important;
-  box-shadow: 0 0 0 2px rgba(212,160,23,0.2);
-}
-#licDias::-webkit-outer-spin-button,
-#licDias::-webkit-inner-spin-button{
-  margin: 0;  /* empujón sutil del spinner */
-}
-
-/* Spinner de #licDias pegado a la derecha */
-#licDias{
-  padding-right: 8px;        /* quitamos el colchón grande */
-  box-sizing: border-box;    /* el padding no empuja el spinner hacia adentro */
-}
 
 /* Licencias: resaltar la fecha de finalización */
 #licFin{
@@ -696,9 +580,6 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 }
 
 /* preservamos estilos especiales ya definidos */
-#licDias{
-  padding-right: 6px;            /* spinner a la derecha */
-}
 #licFin{
   font-weight: 800;
   text-align: center !important;
@@ -726,6 +607,41 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 
 
 
+
+
+
+
+
+/* === Unificación: Licencias (#licDias) y Antigüedad (#antiguedadAnios) === */
+#licDias,
+#antiguedadAnios {
+  width: auto !important;
+  min-width: 5ch;
+  max-width: 8ch;
+  height: var(--lic-field-h);
+  line-height: var(--lic-field-h);
+  padding: 6px 8px;
+  box-sizing: border-box;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid #d6d6e7;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+#licDias:hover, #licDias:focus,
+#antiguedadAnios:hover, #antiguedadAnios:focus {
+  outline: none;
+  border-color: #d4a017 !important;
+  box-shadow: 0 0 0 2px rgba(212,160,23,0.2);
+}
+
+#licDias::-webkit-outer-spin-button,
+#licDias::-webkit-inner-spin-button,
+#antiguedadAnios::-webkit-outer-spin-button,
+#antiguedadAnios::-webkit-inner-spin-button {
+  margin: 0;
+}
 
 
 
