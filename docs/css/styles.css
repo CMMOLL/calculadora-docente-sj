@@ -759,3 +759,10 @@ table.meses tfoot td { font-weight:600; color:#111827; }
 
 .select-meses { display: block; }
 
+/* === Desglose Mensual: encabezados y total en negrita === */
+.meses thead th,
+.meses tfoot td:first-child,
+.meses tfoot td,
+.meses tfoot #totalDias {
+  font-weight: 800; /* más marcado que el 600/700 por defecto */
+}
