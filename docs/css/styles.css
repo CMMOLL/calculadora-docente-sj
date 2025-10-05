@@ -748,3 +748,18 @@ table.meses td {
   border: none !important;
 }
 
+table.meses tr.year-split td { 
+  border-top: 1px solid rgba(0,0,0,.08);
+}
+table.meses tr.year-split td:first-child { color:#6b7280; font-weight:600; }
+
+table.meses { font-variant-numeric: tabular-nums; }
+table.meses th:nth-child(1), table.meses td:nth-child(1){ width:6ch; text-align:left; white-space:nowrap; }
+table.meses th:nth-child(2), table.meses td:nth-child(2){ width:4ch; text-align:right; }
+
+table.meses tfoot td { font-weight:600; color:#111827; }
+
+@media (max-width: 980px){
+  table.meses { font-size: .9rem; }
+}
+

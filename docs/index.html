@@ -858,6 +858,15 @@
     }
     selectAnioSAC.value = currentYear;
 
+    const MES_ABR_3 = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+    function labelMesAbreviado(m, y, includeYear) {
+      const base = MES_ABR_3[(m | 0) - 1] || '';
+      if (!includeYear) return base;
+      const yy = String(y).slice(-2);
+      return `${base}-${yy}`;
+    }
+
     function renderDesglose(rows) {
       tbodyMeses.textContent = '';
       totalDias.textContent = '0';
@@ -873,17 +882,23 @@
         return;
       }
 
+      const includeYear = new Set(rows.map((row) => row.y)).size > 1;
+
       let total = 0;
       rows.forEach((row) => {
         const tr = document.createElement('tr');
         const tdMes = document.createElement('td');
         const tdDias = document.createElement('td');
 
-        const label = row.monthLabel || `${monthNameEs(row.m)} ${row.y}`;
+        // Tooltip con mes completo, ej: "enero de 2026"
+        tdMes.title = new Intl.DateTimeFormat('es-AR', { month: 'long', year: 'numeric' })
+        .format(new Date(row.y, row.m - 1, 1));
+
+
         const rawDias = row.days ?? row.dias ?? 0;
         const dayValue = Math.trunc(Number(rawDias) || 0);
 
-        tdMes.textContent = label;
+        tdMes.textContent = labelMesAbreviado(row.m, row.y, includeYear);
         tdDias.textContent = String(dayValue);
 
         tr.append(tdMes, tdDias);
@@ -891,7 +906,6 @@
 
         total += dayValue;
       });
-
       totalDias.textContent = String(Math.trunc(total));
     }
 
