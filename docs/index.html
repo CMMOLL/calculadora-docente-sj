@@ -45,7 +45,13 @@
   })();
 </script>
 
-<script src="js/codigos.js"></script>
+<script>
+  const v = window.__assetVersion || Date.now();
+  const s = document.createElement('script');
+  s.src = 'js/codigos.js?v=' + encodeURIComponent(v);
+  document.head.appendChild(s);
+</script>
+
 <script src="js/codigos/e66.js"></script>
 
 <script>
@@ -475,7 +481,7 @@
             <div class="pill" id="periodoLabel">—</div>
           </div>
           <div class="result">
-            <table>
+            <table class="meses">
               <thead>
                 <tr>
                   <th>Mes</th>
@@ -853,25 +859,40 @@
     selectAnioSAC.value = currentYear;
 
     function renderDesglose(rows) {
-      tbodyMeses.innerHTML = '';
-      if (rows.length === 0) {
-        tbodyMeses.innerHTML = '<tr><td class="muted" colspan="2">Ingresá inicio y fin…</td></tr>';
-        totalDias.textContent = '0';
+      tbodyMeses.textContent = '';
+      totalDias.textContent = '0';
+
+      if (!Array.isArray(rows) || rows.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.className = 'muted';
+        td.colSpan = 2;
+        td.textContent = 'Ingresá inicio y fin…';
+        tr.appendChild(td);
+        tbodyMeses.appendChild(tr);
         return;
       }
+
       let total = 0;
-      rows.forEach(r => {
+      rows.forEach((row) => {
         const tr = document.createElement('tr');
-        const td1 = document.createElement('td');
-        const td2 = document.createElement('td');
-        td1.textContent = `${monthNameEs(r.m)} ${r.y}`;
-        td2.textContent = r.days;
-        tr.appendChild(td1);
-        tr.appendChild(td2);
+        const tdMes = document.createElement('td');
+        const tdDias = document.createElement('td');
+
+        const label = row.monthLabel || `${monthNameEs(row.m)} ${row.y}`;
+        const rawDias = row.days ?? row.dias ?? 0;
+        const dayValue = Math.trunc(Number(rawDias) || 0);
+
+        tdMes.textContent = label;
+        tdDias.textContent = String(dayValue);
+
+        tr.append(tdMes, tdDias);
         tbodyMeses.appendChild(tr);
-        total += r.days;
+
+        total += dayValue;
       });
-      totalDias.textContent = total;
+
+      totalDias.textContent = String(Math.trunc(total));
     }
 
     function calcularSAC(rows, anio, sem) {
@@ -2014,6 +2035,14 @@
 })();
 </script>
 
+<style>
+  /* Override a prueba de caché para la tabla de meses */
+  table.meses td::before,
+  table.meses td::after { content: none !important; }
+  table.meses td,
+  table.meses tr { background: transparent !important; box-shadow: none !important; }
+</style>
 </body>
 
 </html>
+

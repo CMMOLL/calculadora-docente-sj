@@ -318,6 +318,9 @@ window.getMultiplicador = (c) =>
 function normalizeImporteTd(td) {
   if (!td) return;
 
+  // no tocar celdas dentro del desglose mensual
+  if (td.closest('table')?.classList.contains('meses')) return;
+
   // busco un nodo “número real” si existe; si no, uso el TD cuando es plano
   const numberNode =
     td.querySelector('[id$="Importe"], [id$="CompImporte"]') ||
@@ -349,10 +352,12 @@ function normalizeImporteTd(td) {
 }
 
   function highlightFCodes(root = document) {
-  const rows = root.querySelectorAll('table tbody tr');
+  const rows = root.querySelectorAll('tabla-codigos tbody tr');
   rows.forEach(tr => {
     const tdCodigo  = tr.querySelector('td:first-child');
-    const tdSigno   = tr.querySelector('td:nth-child(2)');  // $ (si existe)
+    const tdSigno   = tr.closest('table')?.classList.contains('tabla-codigos')
+                    ? tr.querySelector('td:nth-child(2)')
+                    : null;
     const tdImporte = tr.querySelector('td:last-child');
     if (!tdCodigo || !tdImporte) return;
 

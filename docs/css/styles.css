@@ -726,3 +726,25 @@ label.muted:has(#antiguedadAnios){
   flex-wrap: wrap;
   margin-top: 1px;   /* extra suave; subí a 4–6px si te gusta más */
 }
+
+/* --- Hard fix: tabla de meses sin $ ni estilos de códigos F --- */
+table.meses td::before,
+table.meses td::after {
+  content: none !important;
+}
+
+table.meses td,
+table.meses tr {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Evita que estilos de "tabla-codigos" afecten a la tabla de meses */
+table.meses {
+  border: none !important;
+}
+table.meses th,
+table.meses td {
+  border: none !important;
+}
+
