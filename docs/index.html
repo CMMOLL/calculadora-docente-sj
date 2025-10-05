@@ -877,14 +877,31 @@
     const decimasDetalle = document.getElementById('decimasDetalle');
     const finLabel2 = document.getElementById('finLabel2');
 
-    // Inicializar años para SAC
-    const currentYear = new Date().getFullYear();
-    for (let i = currentYear - 5; i <= currentYear + 1; i++) {
-      const opt = document.createElement('option');
-      opt.value = i; opt.textContent = i;
-      selectAnioSAC.appendChild(opt);
-    }
-    selectAnioSAC.value = currentYear;
+// Rellena #anioSAC con los años que realmente aparecen en rows
+function fillSACYearsFromRows(rows) {
+  const years = Array.from(new Set((rows || []).map(r => r.y))).sort((a, b) => a - b);
+
+  // Si todavía no hay periodo cargado, dejamos el año actual como fallback
+  if (!years.length) {
+    const y = new Date().getFullYear();
+    selectAnioSAC.innerHTML = `<option value="${y}">${y}</option>`;
+    selectAnioSAC.value = String(y);
+    return;
+  }
+
+  // Rellenar opciones con los años detectados
+  selectAnioSAC.innerHTML = '';
+  years.forEach(y => {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    selectAnioSAC.appendChild(opt);
+  });
+
+  // Seleccionar por defecto el primer año del rango (o el último, si preferís)
+  selectAnioSAC.value = String(years[0]);
+}
+
 
     const MES_ABR_3 = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
@@ -898,6 +915,8 @@
     function renderDesglose(rows) {
       tbodyMeses.textContent = '';
       totalDias.textContent = '0';
+      fillSACYearsFromRows(rows);
+
 
       if (!Array.isArray(rows) || rows.length === 0) {
         const tr = document.createElement('tr');
@@ -1317,13 +1336,18 @@
       }
 
       periodoLabel.textContent = `${fmtDMY(start)} al ${fmtDMY(end)}`;
-      const rows = breakdown30_360(start, end, baja);
-      renderDesglose(rows);
+const rows = breakdown30_360(start, end, baja);
+renderDesglose(rows);
 
-      const sacAnio = parseInt(selectAnioSAC.value);
-      const sacSem = parseInt(selectSemSAC.value);
-      const diasSemestre = calcularSAC(rows, sacAnio, sacSem);
-      diasSAC.textContent = diasSemestre;
+// 👉 NUEVO: poblar el combo de años según rows
+fillSACYearsFromRows(rows);
+
+// ahora sí, leemos el año/semestre seleccionados
+const sacAnio = parseInt(selectAnioSAC.value);
+const sacSem  = parseInt(selectSemSAC.value);
+const diasSemestre = calcularSAC(rows, sacAnio, sacSem);
+diasSAC.textContent = diasSemestre;
+
 
       const decimasData = calcularDecimas(rows);
       decimasTotal.textContent = decimasData.total;

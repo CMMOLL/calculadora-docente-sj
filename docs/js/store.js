@@ -113,3 +113,34 @@ export function syncFromDOM() {
   set({ ym: ymResuelto, categoriaId, indiceActual: indiceActualResuelto, indicePrevio: indicePrevioResuelto, diasBase, diasExc });
 }
 
+// --- AÑOS SAC DINÁMICOS (según rows de desglose) ---
+let _rowsSAC = []; // último desglose calculado para recalcular días SAC
+
+function fillSACYearsFromRows(rows) {
+  const years = Array.from(new Set((rows || []).map(r => r.y))).sort((a, b) => a - b);
+
+  // Si no hay rows (o están vacíos), deja solo el año actual
+  const list = (years.length ? years : [new Date().getFullYear()]);
+
+  // Vaciar y volver a crear opciones
+  selectAnioSAC.innerHTML = '';
+  for (const y of list) {
+    const opt = document.createElement('option');
+    opt.value = String(y);
+    opt.textContent = String(y);
+    selectAnioSAC.appendChild(opt);
+  }
+  // Por defecto, seleccionamos el último año disponible (el más nuevo)
+  selectAnioSAC.value = String(list[list.length - 1]);
+}
+
+function updateDiasSAC() {
+  const anio = Number(selectAnioSAC.value || 0);
+  const sem  = Number(selectSemSAC.value  || 1);
+  const dias = calcularSAC(_rowsSAC || [], anio, sem);
+  diasSAC.textContent = String(dias);
+}
+
+// Recalcular días cuando cambia Año o Semestre
+selectAnioSAC.addEventListener('change', updateDiasSAC);
+selectSemSAC.addEventListener('change', updateDiasSAC);
