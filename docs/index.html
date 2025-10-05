@@ -293,19 +293,7 @@
 
 
 
-          <!-- Código viejo (eliminar si funciona el cambio)
-          <div id="indicesRow"
-            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;"><label
-              class="muted">Índice del mes
-              <input id="indiceMes" step="0.0001" style="width:auto-size"; margin-left:6px;" type="number" value="787.1022" />
-              <select class="select-meses" id="indicePeriodo" aria-label="Mes y año del índice"></select>
-            </label>
-            <div id="indicePrevToolbar" style="display:none;"><label class="muted">Índice mes anterior
-                <input id="indiceMesPrev_clone" name="indiceMesPrev_clone" step="0.0001" style="width:auto-size;"
-                  type="number" value="772.4261" />
-              </label></div>
-          </div>
--->
+          
           <div class="row"
             style="display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin:8px 0 4px 0;"><label
               class="muted">Antigüedad (años)
@@ -1807,7 +1795,8 @@
         setAutoFin();
       }
     })();
-  </script>\n
+  </script>
+
   <script>
     // === Autocompletar Fecha Fin con último día del mes actual ===
     (function () {
@@ -1855,14 +1844,16 @@
     })();
   </script>
   <script>
-    // Safety net: remover text-nodes que sean exactamente "\n"
+    // Safety net: remover text-nodes que sean exactamente "
+"
     (function () {
       function cleanNodeTree(root) {
         const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
         const toRemove = [];
         while (walker.nextNode()) {
           const n = walker.currentNode;
-          if (n.nodeValue && n.nodeValue.trim() === "\\n") toRemove.push(n);
+          if (n.nodeValue && n.nodeValue.trim() === "
+") toRemove.push(n);
         }
         toRemove.forEach(n => n.parentNode && n.parentNode.removeChild(n));
       }
@@ -2049,13 +2040,21 @@
 })();
 </script>
 
+
+<style>
+  /* Override a prueba de caché para la tabla de meses */
+  table.meses td::before,
+  table.meses td::after { content: none !important; }
+  table.meses td,
+  table.meses tr { background: transparent !important; box-shadow: none !important; }
+</style>
 <script>
 (function () {
   function enhanceSelectToShowN(el, N) {
     if (!el || el.dataset.enhanced === '1') return;
     el.dataset.enhanced = '1';
 
-    // Envolver con un wrapper posicionado (si no lo tiene)
+    // Envolver con wrapper posicionado (si no existe)
     let wrapper = el.parentElement;
     if (!wrapper || !wrapper.classList.contains('select-meses-wrap')) {
       const w = document.createElement('div');
@@ -2069,59 +2068,99 @@
       wrapper = w;
     }
 
-    const origSize = el.getAttribute('size') || '1';
+    const orig = {
+      size: el.getAttribute('size') || '1',
+      width: '',
+      value: el.value
+    };
+
     let outsideCloser = null;
 
-    const close = () => {
-      el.setAttribute('size', origSize);
+    const commitAndClose = (commit) => {
+      // Restaurar tamaño/estilos
+      el.setAttribute('size', orig.size);
       el.classList.remove('select-open');
-      el.style.width = '';
+      el.style.width = orig.width;
+      // Liberar alto del slot para evitar "saltito" inverso
+      wrapper.style.minHeight = '';
+      wrapper.style.height = '';
+
       if (outsideCloser) {
         document.removeEventListener('pointerdown', outsideCloser, true);
         outsideCloser = null;
       }
+
+      if (commit) {
+        // Confirmar explícitamente
+        orig.value = el.value;
+        el.dispatchEvent(new Event('input',  { bubbles:true }));
+        el.dispatchEvent(new Event('change', { bubbles:true }));
+      } else {
+        // Cancelar: restaurar valor anterior
+        el.value = orig.value;
+      }
+
+      el.blur();
     };
 
     const open = () => {
       if (el.classList.contains('select-open')) return;
-      const width = getComputedStyle(el).width;
-      el.style.width = width;
+
+      // Fijar ancho del control y alto del slot => sin reflow
+      const rect = el.getBoundingClientRect();
+      orig.width = el.style.width;
+      el.style.width = `${rect.width}px`;
+      wrapper.style.minHeight = `${rect.height}px`;
+      wrapper.style.height    = `${rect.height}px`;
+
+      // Abrir como lista con N visibles
       el.setAttribute('size', String(N));
       el.classList.add('select-open');
 
+      // Click afuera => confirmar y cerrar
       outsideCloser = (ev) => {
-        if (!wrapper.contains(ev.target)) {
-          close();
-          el.blur();
-        }
+        if (!wrapper.contains(ev.target)) commitAndClose(true);
       };
       document.addEventListener('pointerdown', outsideCloser, true);
     };
 
-    el.addEventListener('focus', open);
-    el.addEventListener('mousedown', open);
-
-    el.addEventListener('change', () => {
-      close();
-      el.blur();
-    });
-
-    el.addEventListener('blur', close);
-
-    el.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
-        close();
-        if (document.activeElement === el) {
-          el.blur();
-        }
+    const onKeyDown = (e) => {
+      // Flechas navegan, sin confirmar
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' ||
+          e.key === 'PageDown' || e.key === 'PageUp' ||
+          e.key === 'Home'     || e.key === 'End') {
+        return;
       }
+
+      if (e.key === 'Enter' || e.key === 'Tab') {
+        commitAndClose(true);
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        commitAndClose(false);
+        return;
+      }
+
+      if (e.key === ' ') {
+        e.preventDefault();
+      }
+    };
+
+    el.addEventListener('focus', open);
+    el.addEventListener('mousedown', () => {
+      if (!el.classList.contains('select-open')) open();
     });
+    el.addEventListener('keydown', onKeyDown);
+
+    // Permitimos seguir navegando; confirmación sólo con Enter/Tab/click afuera
+    el.addEventListener('change', () => {});
+    el.addEventListener('blur', () => {});
   }
 
   function initSelectMeses() {
-    document.querySelectorAll('select.select-meses').forEach((el) => {
-      enhanceSelectToShowN(el, 6);
-    });
+    const sel = document.getElementById('indicePeriodo');
+    if (sel) enhanceSelectToShowN(sel, 6);
   }
 
   if (document.readyState === 'loading') {
@@ -2131,14 +2170,43 @@
   }
 })();
 </script>
-<style>
-  /* Override a prueba de caché para la tabla de meses */
-  table.meses td::before,
-  table.meses td::after { content: none !important; }
-  table.meses td,
-  table.meses tr { background: transparent !important; box-shadow: none !important; }
-</style>
+
 </body>
 
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
