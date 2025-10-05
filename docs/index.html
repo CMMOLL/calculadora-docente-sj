@@ -649,24 +649,64 @@
       let claves = [];
       let latest = null;
 
+      function nextYM(k) {
+        let [y, m] = k.split('-').map(Number);
+        m += 1; if (m === 13) { y += 1; m = 1; }
+        return `${y}-${String(m).padStart(2, '0')}`;
+      }
+
       function aplicarPeriodo(k) {
         if (!k || !mapa[k]) return Promise.resolve(false);
         const v = Number(mapa[k]);
         indiceInput.value = toFixed4(v);
-        // Excepción: si el mes calendario no existe y estamos en el último disponible,
-        // "Índice mes anterior" = mismo valor
-        const hasCurrent = mapa[curYM] != null;
-        let prevValue;
-        if (!hasCurrent && k === latest) {
-          prevValue = v;
-        } else {
+        // ----- Relleno "Índice mes anterior" SOLO si está vacío (fallback seguro) -----
+        (function fillPrevIndexGuarded() {
+          // target input (aceptar varios IDs/nombres)
+          const prevEl =
+            document.querySelector('#indiceMesAnterior') ||
+            document.querySelector('input[name="indiceMesAnterior"]') ||
+            document.querySelector('#indiceMesPrev');
+          if (!prevEl) return;
+
+          // si ya tiene un valor (los meses que funcionan), no tocar
+          const curr = String(prevEl.value ?? '').trim();
+          if (curr !== '') return;
+
+          const mapa   = window.PUNTOS?.mapa || {};
+          const prevFn = window.PUNTOS?.prevYM;
+          const prevK  = (typeof prevFn === 'function') ? prevFn(k) : null;
+
+          // fallback: si hay índice del mes previo en el mapa y NO es el mismo mes, usarlo; si no, usar el actual
+          let prevVal = v;
+          if (prevK && prevK !== k && mapa[prevK] != null) {
+            const n = Number(mapa[prevK]);
+            if (Number.isFinite(n)) prevVal = n;
+          }
+
+          prevEl.value = toFixed4(prevVal);
+
+          // sincronizar posible clon/espejo si existe
+          const prevClone =
+            document.querySelector('#indiceMesAnterior_clone') ||
+            document.querySelector('#indiceMesPrev_clone');
+          if (prevClone) prevClone.value = toFixed4(prevVal);
+        })();
+        let prevValue = v; // v es el índice del mes seleccionado (k)
+        // Si NO existe índice del mes siguiente, el "anterior" = actual (v)
+        const kn = nextYM(k);
+        const tieneNext = !!mapa[kn];
+
+        if (tieneNext) {
           const kp = prevYM(k);
-          prevValue = Number(mapa[kp]);
+          if (kp && kp !== k) {
+            const tmp = Number(mapa[kp]);
+            if (Number.isFinite(tmp)) prevValue = tmp;
+          }
         }
+
         prevCalc.value = toFixed4(prevValue);
         const prevClone = document.getElementById('indiceMesPrev_clone');
         if (prevClone) prevClone.value = toFixed4(prevValue);
-
         const runRecalc = () => {
           indiceInput.dispatchEvent(new Event('input', { bubbles: true }));
           prevCalc.dispatchEvent(new Event('input', { bubbles: true }));
@@ -2174,6 +2214,17 @@
 </body>
 
 </html>
+
+
+
+
+
+
+
+
+
+
+
 
 
 

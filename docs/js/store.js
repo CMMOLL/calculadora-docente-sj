@@ -45,17 +45,63 @@ function toNumberSafe(x) {
 export function syncFromDOM() {
   // Mes seleccionado
   const ymEl = document.getElementById('indicePeriodo');
-  const ym = (ymEl?.value || '').trim();
 
   // Categoría (aceptamos catId o cargoId)
   const catEl = pickEl(['catId', 'cargoId']);
   const categoriaId = Number(catEl?.value || 0);
 
-  // Índices con PUNTOS.prevYM si existe
-  const ymPrev = (window.PUNTOS?.prevYM?.(ym)) || ym;
-  const getIdx = window.CARGOS?.getIndice?.bind(window.CARGOS) || (() => 0);
+  // Índices con fallback explícito cuando el mes seleccionado no tiene índice.
+  // Regla: mientras no exista índice del mes en curso, tanto 30 días como excedentes
+  // usan el último índice conocido (mes anterior) y se normaliza el <select> a ese mes.
+
+  const getIdx   = window.CARGOS?.getIndice?.bind(window.CARGOS) || (() => 0);
+  const ym       = (ymEl?.value || '').trim();
+  const ymPrev   = window.PUNTOS?.prevYM?.(ym) || ym;
+
   const indiceActual = getIdx(ym) || 0;
-  const indicePrevio = getIdx(ymPrev) || 0;
+  let   indicePrevio = getIdx(ymPrev);
+  if (!indicePrevio) indicePrevio = indiceActual;
+
+  // Si el mes siguiente al seleccionado no tiene índice cargado,
+  // usamos el índice actual también para el "anterior".
+  const ymNext = (() => {
+    const [y, m] = String(ym || '').split('-').map(Number);
+    if (!y || !m) return '';
+    const yy = (m === 12) ? (y + 1) : y;
+    const mm = (m === 12) ? 1 : (m + 1);
+    return `${yy}-${String(mm).padStart(2, '0')}`;
+  })();
+
+  if (!getIdx(ymNext)) {
+    indicePrevio = indiceActual;
+  }
+
+  let ymResuelto           = ym;
+  let indiceActualResuelto = indiceActual;
+  let indicePrevioResuelto = indicePrevio;
+
+  if (!indiceActualResuelto) {
+    const idxPrev1 = getIdx(ymPrev) || 0;
+    if (idxPrev1) {
+      // ambos (30 días y excedentes) = último índice conocido
+      indiceActualResuelto = idxPrev1;
+      indicePrevioResuelto = idxPrev1;
+
+      // normalizamos la UI al mes anterior
+      if (ymEl && ymEl.value !== ymPrev) ymEl.value = ymPrev;
+      ymResuelto = ymPrev;
+    } else {
+      // ni el mes ni el anterior tienen índice
+      indicePrevioResuelto = 0;
+    }
+  }
+
+  // Camino normal: si no caímos en el fallback, el previo es el mes anterior real;
+  // si faltara, usamos el actual.
+  if (indicePrevioResuelto == null) {
+    const prevReal = getIdx(ymPrev) || 0;
+    indicePrevioResuelto = prevReal || indiceActualResuelto;
+  }
 
   // Intento de lectura de días desde el DOM (opcional)
   // Aceptamos: #diasBase / #diasBaseLabel y #diasExc / #diasExcedente / #diasExcedentes
@@ -64,6 +110,6 @@ export function syncFromDOM() {
   const diasBase = diasBaseEl ? toNumberSafe(diasBaseEl.dataset?.value ?? diasBaseEl.textContent) : undefined;
   const diasExc  = diasExcEl  ? toNumberSafe(diasExcEl.dataset?.value  ?? diasExcEl.textContent)  : undefined;
 
-  set({ ym, categoriaId, indiceActual, indicePrevio, diasBase, diasExc });
+  set({ ym: ymResuelto, categoriaId, indiceActual: indiceActualResuelto, indicePrevio: indicePrevioResuelto, diasBase, diasExc });
 }
 
