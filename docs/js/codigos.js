@@ -352,7 +352,7 @@ function normalizeImporteTd(td) {
 }
 
   function highlightFCodes(root = document) {
-  const rows = root.querySelectorAll('tabla-codigos tbody tr');
+  const rows = root.querySelectorAll('.tabla-codigos tbody tr');
   rows.forEach(tr => {
     const tdCodigo  = tr.querySelector('td:first-child');
     const tdSigno   = tr.closest('table')?.classList.contains('tabla-codigos')
@@ -370,12 +370,14 @@ function normalizeImporteTd(td) {
       td.classList.toggle('f-highlight', isF);
     });
 
+    
+
     // Mantener el formato del número
     normalizeImporteTd(tdImporte);
   });
 }
 
-  
+  if (typeof window !== 'undefined') window.highlightFCodes = highlightFCodes;
 
   // 1) Al cargar el DOM
   if (document.readyState === 'loading') {
