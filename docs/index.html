@@ -279,7 +279,7 @@
             <label class="muted" style="position:relative; display:inline-flex; align-items:center; gap:8px;">
               Índice del mes
               <input id="indiceMes" step="0.0001" class="num-display" type="number" value="787.1022" readonly />
-              <select id="indicePeriodo" aria-label="Mes y año del índice"></select>
+              <select class="select-meses" id="indicePeriodo" aria-label="Mes y año del índice"></select>
             </label>
 
             <div id="indicePrevToolbar" style="display:none;">
@@ -298,7 +298,7 @@
             style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;"><label
               class="muted">Índice del mes
               <input id="indiceMes" step="0.0001" style="width:auto-size"; margin-left:6px;" type="number" value="787.1022" />
-              <select id="indicePeriodo" aria-label="Mes y año del índice"></select>
+              <select class="select-meses" id="indicePeriodo" aria-label="Mes y año del índice"></select>
             </label>
             <div id="indicePrevToolbar" style="display:none;"><label class="muted">Índice mes anterior
                 <input id="indiceMesPrev_clone" name="indiceMesPrev_clone" step="0.0001" style="width:auto-size;"
@@ -2049,6 +2049,88 @@
 })();
 </script>
 
+<script>
+(function () {
+  function enhanceSelectToShowN(el, N) {
+    if (!el || el.dataset.enhanced === '1') return;
+    el.dataset.enhanced = '1';
+
+    // Envolver con un wrapper posicionado (si no lo tiene)
+    let wrapper = el.parentElement;
+    if (!wrapper || !wrapper.classList.contains('select-meses-wrap')) {
+      const w = document.createElement('div');
+      w.className = 'select-meses-wrap';
+      if (wrapper && typeof wrapper.insertBefore === 'function') {
+        wrapper.insertBefore(w, el);
+      } else {
+        el.before(w);
+      }
+      w.appendChild(el);
+      wrapper = w;
+    }
+
+    const origSize = el.getAttribute('size') || '1';
+    let outsideCloser = null;
+
+    const close = () => {
+      el.setAttribute('size', origSize);
+      el.classList.remove('select-open');
+      el.style.width = '';
+      if (outsideCloser) {
+        document.removeEventListener('pointerdown', outsideCloser, true);
+        outsideCloser = null;
+      }
+    };
+
+    const open = () => {
+      if (el.classList.contains('select-open')) return;
+      const width = getComputedStyle(el).width;
+      el.style.width = width;
+      el.setAttribute('size', String(N));
+      el.classList.add('select-open');
+
+      outsideCloser = (ev) => {
+        if (!wrapper.contains(ev.target)) {
+          close();
+          el.blur();
+        }
+      };
+      document.addEventListener('pointerdown', outsideCloser, true);
+    };
+
+    el.addEventListener('focus', open);
+    el.addEventListener('mousedown', open);
+
+    el.addEventListener('change', () => {
+      close();
+      el.blur();
+    });
+
+    el.addEventListener('blur', close);
+
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+        close();
+        if (document.activeElement === el) {
+          el.blur();
+        }
+      }
+    });
+  }
+
+  function initSelectMeses() {
+    document.querySelectorAll('select.select-meses').forEach((el) => {
+      enhanceSelectToShowN(el, 6);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSelectMeses);
+  } else {
+    initSelectMeses();
+  }
+})();
+</script>
 <style>
   /* Override a prueba de caché para la tabla de meses */
   table.meses td::before,

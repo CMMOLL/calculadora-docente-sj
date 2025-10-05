@@ -763,3 +763,18 @@ table.meses tfoot td { font-weight:600; color:#111827; }
   table.meses { font-size: .9rem; }
 }
 
+/* Wrapper posicionado para anclar el select abierto sin reflow */
+.select-meses-wrap { position: relative; }
+
+/* Select abierto: superpuesto, con scroll interno para 6 filas */
+.select-open {
+  position: absolute;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  max-height: calc(2rem * 6);
+  overflow-y: auto;
+  box-shadow: 0 8px 16px rgba(0,0,0,.08);
+}
+
