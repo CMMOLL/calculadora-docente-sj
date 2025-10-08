@@ -85,6 +85,7 @@ window.getMultiplicador = (c) =>
       return calcE60Prorrateado(indiceAnterior, dias, antigAnios);
     }
   };
+  
   /* === Helpers Horas Catedra === */
   function getPuntos116Acumulados(ym) {
     const getA01For = window.PUNTOS?.getA01For;

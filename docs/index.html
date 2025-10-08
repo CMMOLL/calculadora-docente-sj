@@ -1995,17 +1995,26 @@ diasSAC.textContent = diasSemestre;
         return puntos;
       }
 
+      // Alias de meses SOLO para PUNTOS (no afecta índices)
+        const YM_POINTS_ALIAS = { '2025-08': '2025-07' };
+        const ymForPoints = (ym) => YM_POINTS_ALIAS[String(ym)] || ym;
+
+
       window.PUNTOS = {
         ready: async () => { await ensure(); return true; },
         getA01For: (categoria, ymActual) => {
-          const cargo = window.CARGOS?.getByCategoria?.(Number(categoria));
-          if (!cargo || !INC || !MUL) return { actual: 0, previo: 0 };
-          const ymPrev = prevYM(ymActual);
-          return {
-            actual: a01Acumulado(cargo, ymActual),
-            previo: a01Acumulado(cargo, ymPrev)
-          };
-        },
+            const cargo = window.CARGOS?.getByCategoria?.(Number(categoria));
+            if (!cargo || !INC || !MUL) return { actual: 0, previo: 0 };
+
+            const ymParaActual  = ymForPoints(ymActual);    // Agosto-2025 -> Julio-2025
+            const ymPrev        = prevYM(ymActual);
+            const ymParaPrevio  = ymForPoints(ymPrev);      // también alias para el excedente
+
+            return {
+              actual: a01Acumulado(cargo, ymParaActual),
+              previo: a01Acumulado(cargo, ymParaPrevio)
+            };
+          },
         prevYM
       };
     })();
