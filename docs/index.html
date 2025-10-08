@@ -877,11 +877,16 @@
     const decimasDetalle = document.getElementById('decimasDetalle');
     const finLabel2 = document.getElementById('finLabel2');
 
-// Rellena #anioSAC con los años que realmente aparecen en rows
+// Rellena #anioSAC con los años del rango pero respeta la selección del usuario.
+// Si no hay selección previa o ya no existe, toma por defecto:
+//  - el año del último row (usualmente el de 'end'), y
+//  - si el semestre elegido no tiene días en ese año, busca el primer año que sí tenga.
 function fillSACYearsFromRows(rows) {
-  const years = Array.from(new Set((rows || []).map(r => r.y))).sort((a, b) => a - b);
+  const prev = selectAnioSAC?.value ? Number(selectAnioSAC.value) : null;
+  const sem  = parseInt(selectSemSAC?.value || '2', 10); // 1: Ene–Jun, 2: Jul–Dic
+  const years = Array.from(new Set((rows || []).map(r => r.y))).sort((a,b) => a - b);
 
-  // Si todavía no hay periodo cargado, dejamos el año actual como fallback
+  // Sin rango => fallback año actual
   if (!years.length) {
     const y = new Date().getFullYear();
     selectAnioSAC.innerHTML = `<option value="${y}">${y}</option>`;
@@ -889,17 +894,33 @@ function fillSACYearsFromRows(rows) {
     return;
   }
 
-  // Rellenar opciones con los años detectados
+  // Reconstruir opciones
   selectAnioSAC.innerHTML = '';
-  years.forEach(y => {
+  for (const y of years) {
     const opt = document.createElement('option');
-    opt.value = y;
-    opt.textContent = y;
+    opt.value = String(y);
+    opt.textContent = String(y);
     selectAnioSAC.appendChild(opt);
-  });
+  }
 
-  // Seleccionar por defecto el primer año del rango (o el último, si preferís)
-  selectAnioSAC.value = String(years[0]);
+  // Intento 1: conservar selección previa si sigue siendo válida
+  let target = (prev && years.includes(prev)) ? prev : null;
+
+  // Intento 2: usar el año del último row (normalmente el del 'fin')
+  if (!target) {
+    const lastY = rows[rows.length - 1]?.y;
+    target = years.includes(lastY) ? lastY : years[years.length - 1];
+  }
+
+  // Si el semestre actual no tiene días en 'target', elegimos el primer año que sí tenga
+  const inSem = (r) => sem === 1 ? (r.m >= 1 && r.m <= 6) : (r.m >= 7 && r.m <= 12);
+  const targetHasDays = rows.some(r => r.y === target && inSem(r));
+  if (!targetHasDays) {
+    const alt = years.find(y => rows.some(r => r.y === y && inSem(r)));
+    if (alt) target = alt;
+  }
+
+  selectAnioSAC.value = String(target);
 }
 
 
@@ -956,17 +977,26 @@ function fillSACYearsFromRows(rows) {
       totalDias.textContent = String(Math.trunc(total));
     }
 
-    function calcularSAC(rows, anio, sem) {
-      let dias = 0;
-      const startMonth = (sem === 1) ? 1 : 7;
-      const endMonth = (sem === 1) ? 6 : 12;
-      rows.forEach(r => {
-        if (r.y === anio && r.m >= startMonth && r.m <= endMonth) {
-          dias += r.days;
-        }
-      });
-      return dias;
+    // Calcula días de SAC recortando el rango [start,end] al semestre elegido,
+    // y sumando con la misma regla 30/360 (respeta "Baja").
+    function calcularSACDesdeFechas(start, end, baja, anio, sem) {
+      // límites del semestre
+      const semInicio = new Date(Date.UTC(anio, (sem === 1 ? 0 : 6), 1));   // Ene-01 o Jul-01
+      const semFin    = new Date(Date.UTC(anio, (sem === 1 ? 5 : 11), 30)); // Jun-30 o Dic-30
+
+      // si no hay intersección entre [start,end] y [semInicio,semFin], son 0 días
+      if (!start || !end || end < start) return 0;
+      if (end < semInicio || start > semFin) return 0;
+
+      // recortamos el período al semestre elegido
+      const s = (start > semInicio) ? start : semInicio;
+      const e = (end   < semFin)    ? end   : semFin;
+
+      // volvemos a usar el mismo motor 30/360 para consistencia
+      const rowsRecorte = breakdown30_360(s, e, baja);
+      return rowsRecorte.reduce((acc, r) => acc + (Number(r.days) || 0), 0);
     }
+
 
     function calcularDecimas(rows) {
       let diasTotal = 0;
@@ -1339,14 +1369,13 @@ function fillSACYearsFromRows(rows) {
 const rows = breakdown30_360(start, end, baja);
 renderDesglose(rows);
 
-// 👉 NUEVO: poblar el combo de años según rows
-fillSACYearsFromRows(rows);
 
 // ahora sí, leemos el año/semestre seleccionados
 const sacAnio = parseInt(selectAnioSAC.value);
 const sacSem  = parseInt(selectSemSAC.value);
-const diasSemestre = calcularSAC(rows, sacAnio, sacSem);
-diasSAC.textContent = diasSemestre;
+const diasSemestre = calcularSACDesdeFechas(start, end, baja, sacAnio, sacSem);
+diasSAC.textContent = String(diasSemestre);
+
 
 
       const decimasData = calcularDecimas(rows);
