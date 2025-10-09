@@ -20,9 +20,11 @@ body {
 /* Container */
 .card {
   width: 100%;
-  max-width: none;   /* elimina el límite de 1500px */
-  margin: 0;         /* elimina el centrado */
+  max-width: 1280px;   /* antes: none */
+  margin: 0 auto;      /* antes: 0 */
+  padding: 0 16px;     /* un poco de respiración lateral */
 }
+
 h1 { 
   margin: 0 0 8px 0;
   font-size: 22px;
@@ -46,7 +48,7 @@ label { display:block;
 /* Columna izquierda: selectores de nivel/cargo, fija en alto */
 .leftCol{
   flex:1 1 auto;
-  min-width:720px;
+  min-width:0;
   display:grid;
   grid-template-columns: minmax(320px,360px) 1fr;
   gap:24px;
@@ -76,20 +78,10 @@ label { display:block;
   grid-row:2; 
 }
 
-/* Columna derecha: apilada (Desglose / Aguinaldo / Décimas) */
-.rightCol{ 
-  width: min(420px, 40vw); 
-  display:flex; 
-  flex-direction:column; 
-  gap:24px; 
-}
+
 .months-box{
   display:block; 
   }
-#sacBox, #decimasBox{ 
-  grid-column:auto; 
-  grid-row:auto; 
-}
 #decimasDetalle{ 
   display:none !important; 
 }
@@ -112,7 +104,7 @@ label { display:block;
   padding:14px; 
   border-radius:12px;
   margin-top: 14px;
-  display:inline-block;
+  display:block;
 }
 /* Hace que el card de "Liquidación" ocupe todo el ancho del track central */
 #liqBlock {
@@ -142,7 +134,6 @@ tfoot td { font-weight:700; }
   font-weight: 800;   /* 700=bold, 800/900 = más pesado */
  }
 
-.months-header { display:flex; flex-direction:column; align-items:flex-start; gap:4px; margin-bottom:8px; }
 .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
 select { padding:6px 10px; border:1px solid #d6d6e7; border-radius:10px; background:#fff; width:auto; }
@@ -181,11 +172,7 @@ select { padding:6px 10px; border:1px solid #d6d6e7; border-radius:10px; backgro
   background:#d6e4f0; 
   color:#333;
  }
-.liq-columns{ display:grid; grid-template-columns: minmax(360px, 1fr) minmax(360px, 1fr); gap:16px; align-items:start; }
-.liq-columns > div{ align-self:start; }
-@media (max-width: 980px){
-  .liq-columns{ grid-template-columns: 1fr; }
-}
+
 
 /* Anchos consistentes en la 1ª columna de ambas tablas */
 #liqBlock .tabla-codigos th:first-child, #liqBlock .tabla-codigos td:first-child,
@@ -236,30 +223,13 @@ select { padding:6px 10px; border:1px solid #d6d6e7; border-radius:10px; backgro
   }
 }
 
-/* Contenedor principal de 3 columnas (versión v34) */
-.grid-2 {
-  display: grid;
-  grid-template-columns: minmax(280px, 3fr) 6fr minmax(300px, 3fr);
-  column-gap: 32px;
-}
-
-/* ===== Layout 3 columnas ===== */
-.grid {
-  display: grid;
-  grid-template-columns: minmax(260px, 3fr) minmax(520px, 6fr) minmax(280px, 3fr);
-  column-gap: 32px;
-  align-items: start;
-}
-
 /* Mapeo de columnas (usando tus clases/ids actuales) */
 .leftCol        { grid-column: 1; }
 #liqBlock,
 .col-center     { grid-column: 2; }
-.rightCol,
 .col-right      { grid-column: 3; }
 
 /* La columna derecha se queda “pegada” al top al hacer scroll */
-.rightCol,
 .col-right {
   position: sticky;
   top: 96px;        /* ajustá si querés que baje/suba */
@@ -267,7 +237,6 @@ select { padding:6px 10px; border:1px solid #d6d6e7; border-radius:10px; backgro
 }
 
 /* Asegura que los cards de la derecha usen el ancho de su columna */
-.rightCol > * ,
 .col-right > * {
   width: 100%;
   box-sizing: border-box;
@@ -279,18 +248,12 @@ select { padding:6px 10px; border:1px solid #d6d6e7; border-radius:10px; backgro
     grid-template-columns: 1fr;
     row-gap: 24px;
   }
-  .rightCol,
   .col-right {
     position: static; /* sin sticky en móvil */
   }
 }
 
-.rightCol { top: 30px; }  /* subí/bajá ese 96px a gusto */
 
-.grid {
-  grid-template-columns: 340px minmax(600px, 820px) 360px;
-}
-.rightCol,
 .col-right {
   position: sticky;
   top: 30px;      /* subí/bajá a 60/96 si querés más aire */
@@ -298,7 +261,7 @@ select { padding:6px 10px; border:1px solid #d6d6e7; border-radius:10px; backgro
 }
 
 .wrap { max-width: 1480px; margin: 0 auto; padding: 0 24px; }
-.grid { grid-template-columns: 300px minmax(520px, 760px) 320px; }
+
 
 /* ===== Presentación compacta y solo visualización ===== */
 .num-display {
@@ -445,14 +408,6 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 #cargoHorasBlock .muted { display: block; margin: 8px 0 4px; }
 
 
-
-
-
-
-
-
-
-
 /* === Card grande Horas Cátedra (HCNM/HCNS) === */
 .horas-card{
   background:#fff36b;
@@ -492,8 +447,6 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
   padding: 6px 10px;
 }
 /* Fila Fechas + BAJA */
-#fechasRow { align-items: flex-end; gap: 16px; flex-wrap: wrap; }
-#fechasRow .date-field label { margin-bottom: 4px; display: block; }
 #bajaGroup { margin-left: 4px; }
 #bajaGroup input { margin: 0; }
 
@@ -566,8 +519,6 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
 
 /* (opcional) darle un ancho coherente al campo de días */
 
-
-
 /* Licencias: resaltar la fecha de finalización */
 #licFin{
   font-weight: 800;
@@ -614,17 +565,6 @@ input[type="radio"]:focus, input[type="checkbox"]:focus,
   min-width: 18ch;          /* dale más aire al dd/mm/aaaa + icono */
   /* si aún lo ves justo, subí a 20ch */
 }
-
-
-
-
-
-
-
-
-
-
-
 
 /* === Unificación: Licencias (#licDias) y Antigüedad (#antiguedadAnios) === */
 #licDias,
@@ -766,3 +706,217 @@ table.meses tfoot td { font-weight:600; color:#111827; }
 .meses tfoot #totalDias {
   font-weight: 800; /* más marcado que el 600/700 por defecto */
 }
+
+/* ====== LAYOUT BASE RESPONSIVE (grid-2) ====== */
+
+
+/* Mapeo simple a tus columnas actuales */
+.leftCol  { grid-column: 1; min-width: 0; }   /* << importantísimo para que no fuerce ancho */
+#liqBlock { grid-column: 2; }
+
+
+/* Los cards deben ser bloques, no inline-block */
+.result { display: block; }
+
+
+/* ========= RESPONSIVE - CONTENIDO INTERNO ========= */
+
+/* Fechas y opciones: que todo envuelva en varias filas sin superponerse */
+#rowRadioExtras { flex-wrap: wrap; gap: 8px 12px; }
+
+/* Campos de fecha responsivos */
+.date-field { flex: 1 1 180px; min-width: 160px; }
+.date-field input { width: 100%; }
+
+
+/* Tablas: que no rompan el layout en mobile (scroll horizontal local) */
+table.tabla-codigos { width: 100%; table-layout: auto; }
+@media (max-width: 800px) {
+  table.tabla-codigos {
+    display: block;              /* habilita overflow en el propio elemento */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: 0.95rem;
+  }
+  table.tabla-codigos thead,
+  table.tabla-codigos tbody,
+  table.tabla-codigos tfoot { width: max-content; } /* evita compresión excesiva */
+}
+
+/* Licencias: fila flexible */
+#licenciasCard .row { flex-wrap: wrap; gap: 8px 12px; }
+
+/* Inputs con ancho fijo en desktop que en mobile deben ceder */
+@media (max-width: 800px) {
+  #catId { width: 100% !important; }
+}
+
+/* Pequeños ajustes de paddings para que respire mejor en móviles */
+@media (max-width: 800px) {
+  .result { padding: 12px; }
+}
+
+/* === FINAL: Layout responsive canónico === */
+
+
+/* Sticky solo en desktop */
+.rightCol { position: sticky; top: 30px; align-self: start; }
+
+
+/* Filas clave: envuelven y dejan de superponerse en pantallas chicas */
+#rowRadioExtras { flex-wrap: wrap !important; gap: 8px 12px; }
+
+/* Tablas: si no entran en móvil, scrollean dentro del card sin romper el layout */
+@media (max-width: 800px) {
+  table.tabla-codigos { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table.tabla-codigos thead,
+  table.tabla-codigos tbody,
+  table.tabla-codigos tfoot { width: max-content; }
+}
+
+/* ====== LAYOUT BASE (3 columnas desktop / 2 tablet / 1 mobile) ====== */
+
+/* 3 columnas (desktop ≥1200px aprox.) */
+.grid-2 {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(520px, 2fr) minmax(260px, 1fr);
+  column-gap: 32px;
+  align-items: start;
+}
+.leftCol  { grid-column: 1; min-width: 0; }              /* ¡clave para que no fuerce ancho! */
+#liqBlock { grid-column: 2; }
+.rightCol { grid-column: 3; width: auto; max-width: 100%; position: sticky; top: 30px; align-self: start; }
+.rightCol > * { width: 100%; box-sizing: border-box; }   /* las cards llenan su columna */
+
+/* 2 columnas (tablets) */
+@media (max-width: 1200px) {
+  .grid-2 {
+    grid-template-columns: minmax(320px, 1fr) minmax(480px, 1fr);
+    row-gap: 24px;
+  }
+  .leftCol  { grid-column: 1; }
+  #liqBlock { grid-column: 1 / -1; }  /* la Liquidación se expande a todo el ancho */
+  .rightCol { grid-column: 2; position: static; } /* sin sticky en tablet */
+}
+
+/* 1 columna (mobile ≤800px) */
+@media (max-width: 800px) {
+  .grid-2 { grid-template-columns: 1fr; row-gap: 20px; }
+  .leftCol, #liqBlock, .rightCol { grid-column: 1; }
+  .rightCol { position: static; }
+}
+
+/* ====== CONTENIDO INTERNO RESPONSIVE ====== */
+#fechasRow { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+#indicesRow { display: flex; flex-wrap: wrap; gap: 8px 16px; } /* sin inline styles */
+#rowRadioExtras { display:flex; flex-wrap: wrap; gap: 8px 12px; }
+
+.date-field { flex: 1 1 180px; min-width: 160px; }
+.date-field input { width: 100%; }
+
+/* Grilla de Liquidación: 2 cols desktop / 1 col tablet+mobile */
+.liq-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 1200px) { .liq-columns { grid-template-columns: 1fr; } }
+
+/* Panel derecho: encabezados que no empujan ancho */
+.months-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.months-header .title { margin-left: 0 !important; }     /* por si queda algún inline viejo */
+#sacBox .row { flex-wrap: wrap; gap: 8px 12px; }
+#sacBox .title { margin-left: 0 !important; }
+
+/* SAC compacto (ajustado al contenido) en desktop; full width en móviles */
+.rightCol > #sacBox {
+  width: fit-content;
+  max-width: 100%;
+  display: inline-block;
+  align-self: start;
+  padding: 12px;
+}
+@media (max-width: 800px) {
+  .rightCol > #sacBox { width: 100%; display: block; }
+}
+
+/* Tabla de meses: aislar estilos para que no herede sombras de la tabla de códigos */
+table.meses td::before,
+table.meses td::after { content:none !important; }
+table.meses, table.meses th, table.meses td { border:none !important; }
+table.meses tr { background: transparent !important; box-shadow: none !important; }
+table.meses { font-variant-numeric: tabular-nums; }
+table.meses th:nth-child(1), table.meses td:nth-child(1) { width:6ch; text-align:left; white-space:nowrap; }
+table.meses th:nth-child(2), table.meses td:nth-child(2) { width:4ch; text-align:right; }
+table.meses tfoot td { font-weight:600; color:#111827; }
+@media (max-width:980px){ table.meses { font-size:.9rem; } }
+
+.months-header .pill { white-space: nowrap; }
+#sacBox select { max-width: 14ch; }   /* evita selects larguísimos que empujen */
+
+.row { display:flex; align-items:center; gap:8px; }
+.row-between { justify-content: space-between; }
+
+/* utilidades pequeñas y reutilizables */
+.mt-6 { margin-top: 6px !important; }
+
+/* Utilidad para ocultar/mostrar por clase */
+.is-hidden { display: none !important; }
+
+/* === Utilities (layout/spacing/tokens) === */
+.block { display: block !important; }
+.is-hidden { display: none !important; } /* ya existe, aquí por claridad */
+.flex-wrap { flex-wrap: wrap !important; }
+.items-end { align-items: flex-end !important; }
+
+.mb-2 { margin-bottom: 8px !important; }
+.mt-6 { margin-top: 6px !important; }   /* ya existe */
+.mt-10 { margin-top: 10px !important; }
+.mt-12 { margin-top: 12px !important; }
+.ml-8 { margin-left: 8px !important; }
+
+.gap-12 { gap: 12px !important; }
+
+.w-22ch { width: 22ch !important; }
+
+/* Badge reutilizable para chips/pills pequeños */
+.badge {
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: 1px solid #d6d6e7;
+  font-size: .9rem;
+}
+
+/* (opcional) estandarizar título dentro de cards */
+.card .title.block { margin-bottom: 8px; }
+
+/* Utilidades de visibilidad y layout */
+.is-hidden{ display:none !important; }
+
+.row{ display:flex; gap:.75rem; }
+.row-between{ justify-content:space-between; align-items:center; }
+.items-start{ align-items:flex-start; }
+.items-center{ align-items:center; }
+.items-end{ align-items:flex-end; }
+.row-wrap{ flex-wrap:wrap; }
+
+.inline-flex{ display:inline-flex; align-items:center; gap:.5rem; }
+
+.flex-col{ display:flex; flex-direction:column; }
+
+.gap-6{ gap:6px; }
+.gap-12{ gap:12px; }
+.gap-16{ gap:16px; }
+
+.ml-6{ margin-left:6px; }
+.mb-4{ margin-bottom:4px; }
+.mb-6{ margin-bottom:6px; }
+.mt-8{ margin-top:8px; }
+
+.pos-rel{ position:relative; }
+
+/* Barras/controles específicos */
+#indicesRow{ display:flex; justify-content:space-between; align-items:center; }
+.select-inline{ position:relative; display:inline-flex; align-items:center; gap:8px; }
+
+/* Por defecto es flex; se oculta con .is-hidden */
+#indicePrevToolbar{ display:flex; align-items:center; gap:8px; }
+
+/* Caja complemento con posición relativa por defecto */
+#complementoBox{ position:relative; }

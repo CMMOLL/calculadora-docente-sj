@@ -1,6 +1,14 @@
 (function(){
   window.CODIGOS = window.CODIGOS || {};
 
+  // Mostrar/ocultar sin tocar inline styles
+function setVisible(elOrId, visible) {
+  const el = typeof elOrId === 'string' ? document.getElementById(elOrId) : elOrId;
+  if (!el) return;
+  el.classList.toggle('is-hidden', !visible);
+}
+
+
   // --- DIAGNÓSTICO mín. (no altera cálculos) ---
 console.log("[CODIGOS.JS] Cargado desde", location.pathname);
 window.__pingMults = async () => {
@@ -25,6 +33,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 // helper global
 window.getMultiplicador = (c) =>
   (window.MULTS?.categorias?.[String(c)] ?? window.MULTS?.default ?? 1);
+
+// Utilidad global para mostrar/ocultar por clase (en vez de tocar style.display)
+window.setVisible = function setVisible(elOrId, visible) {
+  const el = typeof elOrId === 'string' ? document.getElementById(elOrId) : elOrId;
+  if (!el) return;
+  el.classList.toggle('is-hidden', !visible);
+};
 
 
 
@@ -245,7 +260,8 @@ window.getMultiplicador = (c) =>
     if (baseCell) baseCell.textContent = formatARS(baseImporteRounded);
 
     const mostrarBase = puedeMostrarBase && baseImporteRounded > 0;
-    if (baseRow) baseRow.style.display = mostrarBase ? 'table-row' : 'none';
+    if (baseRow) setVisible(baseRow, mostrarBase);
+
 
     const totalEl = document.getElementById('totalParcial');
     if (totalEl) {

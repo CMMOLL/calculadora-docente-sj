@@ -12,7 +12,7 @@
   <!-- (Opcional) Apple / PWA -->
   <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
   <meta name="theme-color" content="#0B0F14" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#FFFFFF"  media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
   <link id="app-css" rel="stylesheet" href="css/styles.css">
 </head>
 
@@ -95,7 +95,7 @@
       const e60Label = e60Input ? e60Input.closest('label') : null;
 
       if (e60Label) {
-        e60Label.style.display = isHoras ? 'none' : '';
+        setVisible(e60Label, !isHoras);
       }
       if (isHoras && e60Input) {
         // Forzamos desmarcado si está oculto
@@ -195,7 +195,7 @@
         <div class="sidebar">
           <!-- === Nuevo bloque: Seleccionar Cargos/Horas Cátedra === -->
           <div id="cargoHorasBlock" class="result">
-            <label class="title" style="display:block;margin-bottom:8px;">Seleccionar Cargos/Horas Cátedra</label>
+            <label class="title block mb-2">Seleccionar Cargos/Horas Cátedra</label>
 
             <!-- Lista desplegable principal -->
             <!-- (REMOVIDO) <label class="muted">Lista desplegable</label> -->
@@ -207,24 +207,23 @@
             </select>
 
             <!-- Panel CARGOS: ingresar categoría/ID -->
-            <div id="panelCargos" style="display:none; margin-top:10px;">
+            <div id="panelCargos" class="is-hidden mt-10">
               <label class="muted">Cargos</label>
               <input id="catId" type="text" placeholder="Categoría o nombre" autocomplete="off" spellcheck="false"
-                style="width:22ch;" />
-              <!-- (REMOVIDO) <div class="muted" style="margin-top:6px;">Ej.: 55, 28, 167…</div> -->
+                class="w-22ch" />
+
               <!-- Denominación del cargo (se muestra solo si hay ID válido) -->
-              <div id="cargoNombreWrap" class="muted" style="margin-top:6px; display:none;">
+              <div id="cargoNombreWrap" class="muted mt-6 is-hidden">
                 <span>Denominación:</span>
                 <span class="title" id="cargoNombre">—</span>
-                <span id="multBadge"
-                  style="display:none; margin-left:8px; padding:2px 6px; border-radius:10px; border:1px solid #d6d6e7;">
+                <span id="multBadge" class="badge ml-8 is-hidden">
                   x1
                 </span>
               </div>
 
             </div>
             <!-- NUEVO: Card grande para Horas Cátedra (HCNM/HCNS) -->
-            <div id="horasCard" style="display:none; margin-top:12px;">
+            <div id="horasCard" class="is-hidden mt-12">
               <div class="horas-card">
                 <label for="horasValor" class="horas-title">Horas Cátedra</label>
                 <input id="horasValor" type="number" min="0" max="99" step="1" inputmode="numeric"
@@ -233,9 +232,9 @@
             </div>
           </div>
           <!-- === Cálculo de Días de Licencias – Cartas Médicas === -->
-          <div id="licenciasCard" class="result" style="margin-top:10px;">
+          <div id="licenciasCard" class="result mt-10">
             <div class="title">Cálculo de Días de Licencias – Cartas Médicas</div>
-            <div class="row" style="gap:12px; align-items:flex-end; flex-wrap:wrap;">
+            <div class="row row gap-12 items-end flex-wrap">
               <label class="muted">Fecha de inicio
                 <input id="licInicio" type="date" />
               </label>
@@ -253,7 +252,7 @@
         </div>
         <div class="stack">
 
-          <div id="fechasRow" class="row" style="align-items:flex-end; gap:16px; flex-wrap:wrap;">
+          <div id="fechasRow" class="row items-end gap-16 row-wrap">
             <div class="date-field">
               <label for="inicio">Fecha Inicio</label>
               <input id="inicio" placeholder="dd/mm/aaaa" type="date" />
@@ -265,7 +264,7 @@
             </div>
 
             <!-- BAJA: checkbox primero y texto a la derecha -->
-            <label id="bajaGroup" for="baja" class="muted" style="display:inline-flex;align-items:center;gap:8px;">
+           <label id="bajaGroup" class="muted inline-flex">
               <input id="baja" type="checkbox" />
               <span>Baja</span>
             </label>
@@ -274,15 +273,14 @@
         <div class="result" id="liqBlock">
           <div class="title">Liquidación</div>
 
-          <div class="row" id="indicesRow"
-            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <label class="muted" style="position:relative; display:inline-flex; align-items:center; gap:8px;">
+          <div class="row" id="indicesRow" class="mb-6">
+            <label class="muted select-inline">
               Índice del mes
               <input id="indiceMes" step="0.0001" class="num-display" type="number" value="787.1022" readonly />
               <select class="select-meses" id="indicePeriodo" aria-label="Mes y año del índice"></select>
             </label>
 
-            <div id="indicePrevToolbar" style="display:none;">
+            <div id="indicePrevToolbar" class="is-hidden">
               <label class="muted">
                 Índice mes anterior
                 <input id="indiceMesPrev_clone" name="indiceMesPrev_clone" step="0.0001" class="num-display"
@@ -291,11 +289,8 @@
             </div>
           </div>
 
-
-
-          
-          <div class="row"
-            style="display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin:8px 0 4px 0;"><label
+          <div class="flex-col items-start gap-6 mt-8 mb-4">
+            <label
               class="muted">Antigüedad (años)
               <div class="antiguedad-row">
                 <input id="antiguedadAnios" min="0" step="1" type="number" value="0" />
@@ -303,9 +298,9 @@
                   <b id="antiguedadPct" title="Antigüedad">0%</b>
                 </span>
               </div>
-              <div id="rowRadioExtras" class="row" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+              <div id="rowRadioExtras" class="row items-center gap-12 row-wrap">
                 <label class="muted">Radio
-                  <select id="radioDocente" style="margin-left:6px;">
+                  <select id="radioDocente" class="ml-6">
                     <option value="0">Sin radio</option>
                     <option value="40">Radio 1 (40%)</option>
                     <option value="50">Radio 2 (50%)</option>
@@ -337,9 +332,8 @@
                 </div>
               </div>
 
-              <label class="muted" style="display:none;">Índice mes anterior
-                <input id="indiceMesPrev" step="0.0001" style="width:12ch; margin-left:6px;" type="number"
-                  value="772.4261" />
+              <label class="muted is-hidden">Índice mes anterior
+                <input id="indiceMesPrev" step="0.0001" type="number" value="772.4261" />
               </label>
           </div>
           <span class="pill"><b id="diasLiq">0</b></span>
@@ -369,22 +363,22 @@
                     <td>$</td>
                     <td id="a04Importe">0,00</td>
                   </tr>
-                  <tr id="rowA56" style="display:none;">
+                  <tr id="rowA56" class="is-hidden">
                     <td title="Estado Docente"><b>A56</b></td>
                     <td>$</td>
                     <td id="a56Importe">0,00</td>
                   </tr>
-                  <tr id="rowE29" style="display:none;">
+                  <tr id="rowE29" class="is-hidden">
                     <td title="Equipamiento Suplentes"><b>E29</b></td>
                     <td>$</td>
                     <td id="e29Importe">0,00</td>
                   </tr>
-                  <tr id="rowE66" data-codigo="E66" style="display:none;">
+                  <tr id="rowE66" data-codigo="E66" class="is-hidden">
                     <td title="Suma Remunerativa y bonificable por antigüedad"><b>E66</b></td>
                     <td>$</td>
                     <td><span id="e66Importe">0,00</span></td>
                   </tr>
-                  <tr id="rowE60" data-codigo="E60" style="display:none;">
+                  <tr id="rowE60" data-codigo="E60" class="is-hidden">
                     <td title="Suma Remunerativa y bonificable por antigüedad (solo cargos)"><b>E60</b></td>
                     <td>$</td>
                     <td><span id="e60Importe">0,00</span></td>
@@ -399,7 +393,7 @@
                 </tfoot>
               </table>
             </div>
-            <div id="complementoBox" style="display:none;; position:relative;">
+            <div id="complementoBox" class="is-hidden pos-rel">
               <div class="muted" title="F = Complemento (días excedentes)">Complemento</div>
               <div class="pill">Días excedentes: <b id="diasExc">0</b></div>
               <table class="tabla-codigos">
@@ -427,24 +421,23 @@
                     <td>$</td>
                     <td id="a04Exc">0,00</td>
                   </tr>
-                  <!-- NUEVO: F56 para complemento de A56 -->
-                  <tr id="rowF56" style="display:none;">
-                    <td title="Complemento del codigo A56 (mes anterior)"><b>F56</b></td>
-                    <td>$</td>
-                    <td id="f56Importe">0,00</td>
+                  <tr id="rowF56" class="is-hidden">
+                  <td><b>F56</b></td>
+                  <td>$</td>
+                  <td id="f56Importe">0,00</td>
                   </tr>
-
-                  <!-- NUEVO: E29 también se muestra en complemento (mismo código) -->
                   <tr id="rowE29_comp" style="display:none;">
                     <td title="Equipamiento Suplentes (en complemento)"><b>E29</b></td>
                     <td>$</td>
                     <td id="e29CompImporte">0,00</td>
                   </tr>
+
                   <tr id="rowF66" style="display:none;">
                     <td title="Complemento del código E66 (mes anterior)"><b>F66</b></td>
                     <td>$</td>
                     <td id="f66Importe">0,00</td>
                   </tr>
+
                   <tr id="rowF60" style="display:none;">
                     <td title="Complemento del código E60 (mes anterior)"><b>F60</b></td>
                     <td>$</td>
@@ -454,18 +447,18 @@
               </table>
             </div>
           </div>
-          <div class="muted" style="margin-top:6px;">
+          <div class="muted mt-6">
             * Si el período supera 30 días: se calculan 30 d con el índice vigente y el excedente con el índice del mes
             anterior.
           </div>
-          <div class="muted" style="margin-top:6px;">Criterio: inicio siempre incluido · fin <span id="finLabel2">NO
+          <div class="muted mt-6">Criterio: inicio siempre incluido · fin <span id="finLabel2">NO
               incluido</span>.</div>
         </div>
       </div>
       <aside class="rightCol">
         <div class="months-box">
           <div class="months-header">
-            <div class="title" style="; margin-left:40px;">Desglose Mensual (30/360)</div>
+            <div class="title">Desglose Mensual (30/360)</div>
             <div class="pill" id="periodoLabel">—</div>
           </div>
           <div class="result">
@@ -489,9 +482,9 @@
               </tfoot>
             </table>
           </div>
-          <div class="result">
-            <div class="row" style="justify-content:space-between;">
-              <div class="title" style="; margin-left:40px;">Días de Aguinaldo</div>
+          <div class="result" id="sacBox">
+            <div class="row row-between">
+              <div class="title">Días de Aguinaldo</div>
               <div class="row">
                 <label class="muted">Año
                   <select id="anioSAC"></select>
@@ -504,19 +497,19 @@
                 </label>
               </div>
             </div>
-            <div style="margin-top:8px;">
+            <div>
               <span class="muted">Días dentro del semestre seleccionado:</span>
               <span class="title" id="diasSAC">—</span>
             </div>
           </div>
-          <div class="result" id="decimasBlock" style="display:none;">
+          <div class="result is-hidden" id="decimasBlock">
             <div class="title">Décimas</div>
             <div class="muted">(Comprende del 1 Mar al 30 Dic)</div>
-            <div style="margin-top:8px;">
+            <div>
               <span class="muted">Total:</span>
               <span class="title" id="decimasTotal">—</span>
             </div>
-            <div class="muted" id="decimasDetalle" style="margin-top:6px;">—</div>
+            <div class="muted" id="decimasDetalle">—</div>
           </div>
         </div>
     </div>
@@ -672,9 +665,9 @@
           const curr = String(prevEl.value ?? '').trim();
           if (curr !== '') return;
 
-          const mapa   = window.PUNTOS?.mapa || {};
+          const mapa = window.PUNTOS?.mapa || {};
           const prevFn = window.PUNTOS?.prevYM;
-          const prevK  = (typeof prevFn === 'function') ? prevFn(k) : null;
+          const prevK = (typeof prevFn === 'function') ? prevFn(k) : null;
 
           // fallback: si hay índice del mes previo en el mapa y NO es el mismo mes, usarlo; si no, usar el actual
           let prevVal = v;
@@ -877,54 +870,55 @@
     const decimasDetalle = document.getElementById('decimasDetalle');
     const finLabel2 = document.getElementById('finLabel2');
 
-// Rellena #anioSAC con los años del rango pero respeta la selección del usuario.
-// Si no hay selección previa o ya no existe, toma por defecto:
-//  - el año del último row (usualmente el de 'end'), y
-//  - si el semestre elegido no tiene días en ese año, busca el primer año que sí tenga.
-function fillSACYearsFromRows(rows) {
-  const prev = selectAnioSAC?.value ? Number(selectAnioSAC.value) : null;
-  const sem  = parseInt(selectSemSAC?.value || '2', 10); // 1: Ene–Jun, 2: Jul–Dic
-  const years = Array.from(new Set((rows || []).map(r => r.y))).sort((a,b) => a - b);
+    // Rellena #anioSAC con los años del rango pero respeta la selección del usuario.
+    // Si no hay selección previa o ya no existe, toma por defecto:
+    //  - el año del último row (usualmente el de 'end'), y
+    //  - si el semestre elegido no tiene días en ese año, busca el primer año que sí tenga.
+    function fillSACYearsFromRows(rows) {
+      const prev = selectAnioSAC?.value ? Number(selectAnioSAC.value) : null;
+      const sem = parseInt(selectSemSAC?.value || '2', 10); // 1: Ene–Jun, 2: Jul–Dic
+      const years = Array.from(new Set((rows || []).map(r => r.y))).sort((a, b) => a - b);
 
-  // Sin rango => fallback año actual
-  if (!years.length) {
-    const y = new Date().getFullYear();
-    selectAnioSAC.innerHTML = `<option value="${y}">${y}</option>`;
-    selectAnioSAC.value = String(y);
-    return;
-  }
+      // Sin rango => fallback año actual
+      if (!years.length) {
+        const y = new Date().getFullYear();
+        selectAnioSAC.innerHTML = `<option value="${y}">${y}</option>`;
+        selectAnioSAC.value = String(y);
+        return;
+      }
 
-  // Reconstruir opciones
-  selectAnioSAC.innerHTML = '';
-  for (const y of years) {
-    const opt = document.createElement('option');
-    opt.value = String(y);
-    opt.textContent = String(y);
-    selectAnioSAC.appendChild(opt);
-  }
+      // Reconstruir opciones
+      selectAnioSAC.innerHTML = '';
+      for (const y of years) {
+        const opt = document.createElement('option');
+        opt.value = String(y);
+        opt.textContent = String(y);
+        selectAnioSAC.appendChild(opt);
+      }
 
-  // Intento 1: conservar selección previa si sigue siendo válida
-  let target = (prev && years.includes(prev)) ? prev : null;
+      // Intento 1: conservar selección previa si sigue siendo válida
+      let target = (prev && years.includes(prev)) ? prev : null;
 
-  // Intento 2: usar el año del último row (normalmente el del 'fin')
-  if (!target) {
-    const lastY = rows[rows.length - 1]?.y;
-    target = years.includes(lastY) ? lastY : years[years.length - 1];
-  }
+      // Intento 2: usar el año del último row (normalmente el del 'fin')
+      if (!target) {
+        const lastY = rows[rows.length - 1]?.y;
+        target = years.includes(lastY) ? lastY : years[years.length - 1];
+      }
 
-  // Si el semestre actual no tiene días en 'target', elegimos el primer año que sí tenga
-  const inSem = (r) => sem === 1 ? (r.m >= 1 && r.m <= 6) : (r.m >= 7 && r.m <= 12);
-  const targetHasDays = rows.some(r => r.y === target && inSem(r));
-  if (!targetHasDays) {
-    const alt = years.find(y => rows.some(r => r.y === y && inSem(r)));
-    if (alt) target = alt;
-  }
+      // Si el semestre actual no tiene días en 'target', elegimos el primer año que sí tenga
+      const inSem = (r) => sem === 1 ? (r.m >= 1 && r.m <= 6) : (r.m >= 7 && r.m <= 12);
+      const targetHasDays = rows.some(r => r.y === target && inSem(r));
+      if (!targetHasDays) {
+        const alt = years.find(y => rows.some(r => r.y === y && inSem(r)));
+        if (alt) target = alt;
+      }
 
-  selectAnioSAC.value = String(target);
-}
+      selectAnioSAC.value = String(target);
+    }
 
 
-    const MES_ABR_3 = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+    const MES_ABR_3 = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
     function labelMesAbreviado(m, y, includeYear) {
       const base = MES_ABR_3[(m | 0) - 1] || '';
@@ -960,7 +954,7 @@ function fillSACYearsFromRows(rows) {
 
         // Tooltip con mes completo, ej: "enero de 2026"
         tdMes.title = new Intl.DateTimeFormat('es-AR', { month: 'long', year: 'numeric' })
-        .format(new Date(row.y, row.m - 1, 1));
+          .format(new Date(row.y, row.m - 1, 1));
 
 
         const rawDias = row.days ?? row.dias ?? 0;
@@ -982,7 +976,7 @@ function fillSACYearsFromRows(rows) {
     function calcularSACDesdeFechas(start, end, baja, anio, sem) {
       // límites del semestre
       const semInicio = new Date(Date.UTC(anio, (sem === 1 ? 0 : 6), 1));   // Ene-01 o Jul-01
-      const semFin    = new Date(Date.UTC(anio, (sem === 1 ? 5 : 11), 30)); // Jun-30 o Dic-30
+      const semFin = new Date(Date.UTC(anio, (sem === 1 ? 5 : 11), 30)); // Jun-30 o Dic-30
 
       // si no hay intersección entre [start,end] y [semInicio,semFin], son 0 días
       if (!start || !end || end < start) return 0;
@@ -990,7 +984,7 @@ function fillSACYearsFromRows(rows) {
 
       // recortamos el período al semestre elegido
       const s = (start > semInicio) ? start : semInicio;
-      const e = (end   < semFin)    ? end   : semFin;
+      const e = (end < semFin) ? end : semFin;
 
       // volvemos a usar el mismo motor 30/360 para consistencia
       const rowsRecorte = breakdown30_360(s, e, baja);
@@ -1014,8 +1008,8 @@ function fillSACYearsFromRows(rows) {
     async function calculateLiq(start, end, baja) {
       if (!start || !end) {
         liqDato.diasLiq.textContent = '0';
-        liqBlock.style.display = 'none';
-        complementoBox.style.display = 'none';
+        setVisible('liqBlock', true);
+        setVisible('complementoBox', diasExc > 0);
         return;
       }
       liqBlock.style.display = 'block';
@@ -1221,22 +1215,29 @@ function fillSACYearsFromRows(rows) {
           liqDato.totalParcial.textContent = fmtAR(totalParcial);
         }
       })();
-      /* === E66 (30d escalado por índice) + F66 (excedente mes anterior) === */
-      function updateComplementoRow(code, visible, valor) {
-        const rowId = (code === 'E29C') ? 'rowE29_comp' : ('row' + code);
-        const cellId =
-          code === 'F66' ? 'f66Importe' :
+
+        // … deja lo que ya tienes y reemplaza SOLO esta función
+        function updateComplementoRow(code, visible, valor) {
+          const rowId = (code === 'E29C') ? 'rowE29_comp' : ('row' + code);
+          const cellId =
+            code === 'F66' ? 'f66Importe' :
             code === 'F60' ? 'f60Importe' :
-              code === 'F56' ? 'f56Importe' :
-                code === 'E29C' ? 'e29CompImporte' : null;
+            code === 'F56' ? 'f56Importe' :
+            code === 'E29C' ? 'e29CompImporte' : null;
 
-        const row = document.getElementById(rowId);
-        const cell = cellId ? document.getElementById(cellId) : null;
+          const row = document.getElementById(rowId);
+          const cell = cellId ? document.getElementById(cellId) : null;
 
-        if (row) row.style.display = visible ? 'table-row' : 'none';
-        if (cell) cell.textContent = (visible ? Number(valor || 0) : 0)
-          .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      }
+          if (row) {
+            // quita posibles clases que oculten y fuerza el display inline
+            row.classList.remove('is-hidden');
+            row.style.display = visible ? 'table-row' : 'none';
+          }
+          if (cell) {
+            const v = visible ? Number(valor || 0) : 0;
+            cell.textContent = v.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          }
+        }
 
       (async function calcE66() {
         const chk = document.getElementById('optE66');
@@ -1329,7 +1330,10 @@ function fillSACYearsFromRows(rows) {
         const diasExcNum = Number(diasExc || 0);
 
         const a56Checked = document.getElementById('optA56')?.checked === true;
-        updateComplementoRow('F56', a56Checked && diasExcNum > 0, 0);
+        // Solo visibilidad; no piso el importe calculado en calcA56()
+        const rowF56 = document.getElementById('rowF56');
+        if (rowF56) setVisible(rowF56, a56Checked && diasExcNum > 0);
+
 
         const tipoSelLocal = (typeof getTipoCargo === 'function') ? (getTipoCargo() || '') : '';
         const esHorasLocal = (tipoSelLocal === 'HCNM' || tipoSelLocal === 'HCNS');
@@ -1366,15 +1370,15 @@ function fillSACYearsFromRows(rows) {
       }
 
       periodoLabel.textContent = `${fmtDMY(start)} al ${fmtDMY(end)}`;
-const rows = breakdown30_360(start, end, baja);
-renderDesglose(rows);
+      const rows = breakdown30_360(start, end, baja);
+      renderDesglose(rows);
 
 
-// ahora sí, leemos el año/semestre seleccionados
-const sacAnio = parseInt(selectAnioSAC.value);
-const sacSem  = parseInt(selectSemSAC.value);
-const diasSemestre = calcularSACDesdeFechas(start, end, baja, sacAnio, sacSem);
-diasSAC.textContent = String(diasSemestre);
+      // ahora sí, leemos el año/semestre seleccionados
+      const sacAnio = parseInt(selectAnioSAC.value);
+      const sacSem = parseInt(selectSemSAC.value);
+      const diasSemestre = calcularSACDesdeFechas(start, end, baja, sacAnio, sacSem);
+      diasSAC.textContent = String(diasSemestre);
 
 
 
@@ -1427,7 +1431,7 @@ diasSAC.textContent = String(diasSemestre);
           const match = pill.textContent.match(/(\d+)/);
           if (match) exced = parseInt(match[1], 10);
         }
-        document.getElementById('indicePrevToolbar').style.display = exced > 0 ? 'flex' : 'none';
+        setVisible('indicePrevToolbar', exced > 0);
       }
 
       // Observe mutations in complementoBox to catch updates to the pill
@@ -1524,7 +1528,11 @@ diasSAC.textContent = String(diasSemestre);
         if (!tbody) return;
         function mkRow(id, code, title) {
           if (document.getElementById(id)) return;
-          const tr = document.createElement('tr'); tr.id = id; tr.style.display = 'none';
+
+          const tr = document.createElement('tr');
+          tr.id = id;
+          tr.classList.add('is-hidden');
+
           const td1 = document.createElement('td'); td1.title = title; td1.innerHTML = '<b>' + code + '</b>';
           const td2 = document.createElement('td'); td2.textContent = '$';
           const td3 = document.createElement('td'); td3.id = id.replace('row', '').toLowerCase() + 'Importe'; td3.textContent = '0,00';
@@ -1552,10 +1560,10 @@ diasSAC.textContent = String(diasSemestre);
       function refreshExtrasVisibility() {
         ensureExtraRows();
         const esCargo = isCargoSeleccionado();
-        if (rowA56) rowA56.style.display = (optA56 && optA56.checked) ? 'table-row' : 'none';
-        if (rowE66) rowE66.style.display = (optE66 && optE66.checked) ? 'table-row' : 'none';
-        if (rowE60) rowE60.style.display = (optE60 && optE60.checked && esCargo) ? 'table-row' : 'none';
-        if (rowE29) rowE29.style.display = (chkSuplente && chkSuplente.checked && esCargo) ? 'table-row' : 'none';
+        setVisible(rowA56, optA56 && optA56.checked);
+        setVisible(rowE66, optE66 && optE66.checked);
+        setVisible(rowE60, optE60 && optE60.checked && esCargo);
+        setVisible(rowE29, chkSuplente && chkSuplente.checked && esCargo);
       }
 
       function bind(el, ev) { if (el) el.addEventListener(ev, function () { refreshExtrasVisibility(); if (typeof update === 'function') update(); }); }
@@ -1618,10 +1626,7 @@ diasSAC.textContent = String(diasSemestre);
     document.getElementById('optE66')?.addEventListener('change', () => {
       const on = document.getElementById('optE66').checked;
       // E66 (columna base)
-      document.getElementById('rowE66')?.style.setProperty('display', on ? '' : 'none');
-      // F66 (columna complemento) se recalcula y decide su visibilidad en calcE66()
-      document.getElementById('rowF66')?.style.setProperty('display', 'none');
-      // Recalcular todo
+      setVisible('rowE66', on);
       if (typeof update === 'function') update();
     });
   </script>
@@ -1938,24 +1943,24 @@ diasSAC.textContent = String(diasSemestre);
   </script>
   <script>
     // Safety net: remover text-nodes que sean exactamente "
-"
-    (function () {
-      function cleanNodeTree(root) {
-        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
-        const toRemove = [];
-        while (walker.nextNode()) {
-          const n = walker.currentNode;
-          if (n.nodeValue && n.nodeValue.trim() === "
+    "
+      (function () {
+        function cleanNodeTree(root) {
+          const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+          const toRemove = [];
+          while (walker.nextNode()) {
+            const n = walker.currentNode;
+            if (n.nodeValue && n.nodeValue.trim() === "
 ") toRemove.push(n);
+          }
+          toRemove.forEach(n => n.parentNode && n.parentNode.removeChild(n));
         }
-        toRemove.forEach(n => n.parentNode && n.parentNode.removeChild(n));
-      }
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => cleanNodeTree(document.body));
-      } else {
-        cleanNodeTree(document.body);
-      }
-    })();
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', () => cleanNodeTree(document.body));
+        } else {
+          cleanNodeTree(document.body);
+        }
+      })();
   </script>
   <!-- Módulo de PUNTOS (A01 acumulado por mes con incrementos y multiplicadores) -->
   <script>
@@ -2025,25 +2030,25 @@ diasSAC.textContent = String(diasSemestre);
       }
 
       // Alias de meses SOLO para PUNTOS (no afecta índices)
-        const YM_POINTS_ALIAS = { '2025-08': '2025-07' };
-        const ymForPoints = (ym) => YM_POINTS_ALIAS[String(ym)] || ym;
+      const YM_POINTS_ALIAS = { '2025-08': '2025-07' };
+      const ymForPoints = (ym) => YM_POINTS_ALIAS[String(ym)] || ym;
 
 
       window.PUNTOS = {
         ready: async () => { await ensure(); return true; },
         getA01For: (categoria, ymActual) => {
-            const cargo = window.CARGOS?.getByCategoria?.(Number(categoria));
-            if (!cargo || !INC || !MUL) return { actual: 0, previo: 0 };
+          const cargo = window.CARGOS?.getByCategoria?.(Number(categoria));
+          if (!cargo || !INC || !MUL) return { actual: 0, previo: 0 };
 
-            const ymParaActual  = ymForPoints(ymActual);    // Agosto-2025 -> Julio-2025
-            const ymPrev        = prevYM(ymActual);
-            const ymParaPrevio  = ymForPoints(ymPrev);      // también alias para el excedente
+          const ymParaActual = ymForPoints(ymActual);    // Agosto-2025 -> Julio-2025
+          const ymPrev = prevYM(ymActual);
+          const ymParaPrevio = ymForPoints(ymPrev);      // también alias para el excedente
 
-            return {
-              actual: a01Acumulado(cargo, ymParaActual),
-              previo: a01Acumulado(cargo, ymParaPrevio)
-            };
-          },
+          return {
+            actual: a01Acumulado(cargo, ymParaActual),
+            previo: a01Acumulado(cargo, ymParaPrevio)
+          };
+        },
         prevYM
       };
     })();
@@ -2120,206 +2125,165 @@ diasSAC.textContent = String(diasSemestre);
   </script>
   </script>
   <script>
-(() => {
-  const titulo = document.getElementById('tituloPeriodo');
-  const inicio = document.getElementById('inicio');
-  const fin    = document.getElementById('fin');
-  const MES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-               'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    (() => {
+      const titulo = document.getElementById('tituloPeriodo');
+      const inicio = document.getElementById('inicio');
+      const fin = document.getElementById('fin');
+      const MES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
-  if (!titulo || !inicio || !fin) return;
+      if (!titulo || !inicio || !fin) return;
 
-  function actualizar() {
-    // Tomamos la fecha fin si existe; si no, la de inicio; si no, hoy.
-    const v = fin.value || inicio.value;
-    const d = v ? new Date(v) : new Date();
-    titulo.textContent = `${MES[d.getMonth()]} ${d.getFullYear()}`;
-  }
-
-  actualizar();
-  inicio.addEventListener('change', actualizar);
-  fin.addEventListener('change', actualizar);
-})();
-</script>
-
-
-<style>
-  /* Override a prueba de caché para la tabla de meses */
-  table.meses td::before,
-  table.meses td::after { content: none !important; }
-  table.meses td,
-  table.meses tr { background: transparent !important; box-shadow: none !important; }
-</style>
-<script>
-(function () {
-  function enhanceSelectToShowN(el, N) {
-    if (!el || el.dataset.enhanced === '1') return;
-    el.dataset.enhanced = '1';
-
-    // Envolver con wrapper posicionado (si no existe)
-    let wrapper = el.parentElement;
-    if (!wrapper || !wrapper.classList.contains('select-meses-wrap')) {
-      const w = document.createElement('div');
-      w.className = 'select-meses-wrap';
-      if (wrapper && typeof wrapper.insertBefore === 'function') {
-        wrapper.insertBefore(w, el);
-      } else {
-        el.before(w);
+      function actualizar() {
+        // Tomamos la fecha fin si existe; si no, la de inicio; si no, hoy.
+        const v = fin.value || inicio.value;
+        const d = v ? new Date(v) : new Date();
+        titulo.textContent = `${MES[d.getMonth()]} ${d.getFullYear()}`;
       }
-      w.appendChild(el);
-      wrapper = w;
+
+      actualizar();
+      inicio.addEventListener('change', actualizar);
+      fin.addEventListener('change', actualizar);
+    })();
+  </script>
+
+
+  <style>
+    /* Override a prueba de caché para la tabla de meses */
+    table.meses td::before,
+    table.meses td::after {
+      content: none !important;
     }
 
-    const orig = {
-      size: el.getAttribute('size') || '1',
-      width: '',
-      value: el.value
-    };
+    table.meses td,
+    table.meses tr {
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+  </style>
+  <script>
+    (function () {
+      function enhanceSelectToShowN(el, N) {
+        if (!el || el.dataset.enhanced === '1') return;
+        el.dataset.enhanced = '1';
 
-    let outsideCloser = null;
+        // Envolver con wrapper posicionado (si no existe)
+        let wrapper = el.parentElement;
+        if (!wrapper || !wrapper.classList.contains('select-meses-wrap')) {
+          const w = document.createElement('div');
+          w.className = 'select-meses-wrap';
+          if (wrapper && typeof wrapper.insertBefore === 'function') {
+            wrapper.insertBefore(w, el);
+          } else {
+            el.before(w);
+          }
+          w.appendChild(el);
+          wrapper = w;
+        }
 
-    const commitAndClose = (commit) => {
-      // Restaurar tamaño/estilos
-      el.setAttribute('size', orig.size);
-      el.classList.remove('select-open');
-      el.style.width = orig.width;
-      // Liberar alto del slot para evitar "saltito" inverso
-      wrapper.style.minHeight = '';
-      wrapper.style.height = '';
+        const orig = {
+          size: el.getAttribute('size') || '1',
+          width: '',
+          value: el.value
+        };
 
-      if (outsideCloser) {
-        document.removeEventListener('pointerdown', outsideCloser, true);
-        outsideCloser = null;
+        let outsideCloser = null;
+
+        const commitAndClose = (commit) => {
+          // Restaurar tamaño/estilos
+          el.setAttribute('size', orig.size);
+          el.classList.remove('select-open');
+          el.style.width = orig.width;
+          // Liberar alto del slot para evitar "saltito" inverso
+          wrapper.style.minHeight = '';
+          wrapper.style.height = '';
+
+          if (outsideCloser) {
+            document.removeEventListener('pointerdown', outsideCloser, true);
+            outsideCloser = null;
+          }
+
+          if (commit) {
+            // Confirmar explícitamente
+            orig.value = el.value;
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+          } else {
+            // Cancelar: restaurar valor anterior
+            el.value = orig.value;
+          }
+
+          el.blur();
+        };
+
+        const open = () => {
+          if (el.classList.contains('select-open')) return;
+
+          // Fijar ancho del control y alto del slot => sin reflow
+          const rect = el.getBoundingClientRect();
+          orig.width = el.style.width;
+          el.style.width = `${rect.width}px`;
+          wrapper.style.minHeight = `${rect.height}px`;
+          wrapper.style.height = `${rect.height}px`;
+
+          // Abrir como lista con N visibles
+          el.setAttribute('size', String(N));
+          el.classList.add('select-open');
+
+          // Click afuera => confirmar y cerrar
+          outsideCloser = (ev) => {
+            if (!wrapper.contains(ev.target)) commitAndClose(true);
+          };
+          document.addEventListener('pointerdown', outsideCloser, true);
+        };
+
+        const onKeyDown = (e) => {
+          // Flechas navegan, sin confirmar
+          if (e.key === 'ArrowDown' || e.key === 'ArrowUp' ||
+            e.key === 'PageDown' || e.key === 'PageUp' ||
+            e.key === 'Home' || e.key === 'End') {
+            return;
+          }
+
+          if (e.key === 'Enter' || e.key === 'Tab') {
+            commitAndClose(true);
+            return;
+          }
+
+          if (e.key === 'Escape') {
+            commitAndClose(false);
+            return;
+          }
+
+          if (e.key === ' ') {
+            e.preventDefault();
+          }
+        };
+
+        el.addEventListener('focus', open);
+        el.addEventListener('mousedown', () => {
+          if (!el.classList.contains('select-open')) open();
+        });
+        el.addEventListener('keydown', onKeyDown);
+
+        // Permitimos seguir navegando; confirmación sólo con Enter/Tab/click afuera
+        el.addEventListener('change', () => { });
+        el.addEventListener('blur', () => { });
       }
 
-      if (commit) {
-        // Confirmar explícitamente
-        orig.value = el.value;
-        el.dispatchEvent(new Event('input',  { bubbles:true }));
-        el.dispatchEvent(new Event('change', { bubbles:true }));
+      function initSelectMeses() {
+        const sel = document.getElementById('indicePeriodo');
+        if (sel) enhanceSelectToShowN(sel, 6);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSelectMeses);
       } else {
-        // Cancelar: restaurar valor anterior
-        el.value = orig.value;
+        initSelectMeses();
       }
-
-      el.blur();
-    };
-
-    const open = () => {
-      if (el.classList.contains('select-open')) return;
-
-      // Fijar ancho del control y alto del slot => sin reflow
-      const rect = el.getBoundingClientRect();
-      orig.width = el.style.width;
-      el.style.width = `${rect.width}px`;
-      wrapper.style.minHeight = `${rect.height}px`;
-      wrapper.style.height    = `${rect.height}px`;
-
-      // Abrir como lista con N visibles
-      el.setAttribute('size', String(N));
-      el.classList.add('select-open');
-
-      // Click afuera => confirmar y cerrar
-      outsideCloser = (ev) => {
-        if (!wrapper.contains(ev.target)) commitAndClose(true);
-      };
-      document.addEventListener('pointerdown', outsideCloser, true);
-    };
-
-    const onKeyDown = (e) => {
-      // Flechas navegan, sin confirmar
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' ||
-          e.key === 'PageDown' || e.key === 'PageUp' ||
-          e.key === 'Home'     || e.key === 'End') {
-        return;
-      }
-
-      if (e.key === 'Enter' || e.key === 'Tab') {
-        commitAndClose(true);
-        return;
-      }
-
-      if (e.key === 'Escape') {
-        commitAndClose(false);
-        return;
-      }
-
-      if (e.key === ' ') {
-        e.preventDefault();
-      }
-    };
-
-    el.addEventListener('focus', open);
-    el.addEventListener('mousedown', () => {
-      if (!el.classList.contains('select-open')) open();
-    });
-    el.addEventListener('keydown', onKeyDown);
-
-    // Permitimos seguir navegando; confirmación sólo con Enter/Tab/click afuera
-    el.addEventListener('change', () => {});
-    el.addEventListener('blur', () => {});
-  }
-
-  function initSelectMeses() {
-    const sel = document.getElementById('indicePeriodo');
-    if (sel) enhanceSelectToShowN(sel, 6);
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initSelectMeses);
-  } else {
-    initSelectMeses();
-  }
-})();
-</script>
+    })();
+  </script>
 
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
