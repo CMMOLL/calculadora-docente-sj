@@ -3,9 +3,13 @@
 **Diseñar y desarrollar una plataforma web** que **automatice la liquidación de sueldos** de **docentes y no docentes** de colegios **privados de San Juan**, **cumpliendo** normativa **provincial y nacional**, **trazable y auditable**, con **datos parametrizables** (índices, convenios, topes, adicionales, aportes y contribuciones) y **capacidad de escalar** a **presentaciones oficiales** (exportes/archivos/reportes compatibles con las exigencias vigentes).
 
 **Estado:** Propuesto
+
 **Versión:** 1.0
+
 **Última actualización:** 10-Oct-2025
+
 **Propietario:** Miguel (Liquidación de Sueldos)
+
 **Colaboración:** Dev / Contabilidad / Auditoría
 
 ---
