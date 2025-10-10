@@ -31,6 +31,15 @@ Se requiere una definición clara, trazable y auditable del objetivo del sistema
 - **100%** de conceptos con fórmula y desglose visibles.
 - Actualización **mensual** de índices/tablas **sin tocar código**.
 
+## Fuera de alcance (por ahora)
+- ARCA/integraciones externas; presentaciones oficiales automáticas; seguridad avanzada.
+- Convertir KPIs en SMART (umbral + fecha + método de medición) y sumar KPI de performance (p.ej., “calcular 1 recibo < 150ms en cliente”).
+
+## Riesgos & Mitigaciones
+- Cambios normativos inesperados; 
+- Fuentes de datos incompletas; 
+- Controles de calidad de datos.
+
 ## Impacto en la hoja de ruta
 - Próximos ADR sugeridos:
   - ADR-0002: Esquema de datos (índices, incrementos, nomencladores, multiplicadores, topes).
