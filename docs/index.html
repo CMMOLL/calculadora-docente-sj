@@ -45,6 +45,21 @@
   })();
 </script>
 
+<!-- Cargar el módulo de índices -->
+<script type="module">
+  import {
+    getPeriodosDisponibles,
+    getPeriodoDefault,
+    getValorIndice
+  } from './js/datos/indices.js';
+
+  // Exponer al ámbito global para poder probar en consola y para código legado
+  window.getPeriodosDisponibles = getPeriodosDisponibles;
+  window.getPeriodoDefault = getPeriodoDefault;
+  window.getValorIndice = getValorIndice;
+</script>
+
+
 <script>
   const v = window.__assetVersion || Date.now();
   const s = document.createElement('script');
